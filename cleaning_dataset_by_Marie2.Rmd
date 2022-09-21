@@ -49,6 +49,7 @@ levels(stars$Spectral_Class)
 ```{r}
 # To modify a level, I need to convert it into character :
 stars$Star_Color <- as.character(stars$Star_Color)
+stars$Star_Type <- as.character(stars$Star_Type)
 
 # So :
 stars[Star_Color=="Blue-White" | Star_Color=="Blue white" | Star_Color=="Blue White"]$Star_Color <- "Blue-white"
@@ -58,9 +59,19 @@ stars[Star_Color=="yellowish"]$Star_Color <- "Yellowish"
 stars[Star_Color=="Pale yellow orange"]$Star_Color <- "Pale-yellow-orange"
 stars[Star_Color=="Yellowish White"]$Star_Color <- "White-yellow"
 
+# And :
+stars[Star_Type=="0"]$Star_Type <- "Brown_Dwarf"
+stars[Star_Type=="1"]$Star_Type <- "Red_Dwarf"
+stars[Star_Type=="2"]$Star_Type <- "White_Dwarf"
+stars[Star_Type=="3"]$Star_Type <- "Main_Sequence"
+stars[Star_Type=="4"]$Star_Type <- "Supergiant"
+stars[Star_Type=="5"]$Star_Type <- "Hypergiant"
+
 # Then to put it back into factor and check again the levels :
 stars$Star_Color <- as.factor(stars$Star_Color)
+stars$Star_Type <- as.factor(stars$Star_Type)
 levels(stars$Star_Color)
+levels(stars$Star_Type)
 ```
 
 # New dataset
