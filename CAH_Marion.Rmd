@@ -1,0 +1,64 @@
+---
+title: "Classification non supervisée"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# Classification ascendante hiérarchique 
+
+Objectif : créer une suite de partitions emboitées et choisir le nombre de groupes le plus pertinent. 
+
+Importation des données
+```{r}
+stars <- read.table("data/stars_by_Marie.csv", sep=",", header=TRUE)
+```
+
+On utilise que les variables caractéristiques de la physique des étoiles, c'est à dire les variables quantitatives 
+```{r}
+require(tidyverse)
+matrice <- stars %>% select(-c(5,6,7))
+```
+
+## Choix de la distance ultramétrique :
+
+L'utilisateur choisit la distance et elle définit la cah, c'est le seul endroit où l'input rentre en jeu après tout s'enchaine. 
+```{r}
+d <-  dist(matrice)
+
+choix.ultrametrique <- function(metric = "ward.D"){
+  cah <- hclust(d, method = metric)
+}
+
+cah <- choix.ultrametrique("ward.D")
+cah <- choix.ultrametrique("single")
+cah <- choix.ultrametrique("complete")
+
+```
+
+## Plot de la fonction de perte 
+
+```{r}
+require(ggplot2)
+require(plotly)
+
+data <- data.frame("inertie" = rev(cah$height)[1:20], "clusters" = 1:20)
+graph <- ggplot(data, aes(y= inertie, x=clusters)) + geom_line() +labs(title="Fonction de perte")+ylab("Inertie intra-groupe")+ xlab("Nombre de clusters") + theme_minimal()
+ggplotly(graph)
+
+```
+## Choix du nombre de groupe 
+```{r}
+k=4
+```
+
+
+## Plot du dendogramme
+```{r}
+require(factoextra)
+fviz_dend(cah, k = k, show_labels = FALSE, rect = TRUE)
+```
+
+-> rajouter statistiques des groupes obtenus 
