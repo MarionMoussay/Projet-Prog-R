@@ -87,5 +87,11 @@ require(factoextra)
 fviz_dend(cah.min)
 ```
 On retrouve ici les deux clusters finaux qu'on a construit. Le dendogramme se lit du bas vers le haut. A la première étape on a réunit l'individu 2 et l'individu 5 pour une distance de 0.66 qu'on peut lire sur l'axe des ordonnées, c'est sur le graphe la première réunification. Ensuite à la seconde étape on a réunit 3 et 4 à 1.5 puis {3,4} et 1 à 1.8. 
+On peut tracer la courbe des sauts de distance entre chaque étape, qu'on retrouve dans la l'élément `height` de l'objet `cah.min`:
+```{r}
+plot(x=-cah.min$height, type='l')
+```
+On voit que le plus grand saut se fait entre 3 et 4 groupes donc on choisit 3 groupes pour éviter le sur apprentissage. Le nombre optimal de groupe est alors de 3 et il s'agit des groupes {2,5}, {3,4} et 1. 
 
 Voilà une classification ascendante hiérarchique faîte à la main !
+
