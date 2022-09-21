@@ -22,7 +22,7 @@ Voici le lien kaggle qui peut peut être vous aider à comprendre l’objectif :
 library(data.table)
 
 # We open the table and convert it in data.table :
-stars <- fread("./stars_by_Marie.csv",sep=",")
+stars <- fread("./data/stars_by_Marie.csv",sep=",")
 stars <- data.table(stars)
 
 stars$Star_Type <- as.factor(stars$Star_Type)
@@ -51,14 +51,25 @@ summary(stars)
 
 # Boxplot of star type effect
 ```{r}
+# log limit variability, only for quantitative data (length, weight...)
+# log2 instead of log for easier interpretation, 2 columns for each, one with, and one without (warning: interpreation of the graphs!)
+# log2 explaination : https://rstudio-pubs-static.s3.amazonaws.com/13988_bb11d85b79b2436280de434988558140.html
+```
+
+
+```{r}
 col_user <- "grey"
 
-boxplot(stars$Temperature.K~stars$Star_Type, xlab= "Star type", ylab= "Temperature (in K)", main="Star type effect on temperature",las=2,col=col_user)
+boxplot(log2(stars$Temperature.K)~stars$Star_Type, xlab= "Star type", ylab= "log2(Temperature) (in K)", main="Star type effect on temperature",las=2,col=col_user)
+#boxplot(stars$Temperature.K~stars$Star_Type, xlab= "Star type", ylab= "Temperature (in K)", main="Star type effect on temperature",las=2,col=col_user)
 
-boxplot(stars$Luminosity.L.Lo~stars$Star_Type, xlab= "Star type", ylab= "Luminosity", main="Star type effect on luminosity",las=2,col=col_user)
+boxplot(log2(stars$Luminosity.L.Lo)~stars$Star_Type, xlab= "Star type", ylab= "log2(Luminosity)", main="Star type effect on luminosity",las=2,col=col_user)
+#boxplot(stars$Luminosity.L.Lo~stars$Star_Type, xlab= "Star type", ylab= "Luminosity", main="Star type effect on luminosity",las=2,col=col_user)
 
-boxplot(stars$Radius.R.Ro~stars$Star_Type, xlab= "Star type", ylab= "radius", main="Star type effect on radius",las=2,col=col_user)
+boxplot(log2(stars$Radius.R.Ro)~stars$Star_Type, xlab= "Star type", ylab= "log2(Radius)", main="Star type effect on radius",las=2,col=col_user)
+#boxplot(stars$Radius.R.Ro~stars$Star_Type, xlab= "Star type", ylab= "Radius", main="Star type effect on radius",las=2,col=col_user)
 
+#boxplot(log2(stars$Absolute_Magnitude.Mv)~stars$Star_Type, xlab= "Star type", ylab= "log2(Absolute magnitude)", main="Star type effect on absolute magnitude",las=2,col=col_user)
 boxplot(stars$Absolute_Magnitude.Mv~stars$Star_Type, xlab= "Star type", ylab= "Absolute magnitude", main="Star type effect on absolute magnitude",las=2,col=col_user)
 ```
 
@@ -70,7 +81,7 @@ ggplot(stars, aes(y = Star_Type)) +
   geom_bar() + 
   xlab("Nombre") +
   ylab("Type d'étoile") + 
-  labs(title="Repartition de lu type d'étoile")+
+  labs(title="Repartition du type d'étoile")+
   scale_fill_identity()+
   theme_bw() +
   theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),panel.background = element_blank(), axis.line = element_line(colour = "black"))+
@@ -113,11 +124,23 @@ boxplot(stars$Absolute_Magnitude.Mv,ylab= "Mangitude absolue (en Mv)", main="Dis
 # Correlation ?
 
 ```{r}
+# On peut dire qu'il y a une correlation, les individus etant regroupes :
 table(stars$Star_Color,stars$Spectral_Class)
 ```
 
 # Ggplot pour retrouver le diagramme
 
+```{r}
+# Image du diagramme HR
+library(magick)
+frink <- image_read("./www/inbox_3791628_14338bbebf77d18e1faef582bccdbdd6_hr.jpg")
+print(frink)
+```
+
+```{r}
+ggplot(data = stars) + 
+  geom_point(aes(x = Temperature.K, y = Absolute_Magnitude.Mv, color = Star_Type))
+```
 
 
 
