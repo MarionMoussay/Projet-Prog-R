@@ -1,4 +1,4 @@
-"Temperature(K)","Luminosity(L/Lo)","Radius(R/Ro)","Absolute_Magnitude(Mv)","Star_Type","Star_Color","Spectral_Class"
+"Temperature.K","Luminosity.L.Lo","Radius.R.Ro","Absolute_Magnitude.Mv","Star_Type","Star_Color","Spectral_Class"
 3068,0.0024,0.17,16.12,"0","Red","M"
 3042,5e-04,0.1542,16.6,"0","Red","M"
 2600,3e-04,0.102,18.7,"0","Red","M"
