@@ -1,0 +1,282 @@
+---
+title: "projet etoile"
+author: "Marie Joigneau"
+date: '2022-09-19'
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Idee sujet
+
+Il existe une classification « officielle » des étoiles, Hertzsprung-Russel Diagram (HR-Diagram), selon leurs caractéristiques physiques (luminosité, radius, …). On aurait pensé créer un modèle de prédiction des types d’étoiles et voir la concordance avec ce diagramme, puis faire un algorithme de classification non supervisée pour comparer les groupes qui en ressortent. Et on aimerait tenter une ACP codée à la main avec possibilité de filtres.
+
+Voici le lien kaggle qui peut peut être vous aider à comprendre l’objectif : https://www.kaggle.com/datasets/deepu1109/star-dataset
+
+## Introduction
+
+## Dataset
+```{r}
+library(data.table)
+
+# We open the table and convert it in data.table :
+stars <- fread("./stars_by_Marie.csv",sep=",")
+stars <- data.table(stars)
+
+stars$Star_Type <- as.factor(stars$Star_Type)
+stars$Star_Color <- as.factor(stars$Star_Color)
+stars$Spectral_Class <- as.factor(stars$Spectral_Class)
+
+stars
+```
+
+## Visualisation - description statistique - aborder le jeux de données
+- boxplot
+- geom bar
+- correlation?
+- faire ggplot pour retrouver le diagramme
+
+# General views
+```{r}
+str(stars)
+
+# 240 observations * 7 variables
+dim(stars)
+
+summary(stars)
+# Star type = (6 classes ranging from 0-5) 0 -> Brown Dwarf 1-> Red Dwarf 2 -> White Dwarf 3-> Main Sequence 4 -> Supergiant 5 -> Hypergiant
+```
+
+# Boxplot of star type effect
+```{r}
+col_user <- "grey"
+
+boxplot(stars$Temperature.K~stars$Star_Type, xlab= "Star type", ylab= "Temperature (in K)", main="Star type effect on temperature",las=2,col=col_user)
+
+boxplot(stars$Luminosity.L.Lo~stars$Star_Type, xlab= "Star type", ylab= "Luminosity", main="Star type effect on luminosity",las=2,col=col_user)
+
+boxplot(stars$Radius.R.Ro~stars$Star_Type, xlab= "Star type", ylab= "radius", main="Star type effect on radius",las=2,col=col_user)
+
+boxplot(stars$Absolute_Magnitude.Mv~stars$Star_Type, xlab= "Star type", ylab= "Absolute magnitude", main="Star type effect on absolute magnitude",las=2,col=col_user)
+```
+
+# Geom bar (count)
+```{r}
+library(ggplot2)
+
+ggplot(stars, aes(y = Star_Type)) +
+  geom_bar() + 
+  xlab("Nombre") +
+  ylab("Type d'étoile") + 
+  labs(title="Repartition de lu type d'étoile")+
+  scale_fill_identity()+
+  theme_bw() +
+  theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),panel.background = element_blank(), axis.line = element_line(colour = "black"))+
+  theme(plot.title = element_text(hjust = 0.5,size=9))
+
+ggplot(stars, aes(y = Spectral_Class)) +
+  geom_bar() + 
+  xlab("Nombre") +
+  ylab("Classe spectrale") + 
+  labs(title="Repartition de la classe spectrale")+
+  scale_fill_identity()+
+  theme_bw() +
+  theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),panel.background = element_blank(), axis.line = element_line(colour = "black"))+
+  theme(plot.title = element_text(hjust = 0.5,size=9))
+
+ggplot(stars, aes(y = Star_Color)) +
+  geom_bar() + 
+  xlab("Nombre") +
+  ylab("Couleur de l'étoile") + 
+  labs(title="Repartition de la couleur de l'étoile")+
+  scale_fill_identity()+
+  theme_bw() +
+  theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),panel.background = element_blank(), axis.line = element_line(colour = "black"))+
+  theme(plot.title = element_text(hjust = 0.5,size=9))
+```
+
+# General boxplot
+```{r}
+col_user2 <- "grey"
+
+boxplot(stars$Temperature.K,ylab= "Temperature (en K)", main="Distribution de la temperature",las=2,col=col_user2)
+
+boxplot(stars$Luminosity.L.Lo,ylab= "Luminosité (en L)", main="Distribution de la luminosité",las=2,col=col_user2)
+
+boxplot(stars$Radius.R.Ro,ylab= "Rayon", main="Distribution du rayon",las=2,col=col_user2)
+
+boxplot(stars$Absolute_Magnitude.Mv,ylab= "Mangitude absolue (en Mv)", main="Distribution de la magnitude absolue",las=2,col=col_user2)
+```
+
+# Correlation ?
+
+```{r}
+table(stars$Star_Color,stars$Spectral_Class)
+```
+
+# Ggplot pour retrouver le diagramme
+
+
+
+
+## PCA
+
+```{r}
+library(FactoMineR)
+PCA.s <- PCA(stars[,1:4])
+PCA.s
+```
+
+```{r}
+summary(PCA.s, ncp=2) # resume sur les 2 premieres dimensions
+```
+
+```{r}
+PCA.s.quali <- PCA(stars, quali.sup=5:7)
+```
+
+```{r}
+# http://www.sthda.com/french/articles/38-methodes-des-composantes-principales-dans-r-guide-pratique/73-acp-analyse-en-composantes-principales-avec-r-l-essentiel/#valeurs-propres-variances
+library("factoextra")
+eig.val <- get_eigenvalue(PCA.s)
+eig.val
+plot(eig.val[,2])
+```
+
+# PCA Marion
+```{r}
+pca <- reactive({
+    df <- df()
+    df <- df[3:5]
+    n <- nrow(df) 
+    moyennes <- apply(df, FUN = mean, MARGIN = 2)
+    moyennes <- matrix(rep(moyennes, n), nrow = n, byrow = T)
+    
+    ectype <- apply(df, FUN = ecartype, MARGIN = 2)
+    ectype <- matrix(rep(ectype,n), nrow = n, byrow = T)
+    
+    df <- (as.matrix(df)-moyennes)/ectype
+    
+    data <- df
+    
+    k<-ncol(data)
+    n <-dim(data)[1]
+    p<-dim(data)[2]
+    
+    cov <- 1/(n-1)*t(data)%*%data 
+    scaling<- sqrt(1/diag(cov))
+    scaled_covariance <- diag(scaling) %*% cov
+    
+    eig<-eigen(scaled_covariance) 
+    explained_variance <-(eig$values)[1:k] 
+    
+    Inertie <- (explained_variance)/sum(explained_variance)*100 
+    
+    decomposition <- svd.triplet(data)
+    Vect_propres <- decomposition$V
+    
+    Ind_coor <- df%*%decomposition$V
+    Var_coor <- (decomposition$V)*t(matrix(rep(decomposition$vs,3),nrow=p))
+    row.names(Var_coor)=colnames(data)
+    
+    pca_mod <- list("Inertie"=Inertie, "Var_coord"=Var_coor[,1:3],"Ind_coor"=Ind_coor[,1:3],"Vecteurs_propres"=Vect_propres)
+    pca_mod
+  })
+  
+  output$pca_barplot <- renderPlotly({
+    pca <- pca()
+    x <- c(1:3)
+    y <- c(pca$Inertie)
+    text <- c(paste(round(pca$Inertie[1]), "%  of variance"), paste(round(pca$Inertie[2]), "%  of variance"), paste(round(pca$Inertie[3]), "%  of variance"))
+    data <- data.frame(x, y, text)
+    
+    fig <- plot_ly(data, x = ~x, y = ~y, type = 'bar', text = text,
+                   marker = list(color = 'rgb(158,202,225)',
+                                 line = list(color = 'rgb(8,48,107)',
+                                             width = 1.5)))
+    fig <- fig %>% layout(title = "Distribution of eigen values")
+    fig
+    
+  })
+  
+  output$pca_ind <- renderPlotly({
+    x1 = as.numeric(input$get_x)
+    x2 = as.numeric(input$get_y)
+    pca <- pca()
+    data<- as.data.frame(pca$Ind_coor)
+    Inertie <- pca$Inertie
+    plot <-  plot_ly(data = data, x = ~data[,x1], y = ~ data[,x2], type = "scatter", mode = 'markers') %>%
+      layout(title = "Graphe des individus",
+             xaxis=list(title=(paste("Axe ",x1," : ","(",round(Inertie[x1],1),"%)",sep=""))),
+             yaxis=list(title=paste("Axe ",x2," : ", "(",round(Inertie[x2],1),"%)",sep="")))
+    plot
+  })
+  
+  output$pca_var <- renderPlotly({
+    x1 = as.numeric(input$get_x)
+    x2 = as.numeric(input$get_y)
+    pca <- pca()
+    Inertie <- pca$Inertie
+    Var_coor <-  as.data.frame(pca[2])
+    graph <- ggplot(data.frame(Var_coor), aes(x= Var_coor[,x1], y=Var_coor[,x2])) +
+      geom_point() +
+      annotate("path",
+               x=0+cos(seq(0,2*pi,length.out=100)),
+               y=0+sin(seq(0,2*pi,length.out=100))) +
+      
+      geom_text(
+        label = colnames(df()[3:5]),
+        nudge_x = 0.25, nudge_y = 0.25,
+        check_overlap = T
+      ) +
+      xlab(paste("Axe ",x1," (",round(Inertie[x1],1),"%)",sep="")) +
+      ylab(paste("Axe ",x2," (",round(Inertie[x2],1),"%)",sep="")) +
+      ggtitle("Graphe des variables")
+    
+    ggplotly(graph)
+  })
+```
+
+## Idee
+
+Objectif : le jeux de donnees verifie t-il le diagramme HR?
+
+Idée :
+
+1) Visualisation - description statistique - aborder le jeux de données
+- boxplot
+- geom bar
+- correlation?
+- faire ggplot pour retrouver le diagramme
+(MARIE)
+
+2) Modèle predictif
+- modèle de regression logistique (quanti) : 4 variables + echantillon test / echantillon train pour vérifier le modèle
+(ALEXANDRE)
+
+3) Classification non supervisée
+- voir si les groupes concordent
+(MARION)
+
+4) ACP
+- voir des éventuelles groupes
+- variables quali en supplémentaire
+- colorer les points en fonction du type d'étoile
+(MARIE avec code MARION)
+
+Shiny
+- 5 pages avec 1ère page (= problématique + diagramme HR)
+
+
+
+
+
+
+
+
+
+
+
+
