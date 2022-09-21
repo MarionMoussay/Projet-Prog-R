@@ -1,0 +1,91 @@
+---
+title: "Classification non supervisée"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# Classification ascendante hiérarchique 
+
+Objectif : créer une suite de partitions emboitées et choisir le nombre de groupes le plus pertinent. 
+
+Algorithmiquement parlant : calcul d'une matrice de distances : 
+- _n*n_ :
+  -> Etape 1 : regroupement des deux individus les plus proches selon une distance ultramétrique
+  -> Etape 2: re-calcul de la matrice de distances 
+- _(n-1)*(n-1)_ :
+  -> ...
+  
+Plusieurs distances peuvent être utilisées dans la matrice des distances, les algorithmes sur R utilise la _distance de Ward_ qui est la plus optimale :
+$$ D^2(A, B) = \frac{n_An_B}{n_A+n_B}d^2(g_A, g_B)$$
+avec : 
+- $n_A$ et $n_B$ les effectifs des groupes; \
+- $g_A$ et $g_B$ les barycentres des groupes.
+
+Pour vous montrer un exemple, j'utilise comme distance ultramétrique le saut minimal (vous allez comprendre). 
+
+J'ai ce tableau : 
+
+Ind |  X   | Y
+ 1  | 0.61 | 4.07
+ 2  | 4.84 | 2.51
+ 3  | 1.57 | 2.81
+ 4  | 0.34 | 2.14
+ 5  | 4.31 | 1.89
+ 
+ Je construis la matrice des distances en utilisanta la distance euclidienne :
+ $$D(i,j) = \sum^K_{k=1} (x_{ik} - x_{jk})^2$$ 
+Par exemple, la distance euclidienne entre l'individu 1 et l'individu 2 est : (4.84-0.61)^2 + (2.51-4.07)^2 = 20.33
+On fait ce calcul pour chaque individu et on obtient : 
+
+    1     |    2  | 3   |   4     | 5
+  _____________________________________
+1 | 0   
+2 | 20.33   0 
+3 | 1.8    10.79   0
+4 | 3.80    20.39   1.5       0
+5 | 18.44   0.66    8.35    15.82   0
+
+Le but étant de regrouper les individus qui se ressemblent, on regroupe dans un premier temps les deux ind qui sont les plus proches soit avec la distance la plus petite, il s'agit de celle entre l'ind 5 et 2 : 0.66. Je réunis ces deux individus en un seul et même groupe. Pour la distance entre {2,5} et 1, on choisit la plus petite distance entre 2-1 et 5-1 soit 18.44 parce qu'on utilise comme dit précédemment le saut minimal. Si on aurait utilisé le saut maximal par exemple, on aurait choisit 20.33. Il est plus courant d'utiliser ici la distance de Ward mais pour cet exemple jouet ça aurait été trop relou à calculer (parce que calcul des barycentres chiants). On obtient finalement cette matrice :
+
+          1   | {2,5} | 3   |   4     
+  _________________________________
+1     | 0   
+{2,5} | 18.44   0 
+3     | 1.8    10.79   0
+4     | 3.80    20.39   1.5       0
+
+La plus petite distance est ici 1.5, même étape, on réunit :
+
+          1   | {2,5} | {3,4}    
+  __________________________
+ 1    | 0   
+{2,5} | 18.44   0 
+{3,4} | 1.8    10.79   0
+
+Et enfin : 
+
+          {2,5} | {3,4,1}    
+  __________________________
+{2,5}   | 0    
+{3,4,1} | 1.8    0
+
+On se retrouve alors avec deux clusters : {2,5} et {3,4,1}.
+
+Faisons le avec le code : 
+```{r}
+df <- data.frame("ind"=c(1,2,3,4,5), "X" = c(0.61,4.84,1.57,0.34,4.31), "Y" = c(4.07,2.51,2.81,2.14,1.89))
+# Calcul de la matrice de distance 
+d = dist(as.matrix(df[,2:3]))
+# Algorithme
+cah.min <- hclust(d, method = "single") # method = single pour single linkwage (saut minimal)
+
+# Plot du dendogramme 
+require(factoextra)
+fviz_dend(cah.min)
+```
+On retrouve ici les deux clusters finaux qu'on a construit. Le dendogramme se lit du bas vers le haut. A la première étape on a réunit l'individu 2 et l'individu 5 pour une distance de 0.66 qu'on peut lire sur l'axe des ordonnées, c'est sur le graphe la première réunification. Ensuite à la seconde étape on a réunit 3 et 4 à 1.5 puis {3,4} et 1 à 1.8. 
+
+Voilà une classification ascendante hiérarchique faîte à la main !
