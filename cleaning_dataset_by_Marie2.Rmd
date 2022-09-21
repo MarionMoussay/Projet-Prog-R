@@ -14,7 +14,7 @@ knitr::opts_chunk$set(echo = TRUE)
 library(data.table)
 
 # We open the table and convert it in data.table :
-stars <- fread("./6 class csv.csv",sep=";")
+stars <- fread("data/stars.csv",sep=",")
 stars <- data.table(stars)
 stars
 ```
@@ -77,7 +77,7 @@ levels(stars$Star_Type)
 # New dataset
 
 ```{r}
-write.csv(stars,"stars_by_Marie.csv", row.names = FALSE)
+write.csv(stars,"data/stars_by_Marie.csv", row.names = FALSE)
 ```
 
 Enjoy :)
