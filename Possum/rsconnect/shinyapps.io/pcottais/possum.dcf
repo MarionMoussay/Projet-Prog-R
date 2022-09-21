@@ -1,0 +1,13 @@
+name: possum
+title: possum
+username:
+account: pcottais
+server: shinyapps.io
+hostUrl: https://api.shinyapps.io/v1
+appId: 4848335
+bundleId: 5130088
+url: https://pcottais.shinyapps.io/possum/
+when: 1634028575.27911
+lastSyncTime: 1634028575.27911
+asMultiple: FALSE
+asStatic: FALSE

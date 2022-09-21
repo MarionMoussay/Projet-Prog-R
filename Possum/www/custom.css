@@ -1,0 +1,20 @@
+/* CSS style sheet for Shiny app */
+.msg_error {color: #F89406;  /* warning hex color */
+}
+
+.hr {border-top: 1px solid #00a65a;  /* dark blue from Australia flag where data come from */
+}
+
+.nav-tabs-custom > .nav-tabs > li.active {
+    border-top-color: #00a65a;
+}
+
+.box {
+    border-top: 3px solid #00a65a;
+}
+
+.a {
+  color: #00a65a !important;
+}
+
+.btn {text-align: left;}
