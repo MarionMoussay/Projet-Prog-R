@@ -77,8 +77,8 @@ boxplot(stars$Absolute_Magnitude.Mv~stars$Star_Type, xlab= "Star type", ylab= "A
 ```{r}
 library(ggplot2)
 
-ggplot(stars, aes(y = Star_Type)) +
-  geom_bar() + 
+ggplot(stars, aes(y = Star_Type, color = Star_Type)) +
+  geom_bar(fill="white") + 
   xlab("Nombre") +
   ylab("Type d'étoile") + 
   labs(title="Repartition du type d'étoile")+
@@ -87,8 +87,8 @@ ggplot(stars, aes(y = Star_Type)) +
   theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),panel.background = element_blank(), axis.line = element_line(colour = "black"))+
   theme(plot.title = element_text(hjust = 0.5,size=9))
 
-ggplot(stars, aes(y = Spectral_Class)) +
-  geom_bar() + 
+ggplot(stars, aes(y = Spectral_Class, color = Spectral_Class)) +
+  geom_bar(fill="white") + 
   xlab("Nombre") +
   ylab("Classe spectrale") + 
   labs(title="Repartition de la classe spectrale")+
@@ -97,8 +97,8 @@ ggplot(stars, aes(y = Spectral_Class)) +
   theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),panel.background = element_blank(), axis.line = element_line(colour = "black"))+
   theme(plot.title = element_text(hjust = 0.5,size=9))
 
-ggplot(stars, aes(y = Star_Color)) +
-  geom_bar() + 
+ggplot(stars, aes(y = Star_Color, color = Star_Color)) +
+  geom_bar(fill="white") + 
   xlab("Nombre") +
   ylab("Couleur de l'étoile") + 
   labs(title="Repartition de la couleur de l'étoile")+
@@ -138,6 +138,11 @@ print(frink)
 ```
 
 ```{r}
+frink2 <- image_read("./www/inbox_3791628_9fc57334a9b9fafbc71aacdd6e5cd69c_310px-Hertzsprung-Russel_StarData.png")
+print(frink2)
+```
+
+```{r}
 ggplot(data = stars) + 
   geom_point(aes(x = Temperature.K, y = Absolute_Magnitude.Mv, color = Star_Type)) +
   scale_y_reverse() +
@@ -152,30 +157,135 @@ ggplot(data = stars) +
   theme(plot.title = element_text(hjust = 0.5,size=9))
 ```
 
+```{r}
+ggplot(data = stars) + 
+  geom_point(aes(x = Temperature.K, y = Absolute_Magnitude.Mv, color = Star_Type, shape = Spectral_Class)) +
+  scale_shape_manual(values =  c(7:1)) +
+  scale_y_reverse() +
+  scale_x_reverse() +
+  
+  xlab("Temperature (K)") +
+  ylab("Magnitude absolue (Mv)") + 
+  labs(title="Diagramme HR")+
+  scale_fill_identity()+
+  theme_bw() +
+  theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),panel.background = element_blank(), axis.line = element_line(colour = "black"))+
+  theme(plot.title = element_text(hjust = 0.5,size=9))
+```
+
+
+```{r}
+frink3 <- image_read("./www/hrdiagram1.jpg")
+print(frink3)
+```
+
+
+```{r}
+ggplot(data = stars) + 
+  geom_point(aes(x = Temperature.K, y = Luminosity.L.Lo, color = Star_Type)) +
+  scale_x_reverse() +
+  
+  xlab("Temperature (K)") +
+  ylab("Luminosité (L.Lo)") + 
+  labs(title="Diagramme HR")+
+  scale_fill_identity()+
+  theme_bw() +
+  theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),panel.background = element_blank(), axis.line = element_line(colour = "black"))+
+  theme(plot.title = element_text(hjust = 0.5,size=9))
+```
 
 
 ## PCA
 
+
 ```{r}
 library(FactoMineR)
-PCA.s <- PCA(stars[,1:4])
+
+axe1 <- 1
+axe2 <- 2
+
+PCA.s <- PCA(stars[,1:4], axes = c(axe1,axe2))
 PCA.s
 ```
+
+```{r}
+PCA.s.quali <- PCA(stars, quali.sup=5:7, axes = c(axe1,axe2))
+```
+
+
+```{r}
+col.stars <- c()
+#plot(PCA.s, choix = "ind",col.ind = "red", axes = c(axe1,axe2),habillage=3)
+
+# https://www.imo.universite-paris-saclay.fr/~auder/teachings/analyse-de-donnees/cours1/exercices_ACP.html 
+plot(PCA.s.quali,choix= "ind", axes = c(axe1,axe2))
+```
+
+# Graphe des variables ACP
+
+```{r}
+plot(PCA.s, choix = "var", axes = c(axe1,axe2))
+
+# The cos2 values are used to estimate the quality of the representation
+# The closer a variable is to the circle of correlations, the better its representation on the factor map (and the more important it is to interpret these components)
+# Variables that are closed to the center of the plot are less important for the first components.
+fviz_pca_var(PCA.s, col.var = "cos2", axes = c(axe1,axe2),
+             gradient.cols = c("#00AFBB", "#E7B800", "#FC4E07"), 
+             repel = TRUE # Avoid text overlapping
+             )
+```
+
 
 ```{r}
 summary(PCA.s, ncp=2) # resume sur les 2 premieres dimensions
 ```
 
-```{r}
-PCA.s.quali <- PCA(stars, quali.sup=5:7)
-```
+# Eigen values
 
 ```{r}
-# http://www.sthda.com/french/articles/38-methodes-des-composantes-principales-dans-r-guide-pratique/73-acp-analyse-en-composantes-principales-avec-r-l-essentiel/#valeurs-propres-variances
+# PCA.s$eig
+# plot(PCA.s$eig[,2])
+
 library("factoextra")
 eig.val <- get_eigenvalue(PCA.s)
 eig.val
-plot(eig.val[,2])
+
+fviz_eig(PCA.s, addlabels = TRUE, ylim = c(0, 70),barfill="white",barcolor="blue")+
+  xlab("Percentage of explained variances") +
+  ylab("Dimensions") + 
+  labs(title="Eigen values")+
+  scale_fill_identity()+
+  theme_bw() +
+  theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),panel.background = element_blank(), axis.line = element_line(colour = "black"))+
+  theme(plot.title = element_text(hjust = 0.5,size=9))
+```
+
+```{r}
+permuteLigne <- function(v) {return(v[sample(1:length(v),replace=FALSE)])}
+#Xnew <- apply(X,2,permuteLigne)
+
+test <- stars[,1:4]
+test
+
+nind <- nrow(test)
+nvar <- ncol(test)
+print(nind)
+print(nvar)
+nbsimul <- 1000
+iner <- NULL
+
+for (i in 1:nbsimul){
+  mat <- apply(test,2,permuteLigne)
+  iner <- c(iner,PCA(mat,graph=F)$eig[2,3])
+}
+
+# calcul du quantile
+# 56.89314%
+quantile(iner,0.95)
+
+# % d'inertie du jeux de donnees n'est pas plus grand que le quantile 95%
+# 83.85818%
+PCA.s$eig[2,3]
 ```
 
 # PCA Marion
@@ -271,6 +381,14 @@ pca <- reactive({
     ggplotly(graph)
   })
 ```
+
+## Correlation
+
+```{r}
+# Forte correlation negative entre magnitude absolue et luminosite
+cor.test(stars$Luminosity.L.Lo,stars$Absolute_Magnitude.Mv)
+```
+
 
 ## Idee
 
