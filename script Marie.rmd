@@ -206,24 +206,48 @@ axe2 <- 2
 
 PCA.s <- PCA(stars[,1:4], axes = c(axe1,axe2))
 PCA.s
-```
 
-```{r}
 PCA.s.quali <- PCA(stars, quali.sup=5:7, axes = c(axe1,axe2))
+PCA.s.quali
+```
+
+```{r}
+# http://www.sthda.com/french/articles/38-methodes-des-composantes-principales-dans-r-guide-pratique/73-acp-analyse-en-composantes-principales-avec-r-l-essentiel/
+
+fviz_pca_ind(PCA.s,
+             geom.ind = "point", # Montre les points seulement (mais pas le "text")
+             col.ind = stars$Star_Type, # colorer by groups
+             palette = c("brown","red","grey","blue","orange","green"),
+             addEllipses = TRUE, # Ellipses de concentration
+             legend.title = "Star type")
 ```
 
 
 ```{r}
-col.stars <- c()
-#plot(PCA.s, choix = "ind",col.ind = "red", axes = c(axe1,axe2),habillage=3)
-
 # https://www.imo.universite-paris-saclay.fr/~auder/teachings/analyse-de-donnees/cours1/exercices_ACP.html 
-plot(PCA.s.quali,choix= "ind", axes = c(axe1,axe2))
+#plot(PCA.s.quali,choix= "ind", axes = c(axe1,axe2))
+
+res.pca <- PCA(stars[,c(1,2,3,4,7)], quali.sup = 5, graph=FALSE)
+fviz_pca_var(res.pca)
+
+p <- fviz_pca_ind(res.pca, col.ind.sup = "blue", repel = TRUE,label="none")
+p <- fviz_add(p, res.pca$quali.sup$coord, color = "red")
+p
+
+e <- fviz_pca_ind(res.pca,
+             geom.ind = "point", # Montre les points seulement (mais pas le "text")
+             col.ind = stars$Star_Type, # colorer by groups
+             palette = c("brown","red","grey","blue","orange","green"),
+             addEllipses = TRUE, # Ellipses de concentration
+             legend.title = "Star type")
+e <- fviz_add(e, res.pca$quali.sup$coord, color = "black")
+e
 ```
 
 # Graphe des variables ACP
 
 ```{r}
+library(factoextra)
 plot(PCA.s, choix = "var", axes = c(axe1,axe2))
 
 # The cos2 values are used to estimate the quality of the representation
