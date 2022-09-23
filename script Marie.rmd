@@ -213,7 +213,7 @@ PCA.s.quali
 
 ```{r}
 # http://www.sthda.com/french/articles/38-methodes-des-composantes-principales-dans-r-guide-pratique/73-acp-analyse-en-composantes-principales-avec-r-l-essentiel/
-
+require(factoextra)
 fviz_pca_ind(PCA.s,
              geom.ind = "point", # Montre les points seulement (mais pas le "text")
              col.ind = stars$Star_Type, # colorer by groups
