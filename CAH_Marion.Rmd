@@ -38,27 +38,58 @@ cah <- choix.ultrametrique("complete")
 
 ```
 
-## Plot de la fonction de perte 
+## Plot de la fonction de perte
 
 ```{r}
 require(ggplot2)
 require(plotly)
+require(factoextra)
 
+## Selon inertie intra groupes
+### On récupère le nombre de groupes avec la méthode du coude : 
 data <- data.frame("inertie" = rev(cah$height)[1:20], "clusters" = 1:20)
-graph <- ggplot(data, aes(y= inertie, x=clusters)) + geom_line() +labs(title="Fonction de perte")+ylab("Inertie intra-groupe")+ xlab("Nombre de clusters") + theme_minimal()
+
+diff <- c()
+for (i in 2:10){
+  diff <- cbind(diff, data$inertie[i-1]-data$inertie[i])
+}
+nb <-  which.min(diff)-1
+### On plot le graphe 
+graph <- ggplot(data, aes(y= inertie, x=clusters)) + geom_line() +labs(title="Fonction de perte")+ylab("Inertie intra-groupe")+ xlab("Nombre de clusters") + theme_minimal() + geom_vline(xintercept = nb, linetype="dotted", color = "blue", size=0.5)
 ggplotly(graph)
 
-```
-## Choix du nombre de groupe 
-```{r}
-k=4
-```
+## Selon statistiques de GAP
+fviz_nbclust(matrice,kmeans, method="gap_stat", k.max = 10) + labs(subtitle = "Gap Statistic method")
 
-
+## Méthode silhouette
+fviz_nbclust(matrice, kmeans, "silhouette", k.max = 10) + labs(subtitle = "Silhouette method") 
+```
 ## Plot du dendogramme
+En fonction des plots précédents, l'utilisateur peut choisir un nombre de groupes:
 ```{r}
-require(factoextra)
+k=3
 fviz_dend(cah, k = k, show_labels = FALSE, rect = TRUE)
 ```
 
--> rajouter statistiques des groupes obtenus 
+## Statistiques par groupes 
+
+On rajoute les groupes attribués : 
+```{r}
+km <- kmeans(matrice, centers = k)
+df_clust <- matrice %>% bind_cols(cluster = as.factor(km$cluster))
+
+
+ggplot(data = df_clust) + 
+  geom_point(aes(x = Temperature.K, y = Absolute_Magnitude.Mv, color =cluster)) +
+  scale_y_reverse() +
+  scale_x_reverse() +
+  
+  xlab("Temperature (K)") +
+  ylab("Magnitude absolue (Mv)") + 
+  labs(title="Groupes CAH")+
+  scale_fill_identity()+
+  theme_bw() +
+  theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),panel.background = element_blank(), axis.line = element_line(colour = "black"))+
+  theme(plot.title = element_text(hjust = 0.5,size=9))
+```
+
