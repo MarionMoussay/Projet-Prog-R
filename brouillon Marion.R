@@ -79,3 +79,5 @@ clusplot(matrice, gpe.ward, labels = 4, col.p = as.numeric(gpe.ward))
 asteroides <- read.table("data/nasa.csv", sep=",", header=TRUE)
 data.asteroides <- asteroides %>% select(-Close.Approach.Date, -Orbiting.Body, -Orbit.Determination.Date,-Equinox )
 PCA(data.asteroides, quali.sup=36)
+
+vive les lapins 
