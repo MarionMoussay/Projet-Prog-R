@@ -215,8 +215,8 @@ shinyServer(function(input, output, session) {
       
       res.pca <- PCA(stars[,c(1,2,3,4,7)], quali.sup = 5, graph=FALSE, axes = c(input$dim1,input$dim2))
       
-      p <- fviz_pca_ind(res.pca, repel = TRUE,label="none")
-      p <- fviz_add(p, res.pca$quali.sup$coord, color = input$colorACPsupp)
+      p <- fviz_pca_ind(res.pca, repel = TRUE,label="none", axes = c(input$dim1,input$dim2))
+      p <- fviz_add(p, res.pca$quali.sup$coord, color = input$colorACPsupp, axes = c(input$dim1,input$dim2))
       p
     })
   })
@@ -230,8 +230,8 @@ shinyServer(function(input, output, session) {
                       col.ind = stars$Star_Type, # colorer by groups
                       palette = c("brown","red","grey","blue","orange","green"),
                       addEllipses = TRUE, # Ellipses de concentration
-                      legend.title = "Star type")
-    e <- fviz_add(e, res.pca$quali.sup$coord, color = "black")
+                      legend.title = "Star type", axes = c(input$dim1,input$dim2))
+    e <- fviz_add(e, res.pca$quali.sup$coord, color = "black", axes = c(input$dim1,input$dim2))
     e
     
   })
