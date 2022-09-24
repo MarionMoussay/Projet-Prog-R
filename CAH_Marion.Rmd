@@ -49,11 +49,6 @@ require(factoextra)
 ### On récupère le nombre de groupes avec la méthode du coude : 
 data <- data.frame("inertie" = rev(cah$height)[1:20], "clusters" = 1:20)
 
-diff <- c()
-for (i in 2:10){
-  diff <- cbind(diff, data$inertie[i-1]-data$inertie[i])
-}
-nb <-  which.min(diff)-1
 ### On plot le graphe 
 graph <- ggplot(data, aes(y= inertie, x=clusters)) + geom_line() +labs(title="Fonction de perte")+ylab("Inertie intra-groupe")+ xlab("Nombre de clusters") + theme_minimal() + geom_vline(xintercept = nb, linetype="dotted", color = "blue", size=0.5)
 ggplotly(graph)
@@ -68,7 +63,7 @@ fviz_nbclust(matrice, kmeans, "silhouette", k.max = 10) + labs(subtitle = "Silho
 En fonction des plots précédents, l'utilisateur peut choisir un nombre de groupes:
 ```{r}
 k=3
-fviz_dend(cah, k = k, show_labels = FALSE, rect = TRUE)
+ggplotly(fviz_dend(cah, k = k, show_labels = FALSE, rect = TRUE,color_labels_by_k = TRUE)+theme(legend.position = "none") )
 ```
 
 ## Statistiques par groupes 
