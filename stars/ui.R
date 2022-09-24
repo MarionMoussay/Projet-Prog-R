@@ -1,6 +1,10 @@
 library(shiny)
-library(colourpicker)
 library(rAmCharts)
+library(shinyWidgets)
+library(tidyverse)
+library(ggplot2)
+library(plotly)
+library(factoextra)
 
 # Define UI for application that draws a histogram
 shinyUI(
@@ -22,36 +26,22 @@ shinyUI(
                
                # second onglet Visualisation
                tabPanel("CAH", 
-                        fluidRow(
-                            column(width = 3, 
-                                   sliderInput("bins",
-                                               "Number of bins:",
-                                               min = 1,
-                                               max = 50,
-                                               value = 30),
-                            ), 
-                            column(width=3, 
-                                   # input pour la couleur
-                                   colourInput(inputId = "color", label = "Couleur :", value = "purple")
+                        fluidRow( 
+                            sidebarPanel(
+                                     uiOutput("choix_ultrametric")
+                                   
                             ),
-                            column(width=3, 
-                                   # titre du graphique
-                                   textInput(inputId = "titre", label = "Titre :", value = "Données")
-                            ),
-                            column(width=3, 
-                                   # selection de la colonne
-                                   radioButtons(inputId = "var", label = "Variable : ", choices = colnames(faithful)),
-                                   actionButton(inputId = "button", label="Refresh", icon=icon("thumbs-up"))
-                            ),
+                            mainPanel(
+                              tabsetPanel(
+                                tabPanel("Inertie intra-groupe", plotlyOutput("fct_perte_coude")),
+                                tabPanel("Statistiques de GAP", plotlyOutput("fct_perte_gap")),
+                                tabPanel("Méthode silhouette", plotlyOutput("fct_perte_silhouette"))
+                                
+                              )
+                            )
+                            
                         ),
-                        fluidRow(tabsetPanel(
-                            tabPanel("Histogramme",
-                                     amChartsOutput("histogramme"),
-                                     # classes (div centrée)
-                                     div(textOutput("n_bins"), align = "center"))),
-                            tabPanel("Boxplot",
-                                     amChartsOutput("boxplot"))
-                        )
+                        fluidRow()
                         
                )
     )
