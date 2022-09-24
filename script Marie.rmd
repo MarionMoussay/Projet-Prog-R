@@ -206,6 +206,9 @@ axe2 <- 2
 PCA.s <- PCA(stars[,1:4], axes = c(axe1,axe2))
 PCA.s
 
+p <- fviz_pca_ind(PCA.s, col.ind.sup = "blue", repel = TRUE,label="none")
+p
+
 PCA.s.quali <- PCA(stars, quali.sup=5:7, axes = c(axe1,axe2))
 PCA.s.quali
 ```
