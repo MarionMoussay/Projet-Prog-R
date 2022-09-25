@@ -157,6 +157,12 @@ ggplot(data = stars) +
   theme(plot.title = element_text(hjust = 0.5,size=9))
 ```
 
+
+```{r}
+frink3 <- image_read("./www/hrdiagram1.jpg")
+print(frink3)
+```
+
 ```{r}
 ggplot(data = stars) + 
   geom_point(aes(x = Temperature.K, y = Absolute_Magnitude.Mv, color = Star_Type, shape = Spectral_Class)) +
@@ -172,13 +178,6 @@ ggplot(data = stars) +
   theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),panel.background = element_blank(), axis.line = element_line(colour = "black"))+
   theme(plot.title = element_text(hjust = 0.5,size=9))
 ```
-
-
-```{r}
-frink3 <- image_read("./www/hrdiagram1.jpg")
-print(frink3)
-```
-
 
 ```{r}
 ggplot(data = stars) + 
@@ -206,6 +205,9 @@ axe2 <- 2
 
 PCA.s <- PCA(stars[,1:4], axes = c(axe1,axe2))
 PCA.s
+
+p <- fviz_pca_ind(PCA.s, col.ind.sup = "blue", repel = TRUE,label="none")
+p
 
 PCA.s.quali <- PCA(stars, quali.sup=5:7, axes = c(axe1,axe2))
 PCA.s.quali
@@ -261,7 +263,7 @@ fviz_pca_var(PCA.s, col.var = "cos2", axes = c(axe1,axe2),
 
 
 ```{r}
-summary(PCA.s, ncp=2) # resume sur les 2 premieres dimensions
+summary(PCA.s.quali, ncp=2) # resume sur les 2 premieres dimensions
 ```
 
 # Eigen values
@@ -271,10 +273,10 @@ summary(PCA.s, ncp=2) # resume sur les 2 premieres dimensions
 # plot(PCA.s$eig[,2])
 
 library("factoextra")
-eig.val <- get_eigenvalue(PCA.s)
+eig.val <- get_eigenvalue(PCA.s.quali)
 eig.val
 
-fviz_eig(PCA.s, addlabels = TRUE, ylim = c(0, 70),barfill="white",barcolor="blue")+
+fviz_eig(PCA.s.quali, addlabels = TRUE, ylim = c(0, 70),barfill="white",barcolor="blue")+
   xlab("Percentage of explained variances") +
   ylab("Dimensions") + 
   labs(title="Eigen values")+
@@ -309,7 +311,7 @@ quantile(iner,0.95)
 
 # % d'inertie du jeux de donnees n'est pas plus grand que le quantile 95%
 # 83.85818%
-PCA.s$eig[2,3]
+PCA.s.quali$eig[2,3]
 ```
 
 # PCA Marion
