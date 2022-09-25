@@ -9,6 +9,8 @@ library(DT)
 library(ggplot2)
 library(FactoMineR)
 library(factoextra)
+library(magick)
+library(plotly)
 
 ### -- I.2. DATASET --------------------------
 

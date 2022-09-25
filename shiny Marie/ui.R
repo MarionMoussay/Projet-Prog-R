@@ -67,9 +67,9 @@ shinyUI(
                       )
              ),
              tabPanel("Diagramme HR",
-                      plotOutput("diagramme_HR1"),
-                      plotOutput("diagramme_HR2"),
-                      plotOutput("diagramme_HR3")
+                      plotlyOutput("diagramme_HR1"),
+                      plotlyOutput("diagramme_HR2"),
+                      plotlyOutput("diagramme_HR3")
              ),
              tabPanel("ACP", 
                       
@@ -99,8 +99,8 @@ shinyUI(
                                                     verbatimTextOutput("summaryACP")
                                            ),
                                            tabPanel("individus",
-                                                    plotOutput("ACP_ind"),
-                                                    plotOutput("ACP_ind_ellipse")
+                                                    plotlyOutput("ACP_ind"),
+                                                    plotlyOutput("ACP_ind_ellipse")
                                            ),
                                            tabPanel("variables",
                                                     plotOutput("ACP_var")

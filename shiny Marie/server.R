@@ -114,8 +114,8 @@ shinyServer(function(input, output, session) {
       theme(plot.title = element_text(hjust = 0.5,size=9))
   })
   
-  ## ---- VISUALISATION STAR EFFECT BOXPLOT --------------------
-  
+  ## ---- VISUALISATION STAR EFFECT BOXPLOT (NE MARCHE PAS) --------------------
+
   output$star_type_boxplot1 <- renderAmCharts({
     input$go # input declenchant la reactivite
     # reste du code isole
@@ -150,8 +150,8 @@ shinyServer(function(input, output, session) {
   
   ## ---- DIAGRAMME HR --------------------
   
-  output$diagramme_HR1<-renderPlot({
-    ggplot(data = stars) + 
+  output$diagramme_HR1<-renderPlotly({
+    a <- ggplot(data = stars) + 
       geom_point(aes(x = Temperature.K, y = Absolute_Magnitude.Mv, color = Star_Type)) +
       scale_y_reverse() +
       scale_x_reverse() +
@@ -163,10 +163,11 @@ shinyServer(function(input, output, session) {
       theme_bw() +
       theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),panel.background = element_blank(), axis.line = element_line(colour = "black"))+
       theme(plot.title = element_text(hjust = 0.5,size=9))
+    ggplotly(a)
   })
   
-  output$diagramme_HR2<-renderPlot({
-    ggplot(data = stars) + 
+  output$diagramme_HR2<-renderPlotly({
+    b <- ggplot(data = stars) + 
       geom_point(aes(x = Temperature.K, y = Absolute_Magnitude.Mv, color = Star_Type, shape = Spectral_Class)) +
       scale_shape_manual(values =  c(7:1)) +
       scale_y_reverse() +
@@ -179,10 +180,11 @@ shinyServer(function(input, output, session) {
       theme_bw() +
       theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),panel.background = element_blank(), axis.line = element_line(colour = "black"))+
       theme(plot.title = element_text(hjust = 0.5,size=9))
+    ggplotly(b)
   })
   
-  output$diagramme_HR3<-renderPlot({
-    ggplot(data = stars) + 
+  output$diagramme_HR3<-renderPlotly({
+    c <- ggplot(data = stars) + 
       geom_point(aes(x = Temperature.K, y = Luminosity.L.Lo, color = Star_Type)) +
       scale_x_reverse() +
       
@@ -193,6 +195,7 @@ shinyServer(function(input, output, session) {
       theme_bw() +
       theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),panel.background = element_blank(), axis.line = element_line(colour = "black"))+
       theme(plot.title = element_text(hjust = 0.5,size=9))
+    ggplotly(c)
   })
   
   ## ---- ACP SUMMARY --------------------
@@ -206,7 +209,7 @@ shinyServer(function(input, output, session) {
   
   ## ---- ACP INDIVIDUS --------------------
   
-  output$ACP_ind<-renderPlot({
+  output$ACP_ind<-renderPlotly({
     input$goACP # input declenchant la reactivite
     # reste du code isole
     isolate({
@@ -217,11 +220,11 @@ shinyServer(function(input, output, session) {
       
       p <- fviz_pca_ind(res.pca, repel = TRUE,label="none", axes = c(input$dim1,input$dim2))
       p <- fviz_add(p, res.pca$quali.sup$coord, color = input$colorACPsupp, axes = c(input$dim1,input$dim2))
-      p
+      ggplotly(p)
     })
   })
   
-  output$ACP_ind_ellipse<-renderPlot({
+  output$ACP_ind_ellipse<-renderPlotly({
 
     res.pca <- PCA(stars[,c(1,2,3,4,7)], quali.sup = 5, graph=FALSE, axes = c(input$dim1,input$dim2))
     
@@ -232,7 +235,7 @@ shinyServer(function(input, output, session) {
                       addEllipses = TRUE, # Ellipses de concentration
                       legend.title = "Star type", axes = c(input$dim1,input$dim2))
     e <- fviz_add(e, res.pca$quali.sup$coord, color = "black", axes = c(input$dim1,input$dim2))
-    e
+    ggplotly(e)
     
   })
   
@@ -246,7 +249,6 @@ shinyServer(function(input, output, session) {
                  gradient.cols = c("#00AFBB", "#E7B800", "#FC4E07"), 
                  repel = TRUE # Avoid text overlapping
     )
-    
   })
   
   ## ---- ACP VALEURS PROPRES --------------------
