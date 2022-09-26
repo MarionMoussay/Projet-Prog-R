@@ -20,60 +20,49 @@ shinyServer(function(input, output, session) {
   })
   
   ## ---- VISUALISATION DISTRIBUTION BOXPLOT --------------------
-  # output$star_type_boxplot <- renderAmCharts({
+  
+  # output$distribution_boxplot1 <- renderAmCharts({
   #   input$go # input declenchant la reactivite
   #   # reste du code isole
   #   isolate({
-  #     print(input$var)
-  #     if (input$var == "Temperature.K"){
-  #       print("boxplot T")
-  #       amBoxplot(stars$Temperature.K,ylab= "Temperature (en K)", main="Distribution de la temperature",las=2,col=input$color)
-  #     }
-  #     if (input$var == "Luminosity.L.Lo"){
-  #       print("boxplot L")
-  #       amBoxplot(stars$Luminosity.L.Lo,ylab= "Luminosité (en L)", main="Distribution de la luminosité",las=2,col=input$color)
-  #     }
-  #     if (input$var == "Radius.R.Ro"){
-  #       print("boxplot R")
-  #       amBoxplot(stars$Radius.R.Ro,ylab= "Rayon", main="Distribution du rayon",las=2,col=input$color)
-  #     }
-  #     if (input$var == "Radius.R.Ro"){
-  #       print("boxplot R")
-  #       amBoxplot(stars$Absolute_Magnitude.Mv,ylab= "Mangitude absolue (en Mv)", main="Distribution de la magnitude absolue",las=2,col=input$color)
-  #     }
+  #     amBoxplot(stars$Temperature.K,ylab= "Temperature (en K)", main="Distribution de la temperature",las=2,col=input$color)
+  #   })
+  # })
+  # 
+  # output$distribution_boxplot2 <- renderAmCharts({
+  #   input$go # input declenchant la reactivite
+  #   # reste du code isole
+  #   isolate({
+  #     amBoxplot(stars$Luminosity.L.Lo,ylab= "Luminosité (en L)", main="Distribution de la luminosité",las=2,col=input$color)
+  #   })
+  # })
+  # 
+  # output$distribution_boxplot3 <- renderAmCharts({
+  #   input$go # input declenchant la reactivite
+  #   # reste du code isole
+  #   isolate({
+  #     amBoxplot(stars$Radius.R.Ro,ylab= "Rayon", main="Distribution du rayon",las=2,col=input$color)
+  #   })
+  # })
+  # 
+  # output$distribution_boxplot4 <- renderAmCharts({
+  #   input$go # input declenchant la reactivite
+  #   # reste du code isole
+  #   isolate({
+  #     amBoxplot(stars$Absolute_Magnitude.Mv,ylab= "Mangitude absolue (en Mv)", main="Distribution de la magnitude absolue",las=2,col=input$color)
   #   })
   # })
   
+  output$choix_var_graph <- renderUI({
+    awesomeRadio(
+      inputId = "choix_var_graph",
+      label = "Choisissez la variable à illuster :", 
+      choices = list("Température"="Temperature.K", "Luminosité" ="Luminosity.L.Lo", "Rayon" ="Radius.R.Ro", "Magnitude"="Absolute_Magnitude.Mv")
+    )
+  })
+  
   output$distribution_boxplot1 <- renderAmCharts({
-    input$go # input declenchant la reactivite
-    # reste du code isole
-    isolate({
-      amBoxplot(stars$Temperature.K,ylab= "Temperature (en K)", main="Distribution de la temperature",las=2,col=input$color)
-    })
-  })
-  
-  output$distribution_boxplot2 <- renderAmCharts({
-    input$go # input declenchant la reactivite
-    # reste du code isole
-    isolate({
-      amBoxplot(stars$Luminosity.L.Lo,ylab= "Luminosité (en L)", main="Distribution de la luminosité",las=2,col=input$color)
-    })
-  })
-  
-  output$distribution_boxplot3 <- renderAmCharts({
-    input$go # input declenchant la reactivite
-    # reste du code isole
-    isolate({
-      amBoxplot(stars$Radius.R.Ro,ylab= "Rayon", main="Distribution du rayon",las=2,col=input$color)
-    })
-  })
-  
-  output$distribution_boxplot4 <- renderAmCharts({
-    input$go # input declenchant la reactivite
-    # reste du code isole
-    isolate({
-      amBoxplot(stars$Absolute_Magnitude.Mv,ylab= "Mangitude absolue (en Mv)", main="Distribution de la magnitude absolue",las=2,col=input$color)
-    })
+    amBoxplot(stars[,get(input$choix_var_graph)], ylab= input$choix_var_graph, main=paste0("Distribution de la variable ",input$choix_var_graph),las=2,col=input$color)
   })
   
   ## ---- VISUALISATION GEOM BAR COUNT --------------------
@@ -124,6 +113,11 @@ shinyServer(function(input, output, session) {
     })
   })
   
+  # Ici ça marche ! : (mais c'est pas interactif)
+  # output$star_type_boxplot1 <- renderPlot({
+  #   boxplot(log2(stars$Temperature.K)~stars$Star_Type, xlab= "Star type", ylab= "log2(Temperature) (in K)", main="Star type effect on temperature",las=2)
+  # })
+  
   output$star_type_boxplot2 <- renderAmCharts({
     input$go # input declenchant la reactivite
     # reste du code isole
@@ -149,6 +143,11 @@ shinyServer(function(input, output, session) {
   })
   
   ## ---- DIAGRAMME HR --------------------
+  
+  # insertion d'une image :
+  output$imgf<-  renderImage({
+    c("<img src=", "www/HRDiagram-Fr.png" ," width = 360></>")
+  })
   
   output$diagramme_HR1<-renderPlotly({
     a <- ggplot(data = stars) + 

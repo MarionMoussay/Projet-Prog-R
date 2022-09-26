@@ -36,7 +36,9 @@ shinyUI(
                                  colourInput(inputId = "color", label = "Couleur :", value = "orange"),
                                  
                                  # selection de la colonne
-                                 radioButtons(inputId = "var", label = "Variable : ", choices = colnames(stars[,1:4])),
+                                 uiOutput("choix_var_graph"),
+                                 
+                                 #uiOutput("choix_ultrametric"),
                                  
                                  # bouton
                                  actionButton("go", "GO!!!")
@@ -46,10 +48,10 @@ shinyUI(
                         column(width = 9, 
                                tabsetPanel(id = "viz", 
                                  tabPanel("Distribution boxplot",
-                                          amChartsOutput("distribution_boxplot1"),
-                                          amChartsOutput("distribution_boxplot2"),
-                                          amChartsOutput("distribution_boxplot3"),
-                                          amChartsOutput("distribution_boxplot4")
+                                          amChartsOutput("distribution_boxplot1")
+                                          # amChartsOutput("distribution_boxplot2"),
+                                          # amChartsOutput("distribution_boxplot3"),
+                                          # amChartsOutput("distribution_boxplot4")
                                           ),
                                  tabPanel("Geom bar count",
                                           plotOutput("count_type"),
@@ -57,6 +59,7 @@ shinyUI(
                                           plotOutput("count_color")
                                           ),
                                  tabPanel("Star type effect",
+                                          #plotOutput("star_type_boxplot1"),
                                           amChartsOutput("star_type_boxplot1"),
                                           amChartsOutput("star_type_boxplot2"),
                                           amChartsOutput("star_type_boxplot3"),
@@ -67,6 +70,7 @@ shinyUI(
                       )
              ),
              tabPanel("Diagramme HR",
+                      htmlOutput('imgf'),
                       plotlyOutput("diagramme_HR1"),
                       plotlyOutput("diagramme_HR2"),
                       plotlyOutput("diagramme_HR3")

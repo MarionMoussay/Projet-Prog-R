@@ -11,6 +11,7 @@ library(FactoMineR)
 library(factoextra)
 library(magick)
 library(plotly)
+library(shinyWidgets)
 
 ### -- I.2. DATASET --------------------------
 
