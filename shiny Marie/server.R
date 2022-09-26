@@ -145,8 +145,8 @@ shinyServer(function(input, output, session) {
   ## ---- DIAGRAMME HR --------------------
   
   # insertion d'une image :
-  output$imgf<-  renderImage({
-    c("<img src=", "www/HRDiagram-Fr.png" ," width = 360></>")
+  output$imgf<-  renderText({
+    c("<center><img src=", "https://cdn.futura-sciences.com/cdn-cgi/image/width=1520,quality=60,format=auto/sources/images/glossaire/rte/magic/3732_hrgenericsml_01.jpg" ," width = 360></><center>")
   })
   
   output$diagramme_HR1<-renderPlotly({
