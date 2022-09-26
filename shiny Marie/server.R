@@ -118,6 +118,12 @@ shinyServer(function(input, output, session) {
   #   boxplot(log2(stars$Temperature.K)~stars$Star_Type, xlab= "Star type", ylab= "log2(Temperature) (in K)", main="Star type effect on temperature",las=2)
   # })
   
+  # output$star_type_boxplot1 <- renderAmCharts({
+  #   print("star_type")
+  #   print(as.factor(stars$Star_Type))
+  #   amBoxplot(log2(stars$Temperature.K)~as.factor(stars$Star_Type), xlab= "Star type", ylab= "log2(Temperature) (in K)", main="Star type effect on temperature",las=2,col=input$color)
+  # })
+  
   output$star_type_boxplot2 <- renderAmCharts({
     input$go # input declenchant la reactivite
     # reste du code isole
@@ -147,6 +153,10 @@ shinyServer(function(input, output, session) {
   # insertion d'une image :
   output$imgf<-  renderText({
     c("<center><img src=", "https://cdn.futura-sciences.com/cdn-cgi/image/width=1520,quality=60,format=auto/sources/images/glossaire/rte/magic/3732_hrgenericsml_01.jpg" ," width = 360></><center>")
+  })
+  
+  output$summaryHR <- renderPrint({
+    cat("En classant les étoiles d'un même type spectral, Ejnar Hertzsprung (1873/1967) découvre en 1905, indépendamment de Henry Norris Russell (1877/1957), qu'il existe une relation entre la luminosité et la température des étoiles. Le diagramme auquel il aboutit, perfectionné par Russel en 1913, est connu sous le nom de Diagramme de Hertzsprung-Russell ou Diagramme HR, et joue encore de nos jours un rôle fondamental en astrophysique stellaire.")
   })
   
   output$diagramme_HR1<-renderPlotly({

@@ -71,6 +71,7 @@ shinyUI(
              ),
              tabPanel("Diagramme HR",
                       htmlOutput('imgf'),
+                      verbatimTextOutput("summaryHR"),
                       plotlyOutput("diagramme_HR1"),
                       plotlyOutput("diagramme_HR2"),
                       plotlyOutput("diagramme_HR3")
