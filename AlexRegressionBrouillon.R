@@ -1,5 +1,6 @@
 #Chargement du jeu de données nétoyé par Marie
-stars_by_Marie <- read.csv("~/Desktop/M2DataCours/ProjetStars/data/stars_by_Marie.csv")
+stars_by_Marie <- read.csv("./data/stars_by_Marie.csv")
+stars_by_Marie <- stars
 dim(stars_by_Marie)
 data <- stars_by_Marie[,1:5]
 
@@ -8,6 +9,7 @@ data <- stars_by_Marie[,1:5]
 library(FREQ)
 library(frequency)
 require(nnet)
+require(leaps)
 
 data$Star_Type = factor(data$Star_Type)
 freq(data$Star_Type)
@@ -44,6 +46,7 @@ for (k in 1:10) {
   test = data[segments[[k]],]     # Test dataset
   mod <- multinom(Star_Type~.,data=train)
   select <- stepwise(mod,data=data,direction="forward/backward", criterion="AIC", trace=0)
+  # "nombre de variables sélectionnés:15" ??
   print(paste0("nombre de variables sélectionnés:", length(coef(select)-1)))
   bestmod = multinom(formula(select), data=train)   # Fits the best submodel
   cvpredictions[segments[[k]]] = predict(bestmod,newdata=test)
@@ -56,6 +59,8 @@ select$which
 colnames(select$which)[select$which[1,]]
 
 colnames(select$which)[select$which[2,]]
+
+colnames(select$which)[select$which[3,]]
 
 ### RSS plot for exhaustive feature selection
 plot(1:4,select$rss,type="b",pch=16,xlab="Number of variables in the submodel",
@@ -80,7 +85,13 @@ lines(1:4,aic,type="b",pch=17,lwd=2,col="coral1")
 legend("topleft",lwd=2,lty=1,pch=c(16,17),col=c("darkgray","coral1"),bty="n",cex=1.25,legend=c("BIC","AIC"))
 grid()
 
-selected = select$which[which.min(bic),]   # Indices of selected variables 
+selected = select$which[which.min(bic),]   # Indices of selected variables
+selected
+
+# pb avec ces 2 dernières lignes :/ -> je les ai écris à la main du coup
+bestmod = multinom(data$Star_Type~.,data=data[,c(1,3,4)])
+coef(bestmod)
+
 bestmod = multinom(data$Star_Type~.,data=data[,selected])   # Fits the best submodel
 coef(bestmod)
 
