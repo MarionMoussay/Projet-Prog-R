@@ -156,7 +156,7 @@ shinyServer(function(input, output, session) {
   })
   
   output$summaryHR <- renderPrint({
-    cat("En classant les étoiles d'un même type spectral, Ejnar Hertzsprung (1873/1967) découvre en 1905, indépendamment de Henry Norris Russell (1877/1957), qu'il existe une relation entre la luminosité et la température des étoiles. Le diagramme auquel il aboutit, perfectionné par Russel en 1913, est connu sous le nom de Diagramme de Hertzsprung-Russell ou Diagramme HR, et joue encore de nos jours un rôle fondamental en astrophysique stellaire.")
+    cat("En classant les étoiles d'un même type spectral, Ejnar Hertzsprung (1873/1967) découvre en 1905, indépendamment de Henry Norris Russell (1877/1957), qu'il existe une relation entre la luminosité et la température des étoiles. Le diagramme auquel il aboutit, perfectionné par Russel en 1913, est connu sous le nom de Diagramme de Hertzsprung-Russell ou Diagramme HR, et joue encore de nos jours un rôle fondamental en astrophysique stellaire. [1]")
   })
   
   output$diagramme_HR1<-renderPlotly({

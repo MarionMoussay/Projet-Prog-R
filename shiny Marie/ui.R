@@ -33,7 +33,7 @@ shinyUI(
                                # wellPanel pour griser
                                wellPanel(
                                  # input pour la couleur
-                                 colourInput(inputId = "color", label = "Couleur :", value = "orange"),
+                                 colourpicker::colourInput(inputId = "color", label = "Couleur :", value = "orange"),
                                  
                                  # selection de la colonne
                                  uiOutput("choix_var_graph"),
@@ -84,8 +84,8 @@ shinyUI(
                                # wellPanel pour griser
                                wellPanel(
                                  # input pour la couleur
-                                 colourInput(inputId = "colorACP", label = "Couleur :", value = "blue"),
-                                 colourInput(inputId = "colorACPsupp", label = "Couleur supplémentaire :", value = "orange"),
+                                 colourpicker::colourInput(inputId = "colorACP", label = "Couleur :", value = "blue"),
+                                 colourpicker::colourInput(inputId = "colorACPsupp", label = "Couleur supplémentaire :", value = "orange"),
                                  
                                  numericInput("dim1", "Première dimension:", 1,
                                               min = 1, max = 4),

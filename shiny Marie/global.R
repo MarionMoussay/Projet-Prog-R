@@ -12,6 +12,7 @@ library(factoextra)
 library(magick)
 library(plotly)
 library(shinyWidgets)
+library(colourpicker)
 
 ### -- I.2. DATASET --------------------------
 
