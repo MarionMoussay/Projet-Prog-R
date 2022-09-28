@@ -1,6 +1,69 @@
 # Define server logic required to draw a histogram
 shinyServer(function(input, output, session) {
   
+  ## ---- CONTEXTE ----------------
+  
+  output$choix_var_hrdiag <- renderUI({
+    checkboxGroupInput(inputId = "choix_var_hrdiag", label = "Choisissez le ou les type(s) à représenter", 
+                       choices = c("Naine brune", "Hyper géante", "Séquence principale", "Naine Rouge", "Super géante", "Naine blanche"), 
+                       selected = c("Naine brune", "Hyper géante", "Séquence principale", "Naine Rouge", "Super géante", "Naine blanche"))
+   
+  })
+  
+  output$diagramme_HR1<-renderPlotly({
+    data <- stars
+    levels(data$Star_Type) <- c("Naine brune", "Hyper géante", "Séquence principale", "Naine Rouge", "Super géante", "Naine blanche")
+    data <- data %>% filter(Star_Type %in% input$choix_var_hrdiag)
+    graph <- ggplot(data = data) + 
+      geom_point(aes(x = Temperature.K, y = Absolute_Magnitude.Mv, color = Star_Type)) +
+      scale_y_reverse() +
+      scale_x_reverse() +
+      
+      xlab("Température (K)") +
+      ylab("Magnitude absolue (Mv)") + 
+      labs(title="Diagramme HR")+
+      scale_fill_identity()+
+      theme_bw() +
+      theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),panel.background = element_blank(), axis.line = element_line(colour = "black"))+
+      theme(plot.title = element_text(hjust = 0.5,size=9))
+    ggplotly(graph)
+  })
+  
+  output$diagramme_HR2<-renderPlotly({
+    data <- stars
+    levels(data$Star_Type) <- c("Naine brune", "Hyper géante", "Séquence principale", "Naine Rouge", "Super géante", "Naine blanche")
+    data <- data %>% filter(Star_Type %in% input$choix_var_hrdiag)
+    graph <- ggplot(data = data) + 
+      geom_point(aes(x = Temperature.K, y = Absolute_Magnitude.Mv, color = Star_Type, shape = Spectral_Class)) +
+      scale_shape_manual(values =  c(7:1)) +
+      scale_y_reverse() +
+      scale_x_reverse() +
+      
+      xlab("Temperature (K)") +
+      ylab("Magnitude absolue (Mv)") + 
+      labs(title="Diagramme HR")+
+      scale_fill_identity()+
+      theme_bw() +
+      theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),panel.background = element_blank(), axis.line = element_line(colour = "black"))+
+      theme(plot.title = element_text(hjust = 0.5,size=9), legend.title=element_text("Classe spectrale et types d'étoiles"))
+    ggplotly(graph)
+  })
+  
+  # output$diagramme_HR3<-renderPlotly({
+  #   c <- ggplot(data = stars) + 
+  #     geom_point(aes(x = Temperature.K, y = Luminosity.L.Lo, color = Star_Type)) +
+  #     scale_x_reverse() +
+  #     
+  #     xlab("Temperature (K)") +
+  #     ylab("Luminosité (L.Lo)") + 
+  #     labs(title="Diagramme HR")+
+  #     scale_fill_identity()+
+  #     theme_bw() +
+  #     theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),panel.background = element_blank(), axis.line = element_line(colour = "black"))+
+  #     theme(plot.title = element_text(hjust = 0.5,size=9))
+  #   ggplotly(c)
+  # })
+  
   ## ---- DATA --------------------
   
   # table
@@ -159,53 +222,9 @@ shinyServer(function(input, output, session) {
     cat("En classant les étoiles d'un même type spectral, Ejnar Hertzsprung (1873/1967) découvre en 1905, indépendamment de Henry Norris Russell (1877/1957), qu'il existe une relation entre la luminosité et la température des étoiles. Le diagramme auquel il aboutit, perfectionné par Russel en 1913, est connu sous le nom de Diagramme de Hertzsprung-Russell ou Diagramme HR, et joue encore de nos jours un rôle fondamental en astrophysique stellaire. [1]")
   })
   
-  output$diagramme_HR1<-renderPlotly({
-    a <- ggplot(data = stars) + 
-      geom_point(aes(x = Temperature.K, y = Absolute_Magnitude.Mv, color = Star_Type)) +
-      scale_y_reverse() +
-      scale_x_reverse() +
-      
-      xlab("Temperature (K)") +
-      ylab("Magnitude absolue (Mv)") + 
-      labs(title="Diagramme HR")+
-      scale_fill_identity()+
-      theme_bw() +
-      theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),panel.background = element_blank(), axis.line = element_line(colour = "black"))+
-      theme(plot.title = element_text(hjust = 0.5,size=9))
-    ggplotly(a)
-  })
   
-  output$diagramme_HR2<-renderPlotly({
-    b <- ggplot(data = stars) + 
-      geom_point(aes(x = Temperature.K, y = Absolute_Magnitude.Mv, color = Star_Type, shape = Spectral_Class)) +
-      scale_shape_manual(values =  c(7:1)) +
-      scale_y_reverse() +
-      scale_x_reverse() +
-      
-      xlab("Temperature (K)") +
-      ylab("Magnitude absolue (Mv)") + 
-      labs(title="Diagramme HR")+
-      scale_fill_identity()+
-      theme_bw() +
-      theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),panel.background = element_blank(), axis.line = element_line(colour = "black"))+
-      theme(plot.title = element_text(hjust = 0.5,size=9))
-    ggplotly(b)
-  })
   
-  output$diagramme_HR3<-renderPlotly({
-    c <- ggplot(data = stars) + 
-      geom_point(aes(x = Temperature.K, y = Luminosity.L.Lo, color = Star_Type)) +
-      scale_x_reverse() +
-      
-      xlab("Temperature (K)") +
-      ylab("Luminosité (L.Lo)") + 
-      labs(title="Diagramme HR")+
-      scale_fill_identity()+
-      theme_bw() +
-      theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),panel.background = element_blank(), axis.line = element_line(colour = "black"))+
-      theme(plot.title = element_text(hjust = 0.5,size=9))
-    ggplotly(c)
-  })
+
   
   ## ---- ACP SUMMARY --------------------
   

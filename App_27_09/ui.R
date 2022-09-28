@@ -1,9 +1,34 @@
 
 # Define UI for application that draws a histogram
-shinyUI(
+fluidPage(
+  # shinythemes::themeSelector(),
   # navbarPage
-  navbarPage("Classification des étoiles", theme = shinytheme("cosmo"),
-             tabPanel("Contexte"
+  navbarPage("Classification des étoiles", 
+             theme = shinytheme("flatly"),
+             tabPanel("Contexte", 
+                      h1("Le diagramme de Hertzsprung-Russell, la réference officielle de classification des étoiles"),
+                      tabsetPanel(id="onglet1",
+                                  tabPanel("En théorie",
+                                           sidebarLayout(fluid = TRUE,
+                                                         sidebarPanel(includeHTML("include.html"), 
+                                                                      icon("fa-thin fa-star"),
+                                                                      HTML('<a href="https://en.wikipedia.org/wiki/Hertzsprung%E2%80%93Russell_diagram" role="button">Pour en savoir plus</a>')), 
+                                                         mainPanel(img(src = "HRDiagram-Fr.png", width="600", height="700")), 
+                                                         
+                                           )), 
+                                  tabPanel("En pratique",
+                                           sidebarLayout(
+                                             sidebarPanel(width = 4, 
+                                                          h4("En utilisant notre jeu de données, on peut réaliser le diagramme HR."),
+                                                          uiOutput("choix_var_hrdiag")), 
+                                             mainPanel(width = 8,
+                                                       plotlyOutput("diagramme_HR1"), 
+                                                       plotlyOutput("diagramme_HR2")))
+                                  )
+                                  
+                      )
+                      
+                      
              ),
              tabPanel("Jeux de données", 
                       # titre avec css
@@ -22,12 +47,7 @@ shinyUI(
                                    tabPanel("Summary",
                                             verbatimTextOutput("summary")),
                                  )), 
-                        tabPanel("Diagramme HR",
-                                 htmlOutput('imgf'),
-                                 verbatimTextOutput("summaryHR"),
-                                 plotlyOutput("diagramme_HR1"),
-                                 plotlyOutput("diagramme_HR2"),
-                                 plotlyOutput("diagramme_HR3")), 
+                        
                         tabPanel("ACP",
                                  fluidRow(
                                    # premier colonne
