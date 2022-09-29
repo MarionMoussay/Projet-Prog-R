@@ -5,6 +5,7 @@ fluidPage(
   # navbarPage
   navbarPage("Classification des étoiles", 
              theme = shinytheme("sandstone"),
+             ########## ONGLET 1 ###############
              tabPanel("Contexte", 
                       h1("Le diagramme de Hertzsprung-Russell, la réference officielle de classification des étoiles"),
                       tabsetPanel(id="onglet1",
@@ -31,12 +32,14 @@ fluidPage(
                       
                       
              ),
+             ########## ONGLET 2 ###############
              tabPanel("Jeux de données", 
                       # titre avec css
                       h1("Jeu de données", style = "color : #0099ff;text-align:center"),
                       # table
                       dataTableOutput("table")
              ),
+             ########## ONGLET 3 ###############
              navbarMenu("Statistiques descriptives",
                         # premier onglet Data
                         tabPanel("Vue globale",
@@ -84,7 +87,7 @@ fluidPage(
                                                       ),
                                                       tabPanel("valeurs_propres",
                                                                plotOutput("graph_vp"),
-                                                               textOutput("text_vp")
+                                                               h4("text_vp")
                                                       )
                                           )
                                    )
@@ -110,23 +113,16 @@ fluidPage(
                                    # deuxieme colonne
                                    column(width = 9,
                                           tabsetPanel(id = "viz",
-                                                      tabPanel("Distribution boxplot",
+                                                      tabPanel("Distribution par caractéristiques",
                                                                amChartsOutput("distribution_boxplot1")
-                                                               # amChartsOutput("distribution_boxplot2"),
-                                                               # amChartsOutput("distribution_boxplot3"),
-                                                               # amChartsOutput("distribution_boxplot4")
                                                       ),
-                                                      tabPanel("Geom bar count",
+                                                      tabPanel("Effectifs",
                                                                plotOutput("count_type"),
                                                                plotOutput("count_class"),
                                                                plotOutput("count_color")
                                                       ),
-                                                      tabPanel("Star type effect",
-                                                               #plotOutput("star_type_boxplot1"),
-                                                               amChartsOutput("star_type_boxplot1"),
-                                                               amChartsOutput("star_type_boxplot2"),
-                                                               amChartsOutput("star_type_boxplot3"),
-                                                               amChartsOutput("star_type_boxplot4")
+                                                      tabPanel("Distribution par type des étoiles",
+                                                               plotOutput("star_type_boxplot1")
                                                       )
                                           )
                                    )
@@ -135,7 +131,10 @@ fluidPage(
                         )
                         
              ),
+             ########## ONGLET 4 ###############
              tabPanel("Modèle prédictif"), 
+             
+             ########## ONGLET 5 ###############
              tabPanel("Classification Ascendante Hiérarchique", 
                       fluidRow( 
                         span(tags$i(h2("Etape 1 : choix de la distance ultramétrique")), style="color:#045a8d"),

@@ -75,8 +75,9 @@ shinyServer(function(input, output, session) {
               options = list(paging = FALSE, lengthChange = FALSE, scrollY = "600px", scrollX = T),
               rownames = FALSE)})
   
+  ## ---- STATISTIQUES DESCRIPTIVES --------------------
   
-  
+  ### Vue globale ###############
   # str
   output$str <- renderPrint({
     str(stars)
@@ -87,151 +88,8 @@ shinyServer(function(input, output, session) {
     summary(stars)
   })
   
-  ## ---- VISUALISATION DISTRIBUTION BOXPLOT --------------------
-  
-  # output$distribution_boxplot1 <- renderAmCharts({
-  #   input$go # input declenchant la reactivite
-  #   # reste du code isole
-  #   isolate({
-  #     amBoxplot(stars$Temperature.K,ylab= "Temperature (en K)", main="Distribution de la temperature",las=2,col=input$color)
-  #   })
-  # })
-  # 
-  # output$distribution_boxplot2 <- renderAmCharts({
-  #   input$go # input declenchant la reactivite
-  #   # reste du code isole
-  #   isolate({
-  #     amBoxplot(stars$Luminosity.L.Lo,ylab= "Luminosité (en L)", main="Distribution de la luminosité",las=2,col=input$color)
-  #   })
-  # })
-  # 
-  # output$distribution_boxplot3 <- renderAmCharts({
-  #   input$go # input declenchant la reactivite
-  #   # reste du code isole
-  #   isolate({
-  #     amBoxplot(stars$Radius.R.Ro,ylab= "Rayon", main="Distribution du rayon",las=2,col=input$color)
-  #   })
-  # })
-  # 
-  # output$distribution_boxplot4 <- renderAmCharts({
-  #   input$go # input declenchant la reactivite
-  #   # reste du code isole
-  #   isolate({
-  #     amBoxplot(stars$Absolute_Magnitude.Mv,ylab= "Mangitude absolue (en Mv)", main="Distribution de la magnitude absolue",las=2,col=input$color)
-  #   })
-  # })
-  
-  output$choix_var_graph <- renderUI({
-    awesomeRadio(
-      inputId = "choix_var_graph",
-      label = "Choisissez la variable à illuster :", 
-      choices = list("Température"="Temperature.K", "Luminosité" ="Luminosity.L.Lo", "Rayon" ="Radius.R.Ro", "Magnitude"="Absolute_Magnitude.Mv")
-    )
-  })
-  
-  output$distribution_boxplot1 <- renderAmCharts({
-    amBoxplot(stars[,get(input$choix_var_graph)], ylab= input$choix_var_graph, main=paste0("Distribution de la variable ",input$choix_var_graph),las=2,col=input$color)
-  })
-  
-  ## ---- VISUALISATION GEOM BAR COUNT --------------------
-  
-  output$count_type<-renderPlot({
-    ggplot(stars, aes(y = Star_Type, color = Star_Type)) +
-      geom_bar(fill="white") + 
-      xlab("Nombre") +
-      ylab("Type d'étoile") + 
-      labs(title="Repartition du type d'étoile")+
-      scale_fill_identity()+
-      theme_bw() +
-      theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),panel.background = element_blank(), axis.line = element_line(colour = "black"))+
-      theme(plot.title = element_text(hjust = 0.5,size=9))
-    })
-  
-  output$count_class<-renderPlot({
-    ggplot(stars, aes(y = Spectral_Class, color = Spectral_Class)) +
-      geom_bar(fill="white") + 
-      xlab("Nombre") +
-      ylab("Classe spectrale") + 
-      labs(title="Repartition de la classe spectrale")+
-      scale_fill_identity()+
-      theme_bw() +
-      theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),panel.background = element_blank(), axis.line = element_line(colour = "black"))+
-      theme(plot.title = element_text(hjust = 0.5,size=9))
-  })
-  
-  output$count_color<-renderPlot({
-    ggplot(stars, aes(y = Star_Color, color = Star_Color)) +
-      geom_bar(fill="white") + 
-      xlab("Nombre") +
-      ylab("Couleur de l'étoile") + 
-      labs(title="Repartition de la couleur de l'étoile")+
-      scale_fill_identity()+
-      theme_bw() +
-      theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),panel.background = element_blank(), axis.line = element_line(colour = "black"))+
-      theme(plot.title = element_text(hjust = 0.5,size=9))
-  })
-  
-  ## ---- VISUALISATION STAR EFFECT BOXPLOT (NE MARCHE PAS) --------------------
-
-  output$star_type_boxplot1 <- renderAmCharts({
-    input$go # input declenchant la reactivite
-    # reste du code isole
-    isolate({
-      amBoxplot(log2(stars$Temperature.K)~stars$Star_Type, xlab= "Star type", ylab= "log2(Temperature) (in K)", main="Star type effect on temperature",las=2,col=input$color)
-    })
-  })
-  
-  # Ici ça marche ! : (mais c'est pas interactif)
-  # output$star_type_boxplot1 <- renderPlot({
-  #   boxplot(log2(stars$Temperature.K)~stars$Star_Type, xlab= "Star type", ylab= "log2(Temperature) (in K)", main="Star type effect on temperature",las=2)
-  # })
-  
-  # output$star_type_boxplot1 <- renderAmCharts({
-  #   print("star_type")
-  #   print(as.factor(stars$Star_Type))
-  #   amBoxplot(log2(stars$Temperature.K)~as.factor(stars$Star_Type), xlab= "Star type", ylab= "log2(Temperature) (in K)", main="Star type effect on temperature",las=2,col=input$color)
-  # })
-  
-  output$star_type_boxplot2 <- renderAmCharts({
-    input$go # input declenchant la reactivite
-    # reste du code isole
-    isolate({
-      amBoxplot(log2(stars$Luminosity.L.Lo)~stars$Star_Type, xlab= "Star type", ylab= "log2(Luminosity)", main="Star type effect on luminosity",las=2,col=input$color)
-    })
-  })
-  
-  output$star_type_boxplot3 <- renderAmCharts({
-    input$go # input declenchant la reactivite
-    # reste du code isole
-    isolate({
-      amBoxplot(log2(stars$Radius.R.Ro)~stars$Star_Type, xlab= "Star type", ylab= "log2(Radius)", main="Star type effect on radius",las=2,col=input$color)
-    })
-  })
-  
-  output$star_type_boxplot4 <- renderAmCharts({
-    input$go # input declenchant la reactivite
-    # reste du code isole
-    isolate({
-      amBoxplot(stars$Absolute_Magnitude.Mv~stars$Star_Type, xlab= "Star type", ylab= "Absolute magnitude", main="Star type effect on absolute magnitude",las=2,col=input$color)
-    })
-  })
-  
-  ## ---- DIAGRAMME HR --------------------
-  
-  # insertion d'une image :
-  output$imgf<-  renderText({
-    c("<center><img src=", "https://cdn.futura-sciences.com/cdn-cgi/image/width=1520,quality=60,format=auto/sources/images/glossaire/rte/magic/3732_hrgenericsml_01.jpg" ," width = 360></><center>")
-  })
-  
-  output$summaryHR <- renderPrint({
-    cat("En classant les étoiles d'un même type spectral, Ejnar Hertzsprung (1873/1967) découvre en 1905, indépendamment de Henry Norris Russell (1877/1957), qu'il existe une relation entre la luminosité et la température des étoiles. Le diagramme auquel il aboutit, perfectionné par Russel en 1913, est connu sous le nom de Diagramme de Hertzsprung-Russell ou Diagramme HR, et joue encore de nos jours un rôle fondamental en astrophysique stellaire. [1]")
-  })
-  
-  
-  
-
-  
-  ## ---- ACP SUMMARY --------------------
+  ########## ACP ###############
+  ## ---- acp-summary --------------------
   
   output$summaryACP <- renderPrint({
     
@@ -240,7 +98,7 @@ shinyServer(function(input, output, session) {
     summary(PCA.s.quali, ncp=max(input$dim1,input$dim2))
   })
   
-  ## ---- ACP INDIVIDUS --------------------
+  ## ---- acp-individus --------------------
   
   output$ACP_ind<-renderPlotly({
     input$goACP # input declenchant la reactivite
@@ -258,7 +116,7 @@ shinyServer(function(input, output, session) {
   })
   
   output$ACP_ind_ellipse<-renderPlotly({
-
+    
     res.pca <- PCA(stars[,c(1,2,3,4,7)], quali.sup = 5, graph=FALSE, axes = c(input$dim1,input$dim2))
     
     e <- fviz_pca_ind(res.pca,
@@ -272,7 +130,7 @@ shinyServer(function(input, output, session) {
     
   })
   
-  ## ---- ACP VARIABLES --------------------
+  ## ---- acp-variables --------------------
   
   output$ACP_var<-renderPlot({
     
@@ -284,7 +142,7 @@ shinyServer(function(input, output, session) {
     )
   })
   
-  ## ---- ACP VALEURS PROPRES --------------------
+  ## ---- acp-valeurs-propres --------------------
   
   output$graph_vp<-renderPlot({
     
@@ -329,9 +187,95 @@ shinyServer(function(input, output, session) {
     b <- PCA.s.quali$eig[2,3]
     
     print(paste("The quantile from lines permuted is ",a, "and the inertie of the 2 dimensions is ",b))
+  })
+  
+  ########## Boxplot ###############
+  
+  output$choix_var_graph <- renderUI({
+    awesomeRadio(
+      inputId = "choix_var_graph",
+      label = "Choisissez la variable à illuster :", 
+      choices = list("Température"="Temperature.K", "Luminosité" ="Luminosity.L.Lo", "Rayon" ="Radius.R.Ro", "Magnitude"="Absolute_Magnitude.Mv")
+    )
+  })
+  
+  output$distribution_boxplot1 <- renderAmCharts({
+    amBoxplot(stars[,get(input$choix_var_graph)], ylab= input$choix_var_graph, main=paste0("Distribution de la variable ",input$choix_var_graph),las=2,col=input$color)
+  })
+  
+  output$star_type_boxplot1 <- renderAmCharts({
+    if (input$choix_var_graph == "Temperature.K") {
+      titre <- paste("Distribution de la variable 'Température'")
+      amBoxplot(Temperature.K~Star_Type, data = stars, labelRotation = -45, col = "#67b7dc") %>%
+        amOptions(main = titre, mainColor = "#68838B", mainSize = 14)
+    } else if (input$choix_var_graph == "Luminosity.L.Lo"){
+      titre <- paste("Distribution de la variable 'Luminosité'")
+      amBoxplot(Luminosity.L.Lo~Star_Type, data = stars, labelRotation = -45, col = "#67b7dc") %>%
+        amOptions(main = titre, mainColor = "#68838B", mainSize = 14)
+    } else if (input$choix_var_graph == "Radius.R.Ro"){
+      titre <- paste("Distribution de la variable 'Angle relatif")
+      amBoxplot(Radius.R.Ro~Star_Type, data = stars, labelRotation = -45, col = "#67b7dc") %>%
+        amOptions(main = titre, mainColor = "#68838B", mainSize = 14)
+    } else {
+      titre <- paste("Distribution de la variable 'Magnitude relative'")
+      amBoxplot(Absolute_Magnitude.Mv~Star_Type, data = stars, labelRotation = -45, col = "#67b7dc") %>%
+        amOptions(main = titre, mainColor = "#68838B", mainSize = 14)
+    }
+  })
+  
+  # Ici ça marche ! : (mais c'est pas interactif)
+  # output$star_type_boxplot1 <- renderPlot({
+  #   boxplot(log2(stars$Temperature.K)~stars$Star_Type, xlab= "Star type", ylab= "log2(Temperature) (in K)", main="Star type effect on temperature",las=2)
+  # })
+  
+  # output$star_type_boxplot1 <- renderAmCharts({
+  #   print("star_type")
+  #   print(as.factor(stars$Star_Type))
+  #   amBoxplot(log2(stars$Temperature.K)~as.factor(stars$Star_Type), xlab= "Star type", ylab= "log2(Temperature) (in K)", main="Star type effect on temperature",las=2,col=input$color)
+  # })
+  
+  output$count_type<-renderPlot({
+    ggplot(stars, aes(y = Star_Type, color = Star_Type)) +
+      geom_bar(fill="white") + 
+      xlab("Nombre") +
+      ylab("Type d'étoile") + 
+      labs(title="Repartition du type d'étoile")+
+      scale_fill_identity()+
+      theme_bw() +
+      theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),panel.background = element_blank(), axis.line = element_line(colour = "black"))+
+      theme(plot.title = element_text(hjust = 0.5,size=9))
     })
   
+  output$count_class<-renderPlot({
+    ggplot(stars, aes(y = Spectral_Class, color = Spectral_Class)) +
+      geom_bar(fill="white") + 
+      xlab("Nombre") +
+      ylab("Classe spectrale") + 
+      labs(title="Repartition de la classe spectrale")+
+      scale_fill_identity()+
+      theme_bw() +
+      theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),panel.background = element_blank(), axis.line = element_line(colour = "black"))+
+      theme(plot.title = element_text(hjust = 0.5,size=9))
+  })
+  
+  output$count_color<-renderPlot({
+    ggplot(stars, aes(y = Star_Color, color = Star_Color)) +
+      geom_bar(fill="white") + 
+      xlab("Nombre") +
+      ylab("Couleur de l'étoile") + 
+      labs(title="Repartition de la couleur de l'étoile")+
+      scale_fill_identity()+
+      theme_bw() +
+      theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),panel.background = element_blank(), axis.line = element_line(colour = "black"))+
+      theme(plot.title = element_text(hjust = 0.5,size=9))
+  })
+  
+  
+  
+  ############# MODELE PREDICTIF ################
+  
   ############# CAH ################
+  
   output$choix_ultrametric <- renderUI({
     awesomeRadio(
       inputId = "choix_ultrametric",
