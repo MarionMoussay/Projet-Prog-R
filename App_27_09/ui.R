@@ -13,7 +13,7 @@ fluidPage(
                                                          sidebarPanel(includeHTML("include.html"), 
                                                                       icon("fa-thin fa-star"),
                                                                       HTML('<a href="https://en.wikipedia.org/wiki/Hertzsprung%E2%80%93Russell_diagram" role="button">Pour en savoir plus</a>')), 
-                                                         mainPanel(img(src = "HRDiagram-Fr.png", width="600", height="700")), 
+                                                         mainPanel(img(src = "diagramme-hr.jpg", width="600", height="700")), 
                                                          
                                            )), 
                                   tabPanel("En pratique",
@@ -23,7 +23,8 @@ fluidPage(
                                                           uiOutput("choix_var_hrdiag")), 
                                              mainPanel(width = 8,
                                                        plotlyOutput("diagramme_HR1"), 
-                                                       plotlyOutput("diagramme_HR2")))
+                                                       plotlyOutput("diagramme_HR2"), 
+                                                       plotlyOutput("diagramme_HR3")))
                                   )
                                   
                       )

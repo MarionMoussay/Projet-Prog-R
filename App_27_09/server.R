@@ -49,20 +49,20 @@ shinyServer(function(input, output, session) {
     ggplotly(graph)
   })
   
-  # output$diagramme_HR3<-renderPlotly({
-  #   c <- ggplot(data = stars) + 
-  #     geom_point(aes(x = Temperature.K, y = Luminosity.L.Lo, color = Star_Type)) +
-  #     scale_x_reverse() +
-  #     
-  #     xlab("Temperature (K)") +
-  #     ylab("Luminosité (L.Lo)") + 
-  #     labs(title="Diagramme HR")+
-  #     scale_fill_identity()+
-  #     theme_bw() +
-  #     theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),panel.background = element_blank(), axis.line = element_line(colour = "black"))+
-  #     theme(plot.title = element_text(hjust = 0.5,size=9))
-  #   ggplotly(c)
-  # })
+  output$diagramme_HR3<-renderPlotly({
+    c <- ggplot(data = stars) +
+      geom_point(aes(x = Temperature.K, y = Luminosity.L.Lo, color = Star_Type)) +
+      scale_x_reverse() +
+
+      xlab("Temperature (K)") +
+      ylab("Luminosité (L.Lo)") +
+      labs(title="Diagramme HR")+
+      scale_fill_identity()+
+      theme_bw() +
+      theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),panel.background = element_blank(), axis.line = element_line(colour = "black"))+
+      theme(plot.title = element_text(hjust = 0.5,size=9))
+    ggplotly(c)
+  })
   
   ## ---- DATA --------------------
   
