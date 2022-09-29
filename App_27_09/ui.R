@@ -1,10 +1,10 @@
 
 # Define UI for application that draws a histogram
 fluidPage(
-  # shinythemes::themeSelector(),
+  #shinythemes::themeSelector(),
   # navbarPage
   navbarPage("Classification des étoiles", 
-             theme = shinytheme("flatly"),
+             theme = shinytheme("sandstone"),
              tabPanel("Contexte", 
                       h1("Le diagramme de Hertzsprung-Russell, la réference officielle de classification des étoiles"),
                       tabsetPanel(id="onglet1",
