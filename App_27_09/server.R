@@ -75,6 +75,15 @@ shinyServer(function(input, output, session) {
               options = list(paging = FALSE, lengthChange = FALSE, scrollY = "600px", scrollX = T),
               rownames = FALSE)})
   
+  output$downloadCsv2 <- downloadHandler(
+    filename = function() {
+      paste("stars", ".csv", sep="")
+    },
+    content = function(file) {
+      write.csv(stars,file)
+    }
+  )
+  
   ## ---- STATISTIQUES DESCRIPTIVES --------------------
   
   ### Vue globale ###############
