@@ -1,7 +1,7 @@
 
 # Define UI for application that draws a histogram
 fluidPage(
-  #shinythemes::themeSelector(),
+  # shinythemes::themeSelector(),
   # navbarPage
   navbarPage("Classification des étoiles", 
              theme = shinytheme("sandstone"),
@@ -182,4 +182,5 @@ fluidPage(
                       
              )
   )
+  
 )
