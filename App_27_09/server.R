@@ -88,6 +88,49 @@ shinyServer(function(input, output, session) {
     summary(stars)
   })
   
+  # distribution
+  output$count_type<-renderPlotly({
+    count.s <- c()
+    for (i in 1:length(levels(stars$Star_Type))){
+      a <- as.numeric(count(stars,stars$Star_Type)[i,2])
+      print(a)
+      count.s <- c(count.s,a)
+    }
+    count.s
+    
+    df <- data.frame(type=levels(stars$Star_Type),number=count.s)
+    
+    fig <- plot_ly(df, labels = ~type, values = ~count.s, type = 'pie')
+    fig <- fig %>% layout(title = 'Distribution of star type',
+                          xaxis = list(showgrid = FALSE, zeroline = FALSE, showticklabels = FALSE),
+                          yaxis = list(showgrid = FALSE, zeroline = FALSE, showticklabels = FALSE))
+    fig
+  })
+  
+  output$count_class<-renderPlotly({
+    ggplotly(ggplot(stars, aes(y = Spectral_Class, color = Spectral_Class)) +
+               geom_bar(fill="white") + 
+               xlab("Nombre") +
+               ylab("Classe spectrale") + 
+               labs(title="Repartition de la classe spectrale")+
+               scale_fill_identity()+
+               theme_bw() +
+               theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),panel.background = element_blank(), axis.line = element_line(colour = "black"))+
+               theme(plot.title = element_text(hjust = 0.5,size=9)))
+  })
+  
+  output$count_color<-renderPlotly({
+    ggplotly(ggplot(stars, aes(y = Star_Color, color = Star_Color)) +
+               geom_bar(fill="white") + 
+               xlab("Nombre") +
+               ylab("Couleur de l'étoile") + 
+               labs(title="Repartition de la couleur de l'étoile")+
+               scale_fill_identity()+
+               theme_bw() +
+               theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),panel.background = element_blank(), axis.line = element_line(colour = "black"))+
+               theme(plot.title = element_text(hjust = 0.5,size=9)))
+  })
+  
   ########## ACP ###############
   ## ---- acp-summary --------------------
   
@@ -224,41 +267,7 @@ shinyServer(function(input, output, session) {
     }
   })
   
-  output$count_type<-renderPlotly({
-    ggplotly(ggplot(stars, aes(y = Star_Type, color = Star_Type)) +
-      geom_bar(fill="white") + 
-      xlab("Nombre") +
-      ylab("Type d'étoile") + 
-      labs(title="Repartition du type d'étoile")+
-      scale_fill_identity()+
-      theme_bw() +
-      theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),panel.background = element_blank(), axis.line = element_line(colour = "black"))+
-      theme(plot.title = element_text(hjust = 0.5,size=9)))
-    })
   
-  output$count_class<-renderPlotly({
-    ggplotly(ggplot(stars, aes(y = Spectral_Class, color = Spectral_Class)) +
-      geom_bar(fill="white") + 
-      xlab("Nombre") +
-      ylab("Classe spectrale") + 
-      labs(title="Repartition de la classe spectrale")+
-      scale_fill_identity()+
-      theme_bw() +
-      theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),panel.background = element_blank(), axis.line = element_line(colour = "black"))+
-      theme(plot.title = element_text(hjust = 0.5,size=9)))
-  })
-  
-  output$count_color<-renderPlotly({
-    ggplotly(ggplot(stars, aes(y = Star_Color, color = Star_Color)) +
-      geom_bar(fill="white") + 
-      xlab("Nombre") +
-      ylab("Couleur de l'étoile") + 
-      labs(title="Repartition de la couleur de l'étoile")+
-      scale_fill_identity()+
-      theme_bw() +
-      theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),panel.background = element_blank(), axis.line = element_line(colour = "black"))+
-      theme(plot.title = element_text(hjust = 0.5,size=9)))
-  })
   
   
   
