@@ -13,7 +13,7 @@ fluidPage(
                                                          sidebarPanel(includeHTML("include.html"), 
                                                                       icon("fa-thin fa-star"),
                                                                       HTML('<a href="https://en.wikipedia.org/wiki/Hertzsprung%E2%80%93Russell_diagram" role="button">Pour en savoir plus</a>')), 
-                                                         mainPanel(img(src = "diagramme-hr.jpg", width="600", height="700")), 
+                                                         mainPanel(img(src = "diagramme-hr.jpg", width="700", height="700", position="center")), 
                                                          
                                            )), 
                                   tabPanel("En pratique",
