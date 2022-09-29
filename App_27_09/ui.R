@@ -181,6 +181,28 @@ fluidPage(
                                ))
                       
              )
-  )
+  ),
+  div(style = "margin-bottom: 30px;"),
+
+  tags$footer(column(6, "Institut Agro-campus, Rennes", icon = icon("fa-sharp fa-solid fa-house")), 
+              column(2, actionLink("twitter_share", label = "Share", icon = icon("fa-thin fa-star"),
+                                   style= "color:white;", onclick = sprintf("window.open('%s')", 
+                                                                            "https://github.com/MarionMoussay/Projet-Prog-R"))),
+              column(2, actionLink("easter_egg", label = "Ne pas cliquer", icon = icon("stop"),
+                                   style= "color:white;", onclick = sprintf("window.open('%s')", 
+                                                                            "https://www.youtube.com/watch?v=dty7JyWKoKg"))),
+              style = "
+   position:fixed;
+   text-align:center;
+   left: 0;
+   bottom:0;
+   width:100%;
+   z-index:1000;  
+   height:30px; /* Height of the footer */
+   color: white;
+   padding: 10px;
+   font-weight: bold;
+   background-color: #25292C"
+  ) 
   
 )
