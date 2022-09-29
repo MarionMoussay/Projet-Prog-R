@@ -54,8 +54,39 @@ fluidPage(
                                             plotlyOutput("count_class"),
                                             plotlyOutput("count_color")
                                    )
-                                 )), 
+                                 )),
                         
+                        tabPanel("Boxplot", 
+                                 fluidRow(
+                                   # premier colonne
+                                   column(width = 3,
+                                          # wellPanel pour griser
+                                          wellPanel(
+                                            # input pour la couleur
+                                            colourpicker::colourInput(inputId = "color", label = "Couleur :", value = "orange"),
+                                            
+                                            # selection de la colonne
+                                            uiOutput("choix_var_graph"),
+                                            
+                                            # bouton
+                                            actionButton("go", "GO!!!")
+                                          )
+                                   ),
+                                   # deuxieme colonne
+                                   column(width = 9,
+                                          tabsetPanel(id = "viz",
+                                                      tabPanel("Distribution par caractéristiques",
+                                                               amChartsOutput("distribution_boxplot1")
+                                                      ),
+                                                      
+                                                      tabPanel("Distribution par type des étoiles",
+                                                               amChartsOutput("star_type_boxplot1")
+                                                      )
+                                          )
+                                   )
+                                 )
+                                 
+                        ),
                         tabPanel("ACP",
                                  fluidRow(
                                    # premier colonne
@@ -92,37 +123,6 @@ fluidPage(
                                                       tabPanel("valeurs propres",
                                                                plotlyOutput("graph_vp"),
                                                                textOutput("text_vp")
-                                                      )
-                                          )
-                                   )
-                                 )
-                                 
-                        ), 
-                        tabPanel("Boxplot", 
-                                 fluidRow(
-                                   # premier colonne
-                                   column(width = 3,
-                                          # wellPanel pour griser
-                                          wellPanel(
-                                            # input pour la couleur
-                                            colourpicker::colourInput(inputId = "color", label = "Couleur :", value = "orange"),
-                                            
-                                            # selection de la colonne
-                                            uiOutput("choix_var_graph"),
-                                            
-                                            # bouton
-                                            actionButton("go", "GO!!!")
-                                          )
-                                   ),
-                                   # deuxieme colonne
-                                   column(width = 9,
-                                          tabsetPanel(id = "viz",
-                                                      tabPanel("Distribution par caractéristiques",
-                                                               amChartsOutput("distribution_boxplot1")
-                                                      ),
-                                                      
-                                                      tabPanel("Distribution par type des étoiles",
-                                                               amChartsOutput("star_type_boxplot1")
                                                       )
                                           )
                                    )
