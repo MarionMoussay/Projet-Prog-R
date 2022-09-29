@@ -132,33 +132,34 @@ shinyServer(function(input, output, session) {
   
   ## ---- acp-variables --------------------
   
-  output$ACP_var<-renderPlot({
+  output$ACP_var<-renderPlotly({
     
     PCA.s.quali <- PCA(stars, quali.sup=5:7, axes = c(input$dim1,input$dim2))
     
-    fviz_pca_var(PCA.s.quali, col.var = "cos2", axes = c(input$dim1,input$dim2),
+    ggplotly(fviz_pca_var(PCA.s.quali, col.var = "cos2", axes = c(input$dim1,input$dim2),
                  gradient.cols = c("#00AFBB", "#E7B800", "#FC4E07"), 
-                 repel = TRUE # Avoid text overlapping
-    )
+                 label="all"
+    ))
   })
   
   ## ---- acp-valeurs-propres --------------------
   
-  output$graph_vp<-renderPlot({
+  output$graph_vp<-renderPlotly({
     
     PCA.s.quali <- PCA(stars, quali.sup=5:7, axes = c(input$dim1,input$dim2))
     
-    fviz_eig(PCA.s.quali, addlabels = TRUE, ylim = c(0, 70),barfill="white",barcolor=input$colorACP)+
+    ggplotly(fviz_eig(PCA.s.quali, addlabels = TRUE, ylim = c(0, 70),barfill="white",barcolor=input$colorACP)+
       xlab("Percentage of explained variances") +
       ylab("Dimensions") + 
       labs(title="Eigen values")+
       scale_fill_identity()+
       theme_bw() +
       theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),panel.background = element_blank(), axis.line = element_line(colour = "black"))+
-      theme(plot.title = element_text(hjust = 0.5,size=9))
+      theme(plot.title = element_text(hjust = 0.5,size=9)))
   })
   
   output$text_vp <- renderText({ 
+    PCA.s.quali <- PCA(stars, quali.sup=5:7, axes = c(input$dim1,input$dim2))
     
     permuteLigne <- function(v) {return(v[sample(1:length(v),replace=FALSE)])}
     #Xnew <- apply(X,2,permuteLigne)
@@ -186,7 +187,7 @@ shinyServer(function(input, output, session) {
     # 83.85818%
     b <- PCA.s.quali$eig[2,3]
     
-    print(paste("The quantile from lines permuted is ",a, "and the inertie of the 2 dimensions is ",b))
+    print(paste0("The quantile from lines permuted is ",a, "and the inertie of the 2 dimensions is ",b))
   })
   
   ########## Boxplot ###############
@@ -234,8 +235,8 @@ shinyServer(function(input, output, session) {
   #   amBoxplot(log2(stars$Temperature.K)~as.factor(stars$Star_Type), xlab= "Star type", ylab= "log2(Temperature) (in K)", main="Star type effect on temperature",las=2,col=input$color)
   # })
   
-  output$count_type<-renderPlot({
-    ggplot(stars, aes(y = Star_Type, color = Star_Type)) +
+  output$count_type<-renderPlotly({
+    ggplotly(ggplot(stars, aes(y = Star_Type, color = Star_Type)) +
       geom_bar(fill="white") + 
       xlab("Nombre") +
       ylab("Type d'étoile") + 
@@ -243,11 +244,11 @@ shinyServer(function(input, output, session) {
       scale_fill_identity()+
       theme_bw() +
       theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),panel.background = element_blank(), axis.line = element_line(colour = "black"))+
-      theme(plot.title = element_text(hjust = 0.5,size=9))
+      theme(plot.title = element_text(hjust = 0.5,size=9)))
     })
   
-  output$count_class<-renderPlot({
-    ggplot(stars, aes(y = Spectral_Class, color = Spectral_Class)) +
+  output$count_class<-renderPlotly({
+    ggplotly(ggplot(stars, aes(y = Spectral_Class, color = Spectral_Class)) +
       geom_bar(fill="white") + 
       xlab("Nombre") +
       ylab("Classe spectrale") + 
@@ -255,11 +256,11 @@ shinyServer(function(input, output, session) {
       scale_fill_identity()+
       theme_bw() +
       theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),panel.background = element_blank(), axis.line = element_line(colour = "black"))+
-      theme(plot.title = element_text(hjust = 0.5,size=9))
+      theme(plot.title = element_text(hjust = 0.5,size=9)))
   })
   
-  output$count_color<-renderPlot({
-    ggplot(stars, aes(y = Star_Color, color = Star_Color)) +
+  output$count_color<-renderPlotly({
+    ggplotly(ggplot(stars, aes(y = Star_Color, color = Star_Color)) +
       geom_bar(fill="white") + 
       xlab("Nombre") +
       ylab("Couleur de l'étoile") + 
@@ -267,7 +268,7 @@ shinyServer(function(input, output, session) {
       scale_fill_identity()+
       theme_bw() +
       theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),panel.background = element_blank(), axis.line = element_line(colour = "black"))+
-      theme(plot.title = element_text(hjust = 0.5,size=9))
+      theme(plot.title = element_text(hjust = 0.5,size=9)))
   })
   
   

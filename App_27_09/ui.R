@@ -43,13 +43,17 @@ fluidPage(
              navbarMenu("Statistiques descriptives",
                         # premier onglet Data
                         tabPanel("Vue globale",
-                                 navlistPanel(
-                                   widths = c(2, 10), 
+                                 tabsetPanel(
                                    tabPanel("Str",
                                             verbatimTextOutput("str")
                                    ),
                                    tabPanel("Summary",
                                             verbatimTextOutput("summary")),
+                                   tabPanel("Effectifs",
+                                            plotlyOutput("count_type"),
+                                            plotlyOutput("count_class"),
+                                            plotlyOutput("count_color")
+                                   )
                                  )), 
                         
                         tabPanel("ACP",
@@ -83,11 +87,11 @@ fluidPage(
                                                                plotlyOutput("ACP_ind_ellipse")
                                                       ),
                                                       tabPanel("variables",
-                                                               plotOutput("ACP_var")
+                                                               plotlyOutput("ACP_var")
                                                       ),
-                                                      tabPanel("valeurs_propres",
-                                                               plotOutput("graph_vp"),
-                                                               h4("text_vp")
+                                                      tabPanel("valeurs propres",
+                                                               plotlyOutput("graph_vp"),
+                                                               textOutput("text_vp")
                                                       )
                                           )
                                    )
@@ -116,11 +120,7 @@ fluidPage(
                                                       tabPanel("Distribution par caractéristiques",
                                                                amChartsOutput("distribution_boxplot1")
                                                       ),
-                                                      tabPanel("Effectifs",
-                                                               plotOutput("count_type"),
-                                                               plotOutput("count_class"),
-                                                               plotOutput("count_color")
-                                                      ),
+                                                      
                                                       tabPanel("Distribution par type des étoiles",
                                                                plotOutput("star_type_boxplot1")
                                                       )
