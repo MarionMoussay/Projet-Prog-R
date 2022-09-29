@@ -122,7 +122,7 @@ fluidPage(
                                                       ),
                                                       
                                                       tabPanel("Distribution par type des étoiles",
-                                                               plotOutput("star_type_boxplot1")
+                                                               amChartsOutput("star_type_boxplot1")
                                                       )
                                           )
                                    )

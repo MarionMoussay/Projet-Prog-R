@@ -207,33 +207,22 @@ shinyServer(function(input, output, session) {
   output$star_type_boxplot1 <- renderAmCharts({
     if (input$choix_var_graph == "Temperature.K") {
       titre <- paste("Distribution de la variable 'Température'")
-      amBoxplot(Temperature.K~Star_Type, data = stars, labelRotation = -45, col = "#67b7dc") %>%
-        amOptions(main = titre, mainColor = "#68838B", mainSize = 14)
+      amBoxplot(Temperature.K~Star_Type, data = stars, labelRotation = -45, col = input$color) %>%
+        amOptions(main = titre, mainColor = input$color, mainSize = 14)
     } else if (input$choix_var_graph == "Luminosity.L.Lo"){
       titre <- paste("Distribution de la variable 'Luminosité'")
-      amBoxplot(Luminosity.L.Lo~Star_Type, data = stars, labelRotation = -45, col = "#67b7dc") %>%
-        amOptions(main = titre, mainColor = "#68838B", mainSize = 14)
+      amBoxplot(Luminosity.L.Lo~Star_Type, data = stars, labelRotation = -45, col = input$color) %>%
+        amOptions(main = titre, mainColor = input$color, mainSize = 14)
     } else if (input$choix_var_graph == "Radius.R.Ro"){
       titre <- paste("Distribution de la variable 'Angle relatif")
-      amBoxplot(Radius.R.Ro~Star_Type, data = stars, labelRotation = -45, col = "#67b7dc") %>%
-        amOptions(main = titre, mainColor = "#68838B", mainSize = 14)
+      amBoxplot(Radius.R.Ro~Star_Type, data = stars, labelRotation = -45, col = input$color) %>%
+        amOptions(main = titre, mainColor = input$color, mainSize = 14)
     } else {
       titre <- paste("Distribution de la variable 'Magnitude relative'")
-      amBoxplot(Absolute_Magnitude.Mv~Star_Type, data = stars, labelRotation = -45, col = "#67b7dc") %>%
-        amOptions(main = titre, mainColor = "#68838B", mainSize = 14)
+      amBoxplot(Absolute_Magnitude.Mv~Star_Type, data = stars, labelRotation = -45, col = input$color) %>%
+        amOptions(main = titre, mainColor = input$color, mainSize = 14)
     }
   })
-  
-  # Ici ça marche ! : (mais c'est pas interactif)
-  # output$star_type_boxplot1 <- renderPlot({
-  #   boxplot(log2(stars$Temperature.K)~stars$Star_Type, xlab= "Star type", ylab= "log2(Temperature) (in K)", main="Star type effect on temperature",las=2)
-  # })
-  
-  # output$star_type_boxplot1 <- renderAmCharts({
-  #   print("star_type")
-  #   print(as.factor(stars$Star_Type))
-  #   amBoxplot(log2(stars$Temperature.K)~as.factor(stars$Star_Type), xlab= "Star type", ylab= "log2(Temperature) (in K)", main="Star type effect on temperature",las=2,col=input$color)
-  # })
   
   output$count_type<-renderPlotly({
     ggplotly(ggplot(stars, aes(y = Star_Type, color = Star_Type)) +
