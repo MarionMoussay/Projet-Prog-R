@@ -37,7 +37,8 @@ fluidPage(
                       # titre avec css
                       h1("Jeu de données", style = "color : #0099ff;text-align:center"),
                       # table
-                      dataTableOutput("table")
+                      dataTableOutput("table"), 
+                      downloadButton("downloadCsv2", "Télécharger"),tags$br(),tags$br()
              ),
              ########## ONGLET 3 ###############
              navbarMenu("Statistiques descriptives",
