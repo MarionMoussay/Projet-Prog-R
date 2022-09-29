@@ -201,7 +201,7 @@ shinyServer(function(input, output, session) {
   })
   
   output$distribution_boxplot1 <- renderAmCharts({
-    amBoxplot(stars[,get(input$choix_var_graph)], ylab= input$choix_var_graph, main=paste0("Distribution de la variable ",input$choix_var_graph),las=2,col=input$color)
+    amBoxplot(stars[,get(input$choix_var_graph)], ylab= input$choix_var_graph, main=paste0("Distribution de la variable ",input$choix_var_graph),las=2,col=input$color, mainColor = input$color, xlab="")
   })
   
   output$star_type_boxplot1 <- renderAmCharts({
