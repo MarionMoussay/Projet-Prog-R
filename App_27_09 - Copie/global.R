@@ -32,8 +32,9 @@ stars$Spectral_Class <- as.factor(stars$Spectral_Class)
 
 #stars
 library(nnet)
+library(caret)
 
-liste= c()
+liste= c("Temperature.K","Luminosity.L.Lo","Radius.R.Ro")
 
 data <- stars %>% select(1:5)
 
@@ -48,4 +49,7 @@ if (length(liste)== 0){
   mod <- multinom(as.formula(formul), data=data)
   
 }
-print(formul)
+mod
+
+confusionMatrix(predict(mod, newdata = data), data$Star_Type)
+table(predict(mod, newdata = data), data$Star_Type)

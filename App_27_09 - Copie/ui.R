@@ -139,8 +139,7 @@ fluidPage(
               ),
               ########## ONGLET 4 ###############
               tabPanel("Modèle prédictif", 
-                       h1("Le diagramme de Hertzsprung-Russell, la réference officielle de classification des étoiles"),
-                       tabsetPanel(id="onglet1",
+                       tabsetPanel(id="onglet4",
                                    tabPanel("Modèle multinomiale",
                                             sidebarLayout(fluid = TRUE,
                                                           sidebarPanel(checkboxGroupInput(inputId = "choix_var_mod_mult", label = "Choisissez le ou les variables à utiliser dans le modèle", 
@@ -150,11 +149,11 @@ fluidPage(
                                                                          tabPanel("Plot", 
                                                                                   #courbe de régression
                                                                                   ), 
-                                                                         tabPanel("Valeurs prédites",  
-                                                                                  #predict(fff, newdata=stars) + matrice de confusion)
+                                                                         tabPanel("Matrice de confusion", 
+                                                                                  verbatimTextOutput("pred")
+                                                                                  )
                                                                                   ), 
                                                           )
-                                                             
                                             )), 
                                    tabPanel("Ré-échantillonnage leave-one-out",
                                             sidebarLayout(

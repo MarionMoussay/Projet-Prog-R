@@ -275,6 +275,30 @@ shinyServer(function(input, output, session) {
 
   ############# MODELE PREDICTIF ################
   
+  mod <- reactive({
+    data <- stars %>% select(1:5)
+    
+    if (length(input$choix_var_mod_mult)== 0){
+      mod <- multinom(Star_Type~1, data=data)
+    } else {
+      var <- c(input$choix_var_mod_mult[1])
+      for (i in 2:(length(input$choix_var_mod_mult))){
+        var <- paste0(var, paste0("+", input$choix_var_mod_mult[i]))
+      }
+      formul <- paste0("Star_Type~",var )
+      mod <- multinom(as.formula(formul), data=data)
+    }
+  })
+  
+  output$resum_mod <- renderPrint({
+    summary(mod())
+  })
+  
+  output$pred <- renderPrint({
+    table(predict(mod(), newdata = data), data$Star_Type)
+  })
+  
+  
   ############# CAH ################
   
   output$choix_ultrametric <- renderUI({

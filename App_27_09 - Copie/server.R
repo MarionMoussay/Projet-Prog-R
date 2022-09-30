@@ -319,6 +319,10 @@ shinyServer(function(input, output, session) {
     summary(mod())
   })
   
+  output$pred <- renderPrint({
+    table(predict(mod(), newdata = data), data$Star_Type)
+    })
+  
   
   
   
