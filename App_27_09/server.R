@@ -164,7 +164,7 @@ shinyServer(function(input, output, session) {
       
       res.pca <- PCA(stars[,c(1,2,3,4,7)], quali.sup = 5, graph=FALSE, axes = c(input$dim1,input$dim2))
       
-      p <- fviz_pca_ind(res.pca, repel = TRUE,label="none", axes = c(input$dim1,input$dim2))
+      p <- fviz_pca_ind(res.pca, repel = TRUE,label="none", axes = c(input$dim1,input$dim2),col.ind=input$colorACP)
       p <- fviz_add(p, res.pca$quali.sup$coord, color = input$colorACPsupp, axes = c(input$dim1,input$dim2))
       ggplotly(p)
     })
@@ -209,7 +209,7 @@ shinyServer(function(input, output, session) {
     isolate({
       PCA.s.quali <- PCA(stars, quali.sup=5:7, axes = c(input$dim1,input$dim2))
       
-      ggplotly(fviz_eig(PCA.s.quali, addlabels = TRUE, ylim = c(0, 70),barfill="white",barcolor=input$colorACP)+
+      ggplotly(fviz_eig(PCA.s.quali, addlabels = TRUE, ylim = c(0, 70),barfill=input$colorACP,barcolor=input$colorACP)+
                  xlab("Percentage of explained variances") +
                  ylab("Dimensions") + 
                  labs(title="Eigen values")+
