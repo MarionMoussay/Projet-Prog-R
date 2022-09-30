@@ -146,18 +146,32 @@ fluidPage(
                                                                                           choices = c("Temperature (K)"="Temperature.K", "Luminosité (L.lo)"="Luminosity.L.Lo", "Radius (R.ro)"="Radius.R.Ro", "Magnitude Absolue"="Absolute_Magnitude.Mv"))), 
                                                           mainPanel(
                                                              tabsetPanel(tabPanel("Sommaire du modèle",verbatimTextOutput("resum_mod")), 
-                                                                         tabPanel("Plot", 
-                                                                                  #courbe de régression
-                                                                                  ), 
                                                                          tabPanel("Matrice de confusion", 
                                                                                   verbatimTextOutput("pred")
                                                                                   )
                                                                                   ), 
                                                           )
                                             )), 
-                                   tabPanel("Ré-échantillonnage leave-one-out",
+                                   tabPanel("Ré-échantillonnage",
                                             sidebarLayout(
-                                               sidebarPanel(), 
+                                               sidebarPanel(
+                                                  #choix nb segments
+                                                  sliderInput("nb_clusters", "Nombre de segments souhaité :", 1, 240, 240,sep = 1), 
+                                                  
+                                                  #choix backward, forward,
+                                                  awesomeRadio(
+                                                     inputId = "choix_methode",
+                                                     label = "Choisissez la méthode de recherche", 
+                                                     choices = list("Backward"="backward", "Forward" ="forward", "Forward et Backward" ="forward/backward")
+                                                  ),
+                                                  
+                                                  #choix critère
+                                                  awesomeRadio(
+                                                     inputId = "choix_critere",
+                                                     label = "Choisissez le critère de comparaison des modèles", 
+                                                     choices = list("AIC"="AIC", "BIC" ="BIC")
+                                                  ),
+                                               ), 
                                                mainPanel())
                                    )
                        )

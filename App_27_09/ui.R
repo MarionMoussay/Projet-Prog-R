@@ -30,6 +30,7 @@ fluidPage(
                        )
                        
               ),
+<<<<<<< HEAD
               ########## ONGLET 2 ###############
               tabPanel("Jeux de données", 
                        # titre avec css
@@ -159,6 +160,37 @@ fluidPage(
                                             sidebarLayout(
                                                sidebarPanel(), 
                                                mainPanel())
+=======
+             ########## ONGLET 2 ###############
+             tabPanel("Jeux de données", 
+                      # titre avec css
+                      h1("Jeu de données"),
+                      # table
+                      dataTableOutput("table"), 
+                      downloadButton("downloadCsv2", "Télécharger"),tags$br(),tags$br()
+             ),
+             ########## ONGLET 3 ###############
+             navbarMenu("Statistiques descriptives",
+                        # premier onglet Data
+                        tabPanel("Vue globale",
+                                 tabsetPanel(
+                                   tabPanel("Résumés",
+                                            h4("Résumé du tableau"),
+                                            verbatimTextOutput("str"),
+                                            h4("Résumé statistique"),
+                                            verbatimTextOutput("summary")
+                                   ),
+                                   tabPanel("Effectifs",
+                                            
+                                            #plotlyOutput("count_type"),
+                                            plotlyOutput("count_class"),
+                                            plotlyOutput("count_color")
+                                   ),
+                                   tabPanel("Corrélations",
+                                            
+                                            plotOutput("graph_corr"),
+                                            verbatimTextOutput("corr_result")
+>>>>>>> 61fb2aab48bc78ce47550906f2cd8e4321390e42
                                    )
                        )
               ), 

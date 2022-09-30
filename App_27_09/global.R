@@ -16,6 +16,8 @@ library(colourpicker)
 library(shinythemes)
 library(tidyverse)
 library(dplyr)
+library(Hmisc)
+library(corrplot)
 
 
 ### -- I.2. DATASET --------------------------

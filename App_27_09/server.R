@@ -98,47 +98,67 @@ shinyServer(function(input, output, session) {
   })
   
   # distribution
-  output$count_type<-renderPlotly({
-    count.s <- c()
-    for (i in 1:length(levels(stars$Star_Type))){
-      a <- as.numeric(count(stars,stars$Star_Type)[i,2])
-      print(a)
-      count.s <- c(count.s,a)
-    }
-    count.s
-    
-    df <- data.frame(type=levels(stars$Star_Type),number=count.s)
-    
-    fig <- plot_ly(df, labels = ~type, values = ~count.s, type = 'pie')
-    fig <- fig %>% layout(title = 'Distribution of star type',
-                          xaxis = list(showgrid = FALSE, zeroline = FALSE, showticklabels = FALSE),
-                          yaxis = list(showgrid = FALSE, zeroline = FALSE, showticklabels = FALSE))
-    fig
-  })
+  # output$count_type<-renderPlotly({
+  #   count.s <- c()
+  #   for (i in 1:length(levels(stars$Star_Type))){
+  #     a <- as.numeric(count(stars,stars$Star_Type)[i,2])
+  #     print(a)
+  #     count.s <- c(count.s,a)
+  #   }
+  #   count.s
+  #   
+  #   df <- data.frame(type=levels(stars$Star_Type),number=count.s)
+  #   
+  #   fig <- plot_ly(df, labels = ~type, values = ~count.s, type = 'pie')
+  #   fig <- fig %>% layout(title = 'Distribution of star type',
+  #                         xaxis = list(showgrid = FALSE, zeroline = FALSE, showticklabels = FALSE),
+  #                         yaxis = list(showgrid = FALSE, zeroline = FALSE, showticklabels = FALSE))
+  #   fig
+  # })
   
+  # effectif
   output$count_class<-renderPlotly({
-    ggplotly(ggplot(stars, aes(y = Spectral_Class, color = Spectral_Class)) +
-               geom_bar(fill="white") + 
+    ggplotly(ggplot(stars, aes(y = Spectral_Class, fill = Spectral_Class)) +
+               geom_bar(show.legend = FALSE) + 
                xlab("Nombre") +
                ylab("Classe spectrale") + 
                labs(title="Repartition de la classe spectrale")+
                scale_fill_identity()+
                theme_bw() +
                theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),panel.background = element_blank(), axis.line = element_line(colour = "black"))+
-               theme(plot.title = element_text(hjust = 0.5,size=9)))
+               theme(plot.title = element_text(hjust = 0.5,size=9))+
+               scale_fill_manual("legend", values = rainbow(7)
+               )
+             )
   })
   
   output$count_color<-renderPlotly({
-    ggplotly(ggplot(stars, aes(y = Star_Color, color = Star_Color)) +
-               geom_bar(fill="white") + 
+    ggplotly(ggplot(stars, aes(y = Star_Color, fill = Star_Color)) +
+               geom_bar(show.legend=FALSE) + 
                xlab("Nombre") +
                ylab("Couleur de l'étoile") + 
                labs(title="Repartition de la couleur de l'étoile")+
                scale_fill_identity()+
                theme_bw() +
                theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),panel.background = element_blank(), axis.line = element_line(colour = "black"))+
-               theme(plot.title = element_text(hjust = 0.5,size=9)))
+               theme(plot.title = element_text(hjust = 0.5,size=9)) +
+               scale_fill_manual("legend", values = rainbow(9))
+             )
   })
+  
+  # Correlation
+  
+  output$graph_corr<-renderPlot({
+    corr.s <- rcorr(as.matrix(stars[,1:4]))
+    corrplot(corr.s$r, type="upper", order="hclust", tl.col="black", tl.srt=45)
+  })
+  
+  output$corr_result <- renderPrint({
+    corr.s <- rcorr(as.matrix(stars[,1:4]))
+    corr.s
+  })
+  
+  # summary
   
   ########## ACP ###############
   ## ---- acp-summary --------------------
@@ -280,6 +300,8 @@ shinyServer(function(input, output, session) {
     
     if (length(input$choix_var_mod_mult)== 0){
       mod <- multinom(Star_Type~1, data=data)
+    } else if (length(input$choix_var_mod_mult)== 1)  {
+      mod <- multinom(Star_Type~input$choix_var_mod_mult, data=data)
     } else {
       var <- c(input$choix_var_mod_mult[1])
       for (i in 2:(length(input$choix_var_mod_mult))){
