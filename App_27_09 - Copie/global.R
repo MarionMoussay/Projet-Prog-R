@@ -16,6 +16,8 @@ library(colourpicker)
 library(shinythemes)
 library(tidyverse)
 library(dplyr)
+library(leaps)
+library(nnet)
 
 
 ### -- I.2. DATASET --------------------------
@@ -29,3 +31,21 @@ stars$Star_Color <- as.factor(stars$Star_Color)
 stars$Spectral_Class <- as.factor(stars$Spectral_Class)
 
 #stars
+library(nnet)
+
+liste= c()
+
+data <- stars %>% select(1:5)
+
+if (length(liste)== 0){
+  mod <- multinom(Star_Type~1, data=data)
+} else {
+  var <- c(liste[1])
+  for (i in 2:(length(liste))){
+    var <- paste0(var, paste0("+", liste[i]))
+  }
+  formul <- paste0("Star_Type~",var )
+  mod <- multinom(as.formula(formul), data=data)
+  
+}
+print(formul)

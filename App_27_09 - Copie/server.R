@@ -144,10 +144,13 @@ shinyServer(function(input, output, session) {
   ## ---- acp-summary --------------------
   
   output$summaryACP <- renderPrint({
-    
-    PCA.s.quali <- PCA(stars, quali.sup=5:7, axes = c(input$dim1,input$dim2))
-    
-    summary(PCA.s.quali, ncp=max(input$dim1,input$dim2))
+    input$goACP
+    isolate({
+      
+      PCA.s.quali <- PCA(stars, quali.sup=5:7, axes = c(input$dim1,input$dim2))
+      
+      summary(PCA.s.quali, ncp=max(input$dim1,input$dim2))
+    })
   })
   
   ## ---- acp-individus --------------------
@@ -161,24 +164,26 @@ shinyServer(function(input, output, session) {
       
       res.pca <- PCA(stars[,c(1,2,3,4,7)], quali.sup = 5, graph=FALSE, axes = c(input$dim1,input$dim2))
       
-      p <- fviz_pca_ind(res.pca, repel = TRUE,label="none", axes = c(input$dim1,input$dim2))
+      p <- fviz_pca_ind(res.pca, repel = TRUE,label="none", axes = c(input$dim1,input$dim2),col.ind=input$colorACP)
       p <- fviz_add(p, res.pca$quali.sup$coord, color = input$colorACPsupp, axes = c(input$dim1,input$dim2))
       ggplotly(p)
     })
   })
   
   output$ACP_ind_ellipse<-renderPlotly({
-    
-    res.pca <- PCA(stars[,c(1,2,3,4,7)], quali.sup = 5, graph=FALSE, axes = c(input$dim1,input$dim2))
-    
-    e <- fviz_pca_ind(res.pca,
-                      geom.ind = "point", # Montre les points seulement (mais pas le "text")
-                      col.ind = stars$Star_Type, # colorer by groups
-                      palette = c("brown","red","grey","blue","orange","green"),
-                      addEllipses = TRUE, # Ellipses de concentration
-                      legend.title = "Star type", axes = c(input$dim1,input$dim2))
-    e <- fviz_add(e, res.pca$quali.sup$coord, color = "black", axes = c(input$dim1,input$dim2))
-    ggplotly(e)
+    input$goACP
+    isolate({
+      res.pca <- PCA(stars[,c(1,2,3,4,7)], quali.sup = 5, graph=FALSE, axes = c(input$dim1,input$dim2))
+      
+      e <- fviz_pca_ind(res.pca,
+                        geom.ind = "point", # Montre les points seulement (mais pas le "text")
+                        col.ind = stars$Star_Type, # colorer by groups
+                        palette = c("brown","red","grey","blue","orange","green"),
+                        addEllipses = TRUE, # Ellipses de concentration
+                        legend.title = "Star type", axes = c(input$dim1,input$dim2))
+      e <- fviz_add(e, res.pca$quali.sup$coord, color = "black", axes = c(input$dim1,input$dim2))
+      ggplotly(e)
+    })
     
   })
   
@@ -186,94 +191,106 @@ shinyServer(function(input, output, session) {
   
   output$ACP_var<-renderPlotly({
     
-    PCA.s.quali <- PCA(stars, quali.sup=5:7, axes = c(input$dim1,input$dim2))
-    
-    ggplotly(fviz_pca_var(PCA.s.quali, col.var = "cos2", axes = c(input$dim1,input$dim2),
-                 gradient.cols = c("#00AFBB", "#E7B800", "#FC4E07"), 
-                 label="all"
-    ))
+    input$goACP
+    isolate({
+      PCA.s.quali <- PCA(stars, quali.sup=5:7, axes = c(input$dim1,input$dim2))
+      
+      ggplotly(fviz_pca_var(PCA.s.quali, col.var = "cos2", axes = c(input$dim1,input$dim2),
+                            gradient.cols = c("#00AFBB", "#E7B800", "#FC4E07"), 
+                            label="all"
+      ))
+    })
   })
   
   ## ---- acp-valeurs-propres --------------------
   
   output$graph_vp<-renderPlotly({
-    
-    PCA.s.quali <- PCA(stars, quali.sup=5:7, axes = c(input$dim1,input$dim2))
-    
-    ggplotly(fviz_eig(PCA.s.quali, addlabels = TRUE, ylim = c(0, 70),barfill="white",barcolor=input$colorACP)+
-      xlab("Percentage of explained variances") +
-      ylab("Dimensions") + 
-      labs(title="Eigen values")+
-      scale_fill_identity()+
-      theme_bw() +
-      theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),panel.background = element_blank(), axis.line = element_line(colour = "black"))+
-      theme(plot.title = element_text(hjust = 0.5,size=9)))
+    input$goACP
+    isolate({
+      PCA.s.quali <- PCA(stars, quali.sup=5:7, axes = c(input$dim1,input$dim2))
+      
+      ggplotly(fviz_eig(PCA.s.quali, addlabels = TRUE, ylim = c(0, 70),barfill=input$colorACP,barcolor=input$colorACP)+
+                 xlab("Percentage of explained variances") +
+                 ylab("Dimensions") + 
+                 labs(title="Eigen values")+
+                 scale_fill_identity()+
+                 theme_bw() +
+                 theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),panel.background = element_blank(), axis.line = element_line(colour = "black"))+
+                 theme(plot.title = element_text(hjust = 0.5,size=9)))
+    })
   })
   
   output$text_vp <- renderText({ 
-    PCA.s.quali <- PCA(stars, quali.sup=5:7, axes = c(input$dim1,input$dim2))
     
-    permuteLigne <- function(v) {return(v[sample(1:length(v),replace=FALSE)])}
-    #Xnew <- apply(X,2,permuteLigne)
-    
-    test <- stars[,1:4]
-    test
-    
-    nind <- nrow(test)
-    nvar <- ncol(test)
-    print(nind)
-    print(nvar)
-    nbsimul <- 1000
-    iner <- NULL
-    
-    for (i in 1:nbsimul){
-      mat <- apply(test,2,permuteLigne)
-      iner <- c(iner,PCA(mat,graph=F)$eig[2,3])
-    }
-    
-    # calcul du quantile
-    # 56.89314%
-    a <- quantile(iner,0.95)
-    
-    # % d'inertie du jeux de donnees n'est pas plus grand que le quantile 95%
-    # 83.85818%
-    b <- PCA.s.quali$eig[2,3]
-    
-    print(paste0("The quantile from lines permuted is ",a, "and the inertie of the 2 dimensions is ",b))
+    input$goACP
+    isolate({
+      PCA.s.quali <- PCA(stars, quali.sup=5:7, axes = c(input$dim1,input$dim2))
+      
+      permuteLigne <- function(v) {return(v[sample(1:length(v),replace=FALSE)])}
+      #Xnew <- apply(X,2,permuteLigne)
+      
+      test <- stars[,1:4]
+      test
+      
+      nind <- nrow(test)
+      nvar <- ncol(test)
+      print(nind)
+      print(nvar)
+      nbsimul <- 1000
+      iner <- NULL
+      
+      for (i in 1:nbsimul){
+        mat <- apply(test,2,permuteLigne)
+        iner <- c(iner,PCA(mat,graph=F)$eig[2,3])
+      }
+      
+      # calcul du quantile
+      # 56.89314%
+      a <- quantile(iner,0.95)
+      
+      # % d'inertie du jeux de donnees n'est pas plus grand que le quantile 95%
+      # 83.85818%
+      b <- PCA.s.quali$eig[2,3]
+      
+      print(paste0("The quantile from lines permuted is ",a, "and the inertie of the 2 dimensions is ",b))
+    })
   })
   
   ########## Boxplot ###############
-  
-  output$choix_var_graph <- renderUI({
-    awesomeRadio(
-      inputId = "choix_var_graph",
-      label = "Choisissez la variable à illuster :", 
-      choices = list("Température"="Temperature.K", "Luminosité" ="Luminosity.L.Lo", "Rayon" ="Radius.R.Ro", "Magnitude"="Absolute_Magnitude.Mv")
-    )
-  })
-  
   output$distribution_boxplot1 <- renderAmCharts({
-    amBoxplot(stars[,get(input$choix_var_graph)], ylab= input$choix_var_graph, main=paste0("Distribution de la variable ",input$choix_var_graph),las=2,col=input$color, mainColor = input$color, xlab="")
+    input$go
+    isolate({
+      amBoxplot(stars[,get(input$choix_var_graph)], ylab= input$choix_var_graph, main=paste0("Distribution de la variable ",input$choix_var_graph),las=2,col=input$color, mainColor = input$color, xlab="")
+    })
+
   })
   
   output$star_type_boxplot1 <- renderAmCharts({
-    if (input$choix_var_graph == "Temperature.K") {
-      titre <- paste("Distribution de la variable 'Température'")
-      amBoxplot(Temperature.K~Star_Type, data = stars, labelRotation = -45, col = input$color) %>%
-        amOptions(main = titre, mainColor = input$color, mainSize = 14)
-    } else if (input$choix_var_graph == "Luminosity.L.Lo"){
-      titre <- paste("Distribution de la variable 'Luminosité'")
-      amBoxplot(Luminosity.L.Lo~Star_Type, data = stars, labelRotation = -45, col = input$color) %>%
-        amOptions(main = titre, mainColor = input$color, mainSize = 14)
-    } else if (input$choix_var_graph == "Radius.R.Ro"){
-      titre <- paste("Distribution de la variable 'Angle relatif")
-      amBoxplot(Radius.R.Ro~Star_Type, data = stars, labelRotation = -45, col = input$color) %>%
-        amOptions(main = titre, mainColor = input$color, mainSize = 14)
-    } else {
-      titre <- paste("Distribution de la variable 'Magnitude relative'")
-      amBoxplot(Absolute_Magnitude.Mv~Star_Type, data = stars, labelRotation = -45, col = input$color) %>%
-        amOptions(main = titre, mainColor = input$color, mainSize = 14)
-    }
+    
+    input$go
+    isolate({
+      amBoxplot(as.formula(paste(input$choix_var_graph,"~Star_Type")), data=stars, ylab=input$choix_var_graph, main=paste0("Distribution de la variable ", input$choix_var_graph),las=2,col=input$color, mainColor =input$color, xlab="")
+      
+      # amBoxplot(stars[,get(input$choix_var_graph)]~stars$Star_Type, labelRotation = -45, col = input$color) %>%
+      #   amOptions(main = paste0("Distribution de la variable ",input$choix_var_graph), mainColor = input$color, mainSize = 14)
+      
+      # if (input$choix_var_graph == "Temperature.K") {
+      #   titre <- paste("Distribution de la variable 'Température'")
+      #   
+      # } else if (input$choix_var_graph == "Luminosity.L.Lo"){
+      #   titre <- paste("Distribution de la variable 'Luminosité'")
+      #   amBoxplot(Luminosity.L.Lo~Star_Type, data = stars, labelRotation = -45, col = input$color) %>%
+      #     amOptions(main = titre, mainColor = input$color, mainSize = 14)
+      # } else if (input$choix_var_graph == "Radius.R.Ro"){
+      #   titre <- paste("Distribution de la variable 'Angle relatif")
+      #   amBoxplot(Radius.R.Ro~Star_Type, data = stars, labelRotation = -45, col = input$color) %>%
+      #     amOptions(main = titre, mainColor = input$color, mainSize = 14)
+      # } else {
+      #   titre <- paste("Distribution de la variable 'Magnitude relative'")
+      #   amBoxplot(Absolute_Magnitude.Mv~Star_Type, data = stars, labelRotation = -45, col = input$color) %>%
+      #     amOptions(main = titre, mainColor = input$color, mainSize = 14)
+      # }
+    })
   })
   
   
@@ -281,6 +298,29 @@ shinyServer(function(input, output, session) {
   
   
   ############# MODELE PREDICTIF ################
+  
+  
+  mod <- reactive({
+    data <- stars %>% select(1:5)
+    
+    if (length(input$choix_var_mod_mult)== 0){
+      mod <- multinom(Star_Type~1, data=data)
+    } else {
+      var <- c(input$choix_var_mod_mult[1])
+      for (i in 2:(length(input$choix_var_mod_mult))){
+        var <- paste0(var, paste0("+", input$choix_var_mod_mult[i]))
+      }
+      formul <- paste0("Star_Type~",var )
+      mod <- multinom(as.formula(formul), data=data)
+    }
+  })
+  
+  output$resum_mod <- renderPrint({
+    summary(mod())
+  })
+  
+  
+  
   
   ############# CAH ################
   
