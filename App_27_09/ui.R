@@ -43,12 +43,15 @@ fluidPage(
                         # premier onglet Data
                         tabPanel("Vue globale",
                                  tabsetPanel(
-                                   tabPanel("Str",
-                                            verbatimTextOutput("str")
+                                   tabPanel("Résumés",
+                                            h4("Résumé du tableau"),
+                                            verbatimTextOutput("str"),
+                                            h4("Résumé statistique"),
+                                            verbatimTextOutput("summary")
                                    ),
-                                   tabPanel("Summary",
-                                            verbatimTextOutput("summary")),
                                    tabPanel("Effectifs",
+                                            
+                                            
                                             plotlyOutput("count_type"),
                                             plotlyOutput("count_class"),
                                             plotlyOutput("count_color")
