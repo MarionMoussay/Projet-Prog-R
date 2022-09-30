@@ -70,7 +70,7 @@ fluidPage(
                                             uiOutput("choix_var_graph"),
                                             
                                             # bouton
-                                            actionButton("go", "GO!!!")
+                                            actionButton("go", "VALIDER")
                                           )
                                    ),
                                    # deuxieme colonne
@@ -105,7 +105,7 @@ fluidPage(
                                                          min = 1, max = 4),
                                             
                                             # bouton
-                                            actionButton("goACP", "GO!!!")
+                                            actionButton("goACP", "VALIDER")
                                           )
                                    ),
                                    # deuxieme colonne
