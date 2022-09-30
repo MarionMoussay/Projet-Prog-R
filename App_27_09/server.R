@@ -270,33 +270,9 @@ shinyServer(function(input, output, session) {
     input$go
     isolate({
       amBoxplot(as.formula(paste(input$choix_var_graph,"~Star_Type")), data=stars, ylab=input$choix_var_graph, main=paste0("Distribution de la variable ", input$choix_var_graph),las=2,col=input$color, mainColor =input$color, xlab="")
-      
-      # amBoxplot(stars[,get(input$choix_var_graph)]~stars$Star_Type, labelRotation = -45, col = input$color) %>%
-      #   amOptions(main = paste0("Distribution de la variable ",input$choix_var_graph), mainColor = input$color, mainSize = 14)
-      
-      # if (input$choix_var_graph == "Temperature.K") {
-      #   titre <- paste("Distribution de la variable 'Température'")
-      #   
-      # } else if (input$choix_var_graph == "Luminosity.L.Lo"){
-      #   titre <- paste("Distribution de la variable 'Luminosité'")
-      #   amBoxplot(Luminosity.L.Lo~Star_Type, data = stars, labelRotation = -45, col = input$color) %>%
-      #     amOptions(main = titre, mainColor = input$color, mainSize = 14)
-      # } else if (input$choix_var_graph == "Radius.R.Ro"){
-      #   titre <- paste("Distribution de la variable 'Angle relatif")
-      #   amBoxplot(Radius.R.Ro~Star_Type, data = stars, labelRotation = -45, col = input$color) %>%
-      #     amOptions(main = titre, mainColor = input$color, mainSize = 14)
-      # } else {
-      #   titre <- paste("Distribution de la variable 'Magnitude relative'")
-      #   amBoxplot(Absolute_Magnitude.Mv~Star_Type, data = stars, labelRotation = -45, col = input$color) %>%
-      #     amOptions(main = titre, mainColor = input$color, mainSize = 14)
-      # }
     })
   })
-  
-  
-  
-  
-  
+
   ############# MODELE PREDICTIF ################
   
   ############# CAH ################
