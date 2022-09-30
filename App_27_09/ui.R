@@ -33,7 +33,7 @@ fluidPage(
              ########## ONGLET 2 ###############
              tabPanel("Jeux de données", 
                       # titre avec css
-                      h1("Jeu de données", style = "color : #0099ff;text-align:center"),
+                      h1("Jeu de données"),
                       # table
                       dataTableOutput("table"), 
                       downloadButton("downloadCsv2", "Télécharger"),tags$br(),tags$br()
@@ -51,10 +51,14 @@ fluidPage(
                                    ),
                                    tabPanel("Effectifs",
                                             
-                                            
-                                            plotlyOutput("count_type"),
+                                            #plotlyOutput("count_type"),
                                             plotlyOutput("count_class"),
                                             plotlyOutput("count_color")
+                                   ),
+                                   tabPanel("Corrélations",
+                                            
+                                            plotOutput("graph_corr"),
+                                            verbatimTextOutput("corr_result")
                                    )
                                  )),
                         
