@@ -1,21 +1,22 @@
+## ONGLET 1 - CONTEXTE : Quel est le contexte de recherche / enjeux 
+## ONGLET 2 - FOCUS SUR LES DONNEES : 
+## Comment les variables sont-elles distribués selon le type de l'étoile, quelle est la structure du jeu de données ?
+##    - Jeu de données brut;
+##    - Résumés (tableau et statistique);
+##    - Statistiques descriptives (visualisation des variables quantitatives et qualitatives en fonction du type d'étoiles);
+##    - Analyse de la structure du jeu de données : corrélations + ACP 
+## ONGLET 3 - CLASSIFICATION DES ETOILES : comment le type d'étoiles est définit ?
+##    - Classification officielle : diagramme HR
+##    - Modèles de prédictions : modèle de régression (l'objectif étant de prédire un type d'étoile pour des nouvelles entrées de variable)
+##    - Arbre de décision CART
+##    - Classification Ascendante Hiérarchique : comparaison des groupes de sortie 
+
+
 shinyServer(function(input, output, session) {
     
     ############ ---- ONGLET 1  : CONTEXTE ----------------
     
-    output$diagramme_HR<-renderPlot({
-        data <- stars.V2 %>% filter(type %in% input$choix_var_hrdiag)
-        ggplot(data = data) + 
-            geom_point(aes(x = temperature, y = magnitude, color = type, shape = spectre, size = luminosite)) +
-            scale_y_reverse(name="Magnitude absolue (Mv)") +
-            scale_x_reverse(name = "Température ", limits=c(34000,3000)) + 
-            labs(title="Diagramme Hertzsprung-Russell")+
-            theme_bw() +
-            theme(panel.grid.major = element_blank(), 
-                  axis.line = element_line(colour = "black"), 
-                  legend.text= element_text(size=15), 
-                  legend.title = element_text(size=15), 
-                  plot.title = element_text(size=15, face="bold.italic"))
-    })
+
     
     
     ############ ---- ONGLET 2 : FOCUS SUR LES DONNEES --------------------
@@ -36,8 +37,21 @@ shinyServer(function(input, output, session) {
         }
     )
     
+    #### Résumés ###############################
     
-    #### Distribution variables quantitatives ##
+    # str
+    output$str <- renderPrint({
+        str(stars)
+    })
+    
+    # summary
+    output$summary <- renderPrint({
+        summary(stars)
+    })
+    
+    #### Statistiques descriptives #############
+    
+    # Distribution variables quantitatives 
     
     output$star_type_boxplot <- renderAmCharts({
         amBoxplot(as.formula(paste(input$choix_var_boxplot,"~type")), 
@@ -48,7 +62,7 @@ shinyServer(function(input, output, session) {
         
     })
     
-    #### Effectifs variables qualtitatives ##
+    # Effectifs variables qualtitatives 
     
     output$histo_quali<-renderPlotly({
         if (input$choix_var_quali == "spectre") { 
@@ -69,20 +83,10 @@ shinyServer(function(input, output, session) {
             scale_fill_manual(legend, values = terrain.colors(6))
     })
     
-    #### Résumés ##
-    
-    # str
-    output$str <- renderPrint({
-        str(stars)
-    })
-    
-    # summary
-    output$summary <- renderPrint({
-        summary(stars)
-    })
+    ### ANALYSE DE STRUCTURE #################
     
     
-    #### Corrélations #####################################################
+    # Corrélations 
     
     mat.cor <- reactive({
         mat <- stars.V2 %>% select(-type)
@@ -101,9 +105,8 @@ shinyServer(function(input, output, session) {
         corrplot(mat.cor()$r, type="upper", order="hclust", tl.col="black", tl.srt=45)
     })
     
-    ########## ACP ###############
+    # ACP 
     ## ---- acp-summary --------------------
-    
     output$summaryACP <- renderPrint({
         input$goACP
         isolate({
@@ -115,7 +118,6 @@ shinyServer(function(input, output, session) {
     })
     
     ## ---- acp-individus --------------------
-    
     res.pca <- reactive({
         res.pca <- PCA(stars.V2[,c(1,2,3,4,7)], quali.sup = 5, graph=FALSE, axes = c(input$dim1,input$dim2))
         res.pca
@@ -149,7 +151,6 @@ shinyServer(function(input, output, session) {
     })
     
     ## ---- acp-variables --------------------
-    
     res.pca.quali <- reactive({
         PCA.s.quali <- PCA(stars.V2, quali.sup=5:7, axes = c(input$dim1,input$dim2))
         PCA.s.quali
@@ -167,7 +168,6 @@ shinyServer(function(input, output, session) {
     })
     
     ## ---- acp-valeurs-propres --------------------
-    
     output$graph_vp<-renderPlotly({
         input$goACP
         isolate({
@@ -216,7 +216,27 @@ shinyServer(function(input, output, session) {
         })
     })
     
-    ############# MODELE PREDICTIF ################
+    ############ ---- ONGLET 3  : CLASSIFIEUR ----------------
+    
+    ##### Diagramme HR #######
+    
+    output$diagramme_HR<-renderPlot({
+        data <- stars.V2 %>% filter(type %in% input$choix_var_hrdiag)
+        ggplot(data = data) + 
+            geom_point(aes(x = temperature, y = magnitude, color = type, shape = spectre, size = luminosite)) +
+            scale_y_reverse(name="Magnitude absolue (Mv)") +
+            scale_x_reverse(name = "Température ", limits=c(34000,3000)) + 
+            labs(title="Diagramme Hertzsprung-Russell")+
+            theme_bw() +
+            theme(panel.grid.major = element_blank(), 
+                  axis.line = element_line(colour = "black"), 
+                  legend.text= element_text(size=15), 
+                  legend.title = element_text(size=15), 
+                  plot.title = element_text(size=15, face="bold.italic"))
+    })
+    
+    
+    ############# Modèle prédictif ################
     
     mod <- reactive({
         data <- stars %>% select(1:5)
@@ -243,8 +263,10 @@ shinyServer(function(input, output, session) {
         table(predict(mod(), newdata = data), data$Star_Type)
     })
     
+    ############# Arbre de décision ############
     
-    ############# CAH ################
+    
+    ############# Classification Ascendante Hiérarchique ############
     
     output$choix_ultrametric <- renderUI({
         awesomeRadio(
@@ -297,5 +319,7 @@ shinyServer(function(input, output, session) {
             theme(plot.title = element_text(hjust = 0.5,size=9))
         ggplotly(graph)
     })
+    
+    ############ ---- ONGLET 4 : A PROPOS DE NOUS ----------------
     
 })
