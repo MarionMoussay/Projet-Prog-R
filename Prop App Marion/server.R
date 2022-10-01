@@ -18,7 +18,9 @@ shinyServer(function(input, output, session) {
     })
     
     
-    ############ ---- ONGLET 2 : JEU BRUT --------------------
+    ############ ---- ONGLET 2 : FOCUS SUR LES DONNEES --------------------
+    
+    #### Jeu de données brut #####################
     
     output$table <- renderDT({
         datatable(stars, class = 'cell-border stripe',
@@ -35,8 +37,6 @@ shinyServer(function(input, output, session) {
     )
     
     
-    ############ ---- ONGLET 3 : FOCUS SUR LES DONNEES --------------------
-    
     #### Distribution variables quantitatives ##
     
     output$star_type_boxplot <- renderAmCharts({
@@ -52,21 +52,21 @@ shinyServer(function(input, output, session) {
     
     output$histo_quali<-renderPlotly({
         if (input$choix_var_quali == "spectre") { 
-            i <- 7
-            legend="Classes spectrales"
+            # i <- 7
+            legend <- "Classes spectrales"
         } else { 
-            i <- 9
-            legend="Couleurs"
+            # i <- 9
+            legend <- "Couleurs"
         }
         
-        ggplot(stars.V2, aes(y = type, fill = get(input$choix_var_quali))) +
+        ggplot(stars.V2, aes(y = get(input$choix_var_quali), fill = type)) +
             geom_bar() +
-            ylab("Types d'étoiles") + 
+            ylab(legend) + 
             labs(title="Repartition de la classe spectrale")+
             theme_minimal() +
             theme(axis.line = element_line(colour = "black"), 
                   axis.title.x = element_blank())+
-            scale_fill_manual(legend, values = terrain.colors(i))
+            scale_fill_manual(legend, values = terrain.colors(6))
     })
     
     #### Résumés ##
