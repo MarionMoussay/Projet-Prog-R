@@ -175,39 +175,39 @@ fluidPage(
               
               ########## ONGLET 5 ###############
               
-             
-              tabPanel("Décision du type d'étoile",
-                       navbarMenu(id="onglet4",
-                                  tabPanel("Arbre CART"
-                                           ## Obj :  décomposer la prise de décision
-                                           
-                                           ),
-                                  tabPanel("Modèle prédictif", 
-                                           
-                                           ## Obj : prédire le type
-                                           tabPanel("Modèle multinomiale",
-                                                    sidebarLayout(fluid = TRUE,
-                                                                  sidebarPanel(checkboxGroupInput(inputId = "choix_var_mod_mult", label = "Choisissez le ou les variables à utiliser dans le modèle",
-                                                                                                  choices = c("Temperature (K)"="Temperature.K", "Luminosité (L.lo)"="Luminosity.L.Lo", "Radius (R.ro)"="Radius.R.Ro", "Magnitude Absolue"="Absolute_Magnitude.Mv"))),
-                                                                  mainPanel(
-                                                                     tabsetPanel(tabPanel("Sommaire du modèle",verbatimTextOutput("resum_mod")),
-                                                                                 tabPanel("Plot",
-                                                                                          #courbe de régression
-                                                                                 ),
-                                                                                 tabPanel("Matrice de confusion",
-                                                                                          verbatimTextOutput("pred")
-                                                                                 )
-                                                                     ),
-                                                                  )
-                                                    )),
-                                           tabPanel("Ré-échantillonnage leave-one-out",
-                                                    sidebarLayout(
-                                                       sidebarPanel(),
-                                                       mainPanel())
-                                           )
-                                  )
+              
+              navbarMenu("Décision du type d'étoile",
+                         
+                         tabPanel("Arbre CART"
+                                  ## Obj :  décomposer la prise de décision
                                   
-                       )
+                         ),
+                         tabPanel("Modèle prédictif", 
+                                  
+                                  ## Obj : prédire le type
+                                  tabPanel("Modèle multinomiale",
+                                           sidebarLayout(fluid = TRUE,
+                                                         sidebarPanel(checkboxGroupInput(inputId = "choix_var_mod_mult", label = "Choisissez le ou les variables à utiliser dans le modèle",
+                                                                                         choices = c("Temperature (K)"="Temperature.K", "Luminosité (L.lo)"="Luminosity.L.Lo", "Radius (R.ro)"="Radius.R.Ro", "Magnitude Absolue"="Absolute_Magnitude.Mv"))),
+                                                         mainPanel(
+                                                            tabsetPanel(tabPanel("Sommaire du modèle",verbatimTextOutput("resum_mod")),
+                                                                        tabPanel("Plot",
+                                                                                 #courbe de régression
+                                                                        ),
+                                                                        tabPanel("Matrice de confusion",
+                                                                                 verbatimTextOutput("pred")
+                                                                        )
+                                                            ),
+                                                         )
+                                           )),
+                                  tabPanel("Ré-échantillonnage leave-one-out",
+                                           sidebarLayout(
+                                              sidebarPanel(),
+                                              mainPanel())
+                                  )
+                         )
+                         
+                         
               ),
               
               
