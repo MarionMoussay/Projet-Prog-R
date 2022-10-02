@@ -35,6 +35,14 @@ fluidPage(
               
               tabPanel("Jeu de données",
                        tabsetPanel(
+                          ## TELECHARGER CSV
+                          
+                          tabPanel("Télécharger les données", 
+                                   h1("Jeu de données", style = "color : #0099ff;text-align:center"),
+                                   h4("Le jeu de données comportent 40 étoiles de chaque type.",style = "color : #0099ff;text-align:center"),
+                                   dataTableOutput("table"),
+                                   downloadButton("downloadCsv2", "Télécharger"),tags$br(),tags$br()
+                          ),
                           
                           ## DISTRIBUTIONS GLOBALES
                           
@@ -88,15 +96,6 @@ fluidPage(
                                    h4("Résumé statistique"),
                                    verbatimTextOutput("summary")
                                    
-                          ),
-                          
-                          ## TELECHARGER CSV
-                          
-                          tabPanel("Télécharger les données", 
-                                   h1("Jeu de données", style = "color : #0099ff;text-align:center"),
-                                   h4("Le jeu de données comportent 40 étoiles de chaque type.",style = "color : #0099ff;text-align:center"),
-                                   dataTableOutput("table"),
-                                   downloadButton("downloadCsv2", "Télécharger"),tags$br(),tags$br()
                           )
                        )
                        

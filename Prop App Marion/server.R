@@ -24,7 +24,7 @@ shinyServer(function(input, output, session) {
     #### Jeu de données brut #####################
     
     output$table <- renderDT({
-        datatable(stars, class = 'cell-border stripe',
+        datatable(stars.V2, class = 'cell-border stripe',
                   options = list(paging = FALSE, lengthChange = FALSE, scrollY = "600px", scrollX = T),
                   rownames = FALSE)})
     
