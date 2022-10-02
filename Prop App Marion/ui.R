@@ -10,7 +10,8 @@
 ##    - Analyse de la structure du jeu de données : corrélations + ACP 
 ## ONGLET 3 - CLASSIFICATION DES ETOILES : comment le type d'étoiles est définit ?
 ##    - Classification officielle : diagramme HR
-##    - Modèles de prédictions : modèle de régression + arbre de décision CART (l'objectif étant de prédire un type d'étoile pour des nouvelles entrées de variable)
+##    - Modèles de prédictions : modèle de régression (l'objectif étant de prédire un type d'étoile pour des nouvelles entrées de variable)
+##    - Arbre de décision CART
 ##    - Classification Ascendante Hiérarchique : comparaison des groupes de sortie 
 
 
@@ -33,20 +34,51 @@ fluidPage(
               ## JEU DE DONNEES BRUT
               
               tabPanel("Jeu de données",
-                       h1("Jeu de données", style = "color : #0099ff;text-align:center"),
-                       h4("Le jeu de données comportent 40 étoiles de chaque type.",style = "color : #0099ff;text-align:center"),
-                       dataTableOutput("table"),
-                       downloadButton("downloadCsv2", "Télécharger"),tags$br(),tags$br()
-              ),
-              
-              ########## ONGLET 2 ###############
-              
-              # L'objectif est ici de mieux visualiser les données selon le type de l'étoile
-              
-              tabPanel("Focus sur les données", 
-                       h1("Objectif : caractérisation des variables en fonction du type"),
-                       
                        tabsetPanel(
+                          
+                          ## DISTRIBUTIONS GLOBALES
+                          
+                          tabPanel("Distribution des variables",
+                                   
+                                   verticalLayout(fluid=TRUE,
+                                                  fluidRow(
+                                                     
+                                                     ## BOXPLOT VARIABLES QUANTITATIF ##
+                                                     
+                                                     h2("Distribution des caractéristiques numériques"),
+                                                     column(width = 3,
+                                                            wellPanel(
+                                                               h4("Le but est ici de visualiser la distribution de chaque variable quantitive en fonction du type de l'étoile."),
+                                                               awesomeRadio(
+                                                                  inputId = "choix_var_boxplot",
+                                                                  label = "Choisissez la variable à illuster :", 
+                                                                  choices = list("Température"="temperature", "Luminosité" ="luminosite", "Rayon" ="rayon", "Magnitude"="magnitude")
+                                                               ),
+                                                               
+                                                            )
+                                                     ),
+                                                     column(width = 9,amChartsOutput("star_boxplot"))
+                                                  ), 
+                                                  fluidRow(
+                                                     
+                                                     ## GRAPHES BATONS VARIABLES QUALITATIVES ##
+                                                     
+                                                     h2("Effectifs des caractéristiques catégorielles"),
+                                                     column(width = 3,
+                                                            wellPanel(
+                                                               h4("Le but est ici de visualiser les effectifs de chaque variable qualitative selon les types des étoiles."),
+                                                               awesomeRadio(
+                                                                  inputId = "choix_var_quali",
+                                                                  label = "Choisissez la variable à illuster :", 
+                                                                  choices = list("Classe spectrale"="spectre", "Couleur" ="couleur")
+                                                               ),
+                                                               
+                                                            )
+                                                     ),
+                                                     column(width = 9, plotlyOutput("histo_quali"))
+                                                  )
+                                   )
+                          ),
                           
                           ## RESUMES  
                           
@@ -55,7 +87,29 @@ fluidPage(
                                    verbatimTextOutput("str"),
                                    h4("Résumé statistique"),
                                    verbatimTextOutput("summary")
+                                   
                           ),
+                          
+                          ## TELECHARGER CSV
+                          
+                          tabPanel("Télécharger les données", 
+                                   h1("Jeu de données", style = "color : #0099ff;text-align:center"),
+                                   h4("Le jeu de données comportent 40 étoiles de chaque type.",style = "color : #0099ff;text-align:center"),
+                                   dataTableOutput("table"),
+                                   downloadButton("downloadCsv2", "Télécharger"),tags$br(),tags$br()
+                          )
+                       )
+                       
+              ),
+              
+              ########## ONGLET 2 ###############
+              
+              # L'objectif est ici de mieux visualiser les données selon le type de l'étoile
+              
+              tabPanel("Focus sur les caractéristiques des étoiles", 
+                       h1("Objectif : caractérisation des variables en fonction du type"),
+                       
+                       tabsetPanel(
                           
                           ## STATISTIQUES DESCRIPTIVES 
                           
@@ -71,7 +125,7 @@ fluidPage(
                                                             wellPanel(
                                                                h4("Le but est ici de visualiser la distribution de chaque variable quantitive en fonction du type de l'étoile."),
                                                                awesomeRadio(
-                                                                  inputId = "choix_var_boxplot",
+                                                                  inputId = "choix_var_boxplot_type",
                                                                   label = "Choisissez la variable à illuster :", 
                                                                   choices = list("Température"="temperature", "Luminosité" ="luminosite", "Rayon" ="rayon", "Magnitude"="magnitude")
                                                                ),
@@ -89,14 +143,14 @@ fluidPage(
                                                             wellPanel(
                                                                h4("Le but est ici de visualiser les effectifs de chaque variable qualitative selon les types des étoiles."),
                                                                awesomeRadio(
-                                                                  inputId = "choix_var_quali",
+                                                                  inputId = "choix_var_quali_type",
                                                                   label = "Choisissez la variable à illuster :", 
                                                                   choices = list("Classe spectrale"="spectre", "Couleur" ="couleur")
                                                                ),
                                                                
                                                             )
                                                      ),
-                                                     column(width = 9, plotlyOutput("histo_quali"))
+                                                     column(width = 9, plotlyOutput("histo_quali_type"))
                                                      
                                                   )
                                    ), 
@@ -178,6 +232,7 @@ fluidPage(
                                   ### - ordonnées = magnitude 
                                   
                                   h1("Le diagramme de Hertzsprung-Russell, la réference officielle de classification des étoiles"),
+                                  h2("Objectif : définir le type d'une étoile en fonction de ses caractéristiques."),
                                   column(7,
                                          wellPanel(    
                                             verticalLayout(fluid = TRUE,
@@ -239,7 +294,64 @@ fluidPage(
                          
                          ## ARBRE DE DECISION CART
                          
-                         tabPanel("Arbre de décision"),
+                         tabPanel("Arbre de décision CART",
+                                  sidebarLayout(
+                                     sidebarPanel(
+                                        h3("Decision Tree"),
+                                        helpText(
+                                           "These controls are for setting the hyperparameter values",
+                                           "which partly control the structure of the decision tree.",
+                                           "The default values we've put in should create a fairly safe",
+                                           "tree but try changing them if you're feeling adventurous."
+                                        ),
+                                        br(),
+                                        h4("Minimum Split"),
+                                        helpText(
+                                           "If at a given node N is below this value, that node cannot",
+                                           "be split any further: it is a terminal node of the tree."
+                                        ),
+                                        sliderInput(
+                                           inputId = "min_split",
+                                           label = NULL,  # label given in outer code
+                                           min = 2,       # two is the smallest that could be split
+                                           max = 10,      # chosen to not make the models too wild
+                                           value = 2      # defaults to not having an artifical minimum
+                                        ),
+                                        br(),
+                                        h4("Minimum Bucket Size"),
+                                        helpText(
+                                           "If creating a given split would cause N₁ or N₂ to fall below",
+                                           "this minimum, then that split isn't made part of the",
+                                           "decision tree."
+                                        ),
+                                        sliderInput(
+                                           inputId = "min_bucket",
+                                           label = NULL,  # label given in outer code
+                                           min = 1,       # can't have buckets of size zero
+                                           max = 30,      # rpart default is minbucket = 3*minsplit
+                                           value = 1      # defaults to not having an artifical minimum
+                                        ),
+                                        br(),
+                                        h4("Maximum Tree Depth"),
+                                        helpText(
+                                           "Control the maximum depth that the decision tree can reach.",
+                                           "Note that, depending on what features are being used and the",
+                                           "values of the other parameters, you may end up with a tree",
+                                           "much shallower than the maximum."
+                                        ),
+                                        sliderInput(
+                                           inputId = "max_depth",
+                                           label = NULL,  # label given in outer code
+                                           min = 2,       # a min of 2 allows for at least one split
+                                           max = 30,      # rpart can't do 31+ depth on 32-bit machines
+                                           value = 5      # chosen to not make the default too wild
+                                        )
+                                     ),
+                                     mainPanel(
+                                        plotOutput(outputId = "tree_plot")
+                                     )
+                                  )
+                         ),
                          
                          ## CLASSIFICATION ASCENDANTE HIERARCHIQUE
                          
