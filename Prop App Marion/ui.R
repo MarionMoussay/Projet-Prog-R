@@ -76,9 +76,7 @@ fluidPage(
                                                             )
                                                      ),
                                                      column(width = 9, plotlyOutput("histo_quali"))
-                                                     
                                                   )
-                                                  
                                    )
                           ),
                           

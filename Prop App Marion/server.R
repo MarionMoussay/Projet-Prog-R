@@ -318,7 +318,7 @@ shinyServer(function(input, output, session) {
         
     })
     
-    pca <- reactive({
+    cah <- reactive({
         d <- dist(matrice())
         cah <- hclust(d, method=input$choix_ultrametric)
         cah
