@@ -28,7 +28,7 @@ library(caret)
 stars <- fread("./data/stars_by_Marie.csv",sep=",")
 stars <- data.table(stars)
 
-stars.V2 <- stars %>% rename(temperature = Temperature.K, 
+stars.V2 <- stars %>% dplyr::rename(temperature = Temperature.K, 
                              luminosite = Luminosity.L.Lo, 
                              rayon = Radius.R.Ro, 
                              magnitude = Absolute_Magnitude.Mv, 

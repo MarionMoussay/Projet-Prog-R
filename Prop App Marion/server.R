@@ -16,7 +16,7 @@ shinyServer(function(input, output, session) {
     
     ############ ---- ONGLET 1  : CONTEXTE ----------------
     
-
+    
     
     
     ############ ---- ONGLET 2 : FOCUS SUR LES DONNEES --------------------
@@ -37,6 +37,37 @@ shinyServer(function(input, output, session) {
         }
     )
     
+    #### Boxplot ###############################
+    
+    # Variables quantitatives
+    
+    output$star_boxplot <- renderAmCharts({
+        amBoxplot(stars.V2[,get(input$choix_var_boxplot)], 
+                  ylab=input$choix_var_boxplot, 
+                  main=paste0("Distribution de la variable ", input$choix_var_boxplot),
+                  las=2, xlab="", col=terrain.colors(1))
+        
+    })
+    
+    # Variables qualitatives 
+    
+    output$histo_quali<-renderPlotly({
+        if (input$choix_var_quali == "spectre") { 
+            legend <- "Classes spectrales"
+        } else { 
+            legend <- "Couleurs"
+        }
+        
+        ggplot(stars.V2, aes(y = get(input$choix_var_quali),x = (..count..)/sum(..count..)*100, fill=get(input$choix_var_quali))) +
+            geom_bar() +
+            ylab(legend) + 
+            labs(title="Effectifs par modalité (%)")+
+            theme_minimal() +
+            theme(axis.line = element_line(colour = "black"), 
+                  axis.title.x = element_blank())+
+            scale_fill_manual(legend, values = terrain.colors(9))
+    })
+    
     #### Résumés ###############################
     
     # str
@@ -49,38 +80,40 @@ shinyServer(function(input, output, session) {
         summary(stars)
     })
     
+    
+    ############ ---- ONGLET 3 : VARIABLES ~ TYPE --------------------
+    
     #### Statistiques descriptives #############
     
     # Distribution variables quantitatives 
     
     output$star_type_boxplot <- renderAmCharts({
-        amBoxplot(as.formula(paste(input$choix_var_boxplot,"~type")), 
+        amBoxplot(as.formula(paste(input$choix_var_boxplot_type,"~type")), 
                   data=stars.V2, 
-                  ylab=input$choix_var_boxplot, 
-                  main=paste0("Distribution de la variable ", input$choix_var_boxplot),
+                  ylab=input$choix_var_boxplot_type, 
+                  main=paste0("Distribution de la variable ", input$choix_var_boxplot_type),
                   las=2, xlab="", col=terrain.colors(6))
         
     })
     
     # Effectifs variables qualtitatives 
     
-    output$histo_quali<-renderPlotly({
-        if (input$choix_var_quali == "spectre") { 
-            # i <- 7
+    output$histo_quali_type<-renderPlotly({
+        if (input$choix_var_quali_type == "spectre") { 
             legend <- "Classes spectrales"
         } else { 
-            # i <- 9
             legend <- "Couleurs"
         }
         
-        ggplot(stars.V2, aes(y = get(input$choix_var_quali), fill = type)) +
+        ggplot(stars.V2, aes(y = get(input$choix_var_quali_type), x = (..count..)/sum(..count..)*100, fill = type)) +
             geom_bar() +
             ylab(legend) + 
-            labs(title="Repartition de la classe spectrale")+
+            labs(title="Effectifs selon le type d'étoiles (%)")+
             theme_minimal() +
             theme(axis.line = element_line(colour = "black"), 
                   axis.title.x = element_blank())+
             scale_fill_manual(legend, values = terrain.colors(6))
+            
     })
     
     ### ANALYSE DE STRUCTURE #################
@@ -119,8 +152,8 @@ shinyServer(function(input, output, session) {
     
     ## ---- acp-individus --------------------
     res.pca <- reactive({
-        res.pca <- PCA(stars.V2[,c(1,2,3,4,7)], quali.sup = 5, graph=FALSE, axes = c(input$dim1,input$dim2))
-        res.pca
+        res.pca <- PCA(as.data.frame(stars.V2)[,c(1,2,3,4,7)], quali.sup = 5, graph=FALSE, axes = c(input$dim1,input$dim2))
+        
     })
     
     output$ACP_ind<-renderPlotly({
@@ -129,8 +162,9 @@ shinyServer(function(input, output, session) {
             print(input$dim1)
             print(input$dim2)
             
-            g <- fviz_pca_ind(res.pca(), repel = TRUE,label="none", axes = c(input$dim1,input$dim2),col.ind=input$colorACP)
-            g <- fviz_add(p, res.pca()$quali.sup$coord, color = input$colorACPsupp, axes = c(input$dim1,input$dim2))
+            g <- fviz_pca_ind(res.pca(), repel = TRUE,label="none", axes = c(input$dim1,input$dim2),col.ind=input$colorACP) %>% 
+                fviz_add(res.pca()$quali.sup$coord, color = input$colorACPsupp, axes = c(input$dim1,input$dim2))
+            
             ggplotly(g)
         })
     })
@@ -143,8 +177,10 @@ shinyServer(function(input, output, session) {
                               col.ind = stars$Star_Type, 
                               palette = c("brown","red","grey","blue","orange","green"),
                               addEllipses = TRUE, 
-                              legend.title = "Star type", axes = c(input$dim1,input$dim2))
-            g <- fviz_add(g, res.pca()$quali.sup$coord, color = "black", axes = c(input$dim1,input$dim2))
+                              legend.title = "Star type", axes = c(input$dim1,input$dim2)) %>% 
+                
+                fviz_add(res.pca()$quali.sup$coord, color = "black", axes = c(input$dim1,input$dim2))
+            
             ggplotly(g)
         })
         
@@ -160,7 +196,7 @@ shinyServer(function(input, output, session) {
         
         input$goACP
         isolate({
-            ggplotly(fviz_pca_var(PCA.s.quali(), col.var = "cos2", axes = c(input$dim1,input$dim2),
+            ggplotly(fviz_pca_var(res.pca.quali(), col.var = "cos2", axes = c(input$dim1,input$dim2),
                                   gradient.cols = c("#00AFBB", "#E7B800", "#FC4E07"), 
                                   label="all"
             ))
@@ -171,7 +207,7 @@ shinyServer(function(input, output, session) {
     output$graph_vp<-renderPlotly({
         input$goACP
         isolate({
-            ggplotly(fviz_eig(PCA.s.quali(), addlabels = TRUE, ylim = c(0, 70),barfill=input$colorACP,barcolor=input$colorACP)+
+            ggplotly(fviz_eig(res.pca.quali(), addlabels = TRUE, ylim = c(0, 70),barfill=input$colorACP,barcolor=input$colorACP)+
                          xlab("Percentage of explained variances") +
                          ylab("Dimensions") + 
                          labs(title="Eigen values")+
@@ -216,7 +252,7 @@ shinyServer(function(input, output, session) {
         })
     })
     
-    ############ ---- ONGLET 3  : CLASSIFIEUR ----------------
+    ############ ---- ONGLET 4  : CLASSIFIEUR, TYPE~VARIABLES ----------------
     
     ##### Diagramme HR #######
     
@@ -276,9 +312,13 @@ shinyServer(function(input, output, session) {
         )
     })
     
-    matrice <- reactive({matrice <- stars %>% select(-c(5,6,7))})
+    matrice <- reactive({
+        matrice <- stars %>% select(-c(5,6,7))
+        matrice
+        
+    })
     
-    cah <- reactive({
+    pca <- reactive({
         d <- dist(matrice())
         cah <- hclust(d, method=input$choix_ultrametric)
         cah
