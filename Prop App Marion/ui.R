@@ -38,10 +38,12 @@ fluidPage(
                           ## TELECHARGER CSV
                           
                           tabPanel("Télécharger les données", 
-                                   h1("Jeu de données", style = "color : #0099ff;text-align:center"),
-                                   h4("Le jeu de données comportent 40 étoiles de chaque type.",style = "color : #0099ff;text-align:center"),
+                                   h1("Jeu de données"),
+                                   h4("Le jeu de données comportent 40 étoiles de chaque type."),
                                    dataTableOutput("table"),
-                                   downloadButton("downloadCsv2", "Télécharger"),tags$br(),tags$br()
+                                   downloadButton("downloadCsv2", "Télécharger"),tags$br(),tags$br(),
+                                   br(),
+                                   br()
                           ),
                           
                           ## DISTRIBUTIONS GLOBALES
@@ -84,7 +86,9 @@ fluidPage(
                                                             )
                                                      ),
                                                      column(width = 9, plotlyOutput("histo_quali"))
-                                                  )
+                                                  ),
+                                                  br(),
+                                                  br()
                                    )
                           ),
                           
@@ -94,9 +98,12 @@ fluidPage(
                                    h4("Résumé du tableau"),
                                    verbatimTextOutput("str"),
                                    h4("Résumé statistique"),
-                                   verbatimTextOutput("summary")
+                                   verbatimTextOutput("summary"),
+                                   br(),
+                                   br()
                                    
-                          )
+                          ),
+                          
                        )
                        
               ),
@@ -151,7 +158,9 @@ fluidPage(
                                                      ),
                                                      column(width = 9, plotlyOutput("histo_quali_type"))
                                                      
-                                                  )
+                                                  ),
+                                                  br(),
+                                                  br(),
                                    ), 
                           ),
                           ##### ANALYSE STRUCTURE #####
@@ -207,6 +216,8 @@ fluidPage(
                                                             )
                                                      )
                                                   ),
+                                                  br(),
+                                                  br(),
                                    ),
                                    
                           )
@@ -251,10 +262,12 @@ fluidPage(
                                          )
                                   ),
                                   column(5, 
-                                         img(src = "diagramme-hr.jpg", width="700", height="700", position="center"), 
+                                         img(src = "diagramme-hr.jpg", width="700", height="700", position="center"),
                                          
                                   ),
                          ),
+                         
+                  
                          
                          ## MODELE DE PREDICTION #####
                          
@@ -397,7 +410,9 @@ fluidPage(
                                                  ),
                                                  
                                               ))
-                                     
+                                     ,
+                                     br(),
+                                     br()
                                   )
                          )
                          
