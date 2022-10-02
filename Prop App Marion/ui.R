@@ -56,7 +56,7 @@ fluidPage(
                                                      h2("Distribution des caractéristiques numériques"),
                                                      column(width = 3,
                                                             wellPanel(
-                                                               h4("Le but est ici de visualiser la distribution de chaque variable quantitive en fonction du type de l'étoile."),
+                                                               h4("Le but est ici de visualiser la distribution de chaque variable quantitive."),
                                                                awesomeRadio(
                                                                   inputId = "choix_var_boxplot",
                                                                   label = "Choisissez la variable à illuster :", 
@@ -74,7 +74,7 @@ fluidPage(
                                                      h2("Effectifs des caractéristiques catégorielles"),
                                                      column(width = 3,
                                                             wellPanel(
-                                                               h4("Le but est ici de visualiser les effectifs de chaque variable qualitative selon les types des étoiles."),
+                                                               h4("Le but est ici de visualiser les effectifs de chaque variable qualitative."),
                                                                awesomeRadio(
                                                                   inputId = "choix_var_quali",
                                                                   label = "Choisissez la variable à illuster :", 
