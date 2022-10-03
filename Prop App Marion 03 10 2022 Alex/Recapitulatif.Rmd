@@ -1,0 +1,255 @@
+```{r}
+library(shiny)
+library(rAmCharts)
+library(colourpicker)
+library(data.table)
+library(DT)
+library(ggplot2)
+library(FactoMineR)
+library(factoextra)
+library(magick)
+library(plotly)
+library(shinyWidgets)
+library(colourpicker)
+library(shinythemes)
+library(tidyverse)
+library(dplyr)
+library(Hmisc)
+library(corrplot)
+library(rpart)
+library(visNetwork)
+library(plyr)
+
+stars <- fread("./data/stars_by_Marie.csv",sep=",")
+stars <- data.table(stars)
+
+stars.V2 <- stars %>% dplyr::rename(temperature = Temperature.K, 
+                                             luminosite = Luminosity.L.Lo, 
+                                             angle = Radius.R.Ro, 
+                                             magnitude = Absolute_Magnitude.Mv, 
+                                             couleur = Star_Color, 
+                                             spectre = Spectral_Class, 
+                                             type = Star_Type) %>% mutate(type = as.factor(type), 
+                                                                          couleur = as.factor(color), 
+                                                                          spectre= as.factor(spectre))
+
+levels(stars.V2$type) <- c("Naine brune", "Hyper géante", "Séquence principale", "Naine Rouge", "Super géante", "Naine blanche")
+```
+
+
+# ONGLET 1 : Contexte 
+
+## Le diagramme de Hertzsprung-Russell, la réference officielle de classification des étoiles
+
+### En théorie 
+
+Caractérisation des étoiles</h1>
+
+Il s'agit d'un modèle de classification utilisant un algorithme de machine learning basé sur différentes caractéristiques telles que :
+- la température de surface (en Kelvin),
+- la luminosité relative (au Soleil),
+- le rayon relatif (au Soleil),
+- la magnitude absolue,
+- la couleur,
+- la classe spectrale.
+
+Objectif : prédire le type de l'étoile.
+
+Le type de l'étoile peut être prédit à partir de ces 6 variables. On retrouve sur le diagramme ces types :
+- naine brune (brown darf),
+- naine rouge (red darf),
+- naine blanche (white darf),
+- séquence principale (main sequence),
+- géantes (giants),
+- super-géantes (supergiants).
+
+### En pratique 
+
+En utilisant notre jeu de données, on peut réaliser le diagramme HR.
+
+Il peut paraître difficile à lire : 
+
+- la couleur décrit le type de l'étoile, 
+- la forme la classe spectrale, 
+- la taille des points la luminosité. 
+
+On voit alors très bien la concordance avec le graphique.
+
+```{r}
+# data <- stars.V2 %>% filter(type %in% input$choix_var_hrdiag)
+ggplot(data = stars.V2) + 
+  geom_point(aes(x = temperature, y = magnitude, color = type, shape = spectre, size = luminosite)) +
+  
+  
+  labs(title="Diagramme Hertzsprung-Russell")+
+  theme_bw() +
+  theme(panel.grid.major = element_blank(), 
+        axis.line = element_line(colour = "black"))
+```
+# ONGLET 2 ; Jeu de données brut
+
+Projeter le tableau, possibilité de télécharger le fichier `stars.csv`.
+
+# ONGLET 3 : Focus sur les données
+
+## Statistiques descriptives :
+
+### Exploration des variables selon le type d'étoile : 
+
+- variables quanti:
+```{r}
+amBoxplot(as.formula(paste("temperature","~type")), 
+                      data=stars.V2, 
+                      ylab="temperature", 
+                      main=paste0("Distribution de la variable ", "temperature"),
+                      las=2, xlab="", col=terrain.colors(6))
+```
+- variables quali 
+
+```{r}
+## Essayer de rajouter les effectifs par barre
+
+ggplotly(ggplot(stars.V2, aes(y = type, fill = spectre)) +
+  geom_bar() +
+  ylab("Types d'étoiles") + 
+  labs(title="Repartition de la classe spectrale")+
+  theme_minimal() +
+  theme(axis.line = element_line(colour = "black"), 
+        axis.title.x = element_blank())+
+  scale_fill_manual("Classes spectrales", values = terrain.colors(7)))
+```
+
+
+```{r}
+mat <- stars.V2 %>% select(-type)
+levels(mat$couleur) <- 1:9
+levels(mat$spectre) <- 1:7
+mat <- mat %>% mutate(couleur = as.numeric(couleur), 
+                      spectre = as.numeric(spectre)) %>% as.matrix()
+
+mat.cor <- rcorr(mat)
+corrplot(mat.cor$r, type="upper", order="hclust", tl.col="black", tl.srt=45)
+```
+On observe des fortes corrélations entre les couples : 
+"- temperature - couleur "
+- lumière - magnitude, 
+- luminosité - rayon, 
+- magnitude - rayon
+
+-> Corrélation tout à fait logiques, aucun information en plus, ça se voit déjà sur le diagramme HR qu'il y a une forte corrélation entre lumière et magnitude, pareil pour les autres corrélations.
+
+
+
+
+ 
+
+# ONGLET 4 : ARBRE CART
+
+Objectif : comprendre comment sont classifier les étoiles 
+
+```{r}
+res <- rpart(type~., data=stars.V2)
+visTree(res, main = "Classification des étoiles", legend=FALSE)
+```
+On voit que les étoiles sont en premier lieu distinguées par leur luminosité, la première règle de de classification est $\hat{g}(x)= \mathbb{1}_{Luminosity < 0.071} $ 
+
+# ONGLET 4 : Statistiques descriptives
+
+## Vue globale
+```{r}
+str(stars)
+summary(stars)
+```
+
+## Lien entre les variables 
+```{r}
+corr.s <- stars %>% select(1:4) %>% as.matrix %>% rcorr
+corr.s
+corrplot(corr.s$r, type="upper", order="hclust", tl.col="black", tl.srt=45)
+```
+
+### ARBRE DE DECISION CART
+
+```{r}
+makeTree = function(model_vars, min_split, min_bucket, max_depth) {
+    # Takes a list of model variables (strings), a minimum split parameter
+    # (int), a minimum bucket size parameter (int), and a maximum tree depth
+    # parameter (int) as inputs and then returns an rpart classification tree
+    # created with those parameters using Gini-indexes without any pruning.
+
+    train_dat = read.csv(file = "training-data.csv", header = TRUE, sep = ",")
+    # create an rpart compatible formula for the model from the chosen vars
+    f = paste("true_spam_bool ~ ", paste(model_vars, collapse = " + "))
+    # rpart is performs the split calculations and returns the tree
+    tree = rpart(
+        as.formula(f),
+        method = "class",  # sets it up as a classification problem
+        data = train_dat,
+        parms = list(split = "gini"),  # ensures rpart uses gini indexes
+        minsplit = min_split,
+        minbucket = min_bucket,
+        maxdepth = max_depth,
+        cp = 0  # complexity parameter, at zero prevents pruning on branches
+    )
+
+    return(tree)
+}
+
+
+useTree = function(tree, filename) {
+    # Takes a tree generated by rpart and a filename (string) as input and
+    # then predicts the labels of the data in that file using the tree. It
+    # returns a dataframe with two bool (0,1) columns: prediction and truth.
+
+    data = read.csv(file = filename, header = TRUE, sep = ",")
+    prediction = predict(tree, data, type = "class")
+    results = as.data.frame(prediction)
+    results$truth = data$true_spam_bool
+
+    return(results)
+}
+
+
+calcScores = function(results) {
+    # Takes a results dataframe as input and then calculates scores for
+    # accuracy, true negative rate, and true positive rate. It returns a
+    # list of formatted strings detailing these results.
+
+    results = table(results)
+    # calculate the scores on which we'll judge our model to 2 decimal places
+    accuracy = round(100 * (results[1] + results[4]) / sum(results), 2)
+    true_neg = round(100 * results[1] / sum(results[1, ]), 2)
+    true_pos = round(100 * results[4] / sum(results[2, ]), 2)
+
+    # the collapse argument removes the spacing which would otherwise be there
+    return(list(
+        paste(c("Overall Accuracy: ",   accuracy, "%"), collapse = ""),
+        paste(c("True Positive Rate: ", true_pos, "%"), collapse = ""),
+        paste(c("True Negative Rate: ", true_neg, "%"), collapse = "")
+    ))
+}
+
+
+resultsTable = function(results) {
+    # Takes a results dataframe as input and then reconstructs and returns
+    # a dataframe which has a similar layout to the command line interface
+    # output of R's table(...) function.
+
+    data = table(results)
+    Outcomes = c("Predicted Not Spam", "Predicted Spam", "Total")
+    # reconstruct the columns of R's table(...) CLI display
+    c1 = c(data[, 1], sum(data[, 1]))  # data[, 1] is a length 2 vector
+    c2 = c(data[, 2], sum(data[, 1]))  # data[, 2] is a length 2 vector
+    c3 = c(sum(data[, 1]), sum(data[2, ]), sum(data))
+
+    # turn these columns back into a dataframe but with proper headers
+    output = data.frame(Outcomes)
+    output$"Actually Not Spam" = c1
+    output$"Actually Spam"     = c2
+    output$"Total"             = c3
+
+    return(output)
+}
+```
+
+
