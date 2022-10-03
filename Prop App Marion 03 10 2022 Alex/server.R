@@ -298,6 +298,29 @@ shinyServer(function(input, output, session) {
         table(predict(mod(), newdata = data), data$Star_Type)
     })
     
+    pred_loocv <- reactive({
+        data <- stars %>% select(1:5)
+        n <- nrow(data)                   
+        segments <- pls::cvsegments(k=240,N=n) 
+        cvpredictions <- rep(0,n)   
+        
+        for (k in 1:240) {
+            train <- data[-segments[[k]],]  
+            test <- data[segments[[k]],]     
+            mod <- multinom(Star_Type~.,data=train)
+            select <- stepwise(mod,data=data,direction=input$choix_bf, criterion="AIC", trace=0)
+            print(paste0("nombre de variables sélectionnés:", length(coef(select)-1)))
+            bestmod <- multinom(formula(select), data=train)   
+            cvpredictions[segments[[k]]] = predict(bestmod,newdata=test)
+        }
+        
+        cvpredictions
+    })
+    
+    output$resum_loocv <- renderPrint({
+        summary(pred_loocv())
+    })
+    
     ############# Arbre de décision ############
     
     

@@ -21,6 +21,9 @@ library(corrplot)
 library(dplyr)
 library(nnet)
 library(caret)
+library(pls)
+library(leaps)
+library(RcmdrMisc)
 
 ### -- I.2. DATASET --------------------------
 

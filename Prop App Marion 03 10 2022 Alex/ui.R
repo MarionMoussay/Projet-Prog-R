@@ -294,8 +294,23 @@ fluidPage(
                                                                      ),
                                                                   )
                                                     )
+                                                 ),
+                                                 
+                                                 ## Modèle d'apprentissage 
+                                                 
+                                                 h4("Apprentissage leave one-out"),
+                                                 fluidRow(
+                                                    sidebarLayout(fluid = TRUE,
+                                                                  sidebarPanel(checkboxGroupInput(inputId = "choix_bf", label = "Choisissez le sens de l'algorithme",
+                                                                                                  choices = c("forward","backward","forward/backward"))),
+                                                                  mainPanel(
+                                                                     tabsetPanel(tabPanel("Sommaire du modèle loocv",verbatimTextOutput("resum_loocv"))
+                                                                     ),
+                                                                  )
+                                                    )
                                                  )
                                   )
+                                  
                          ),
                          
                          ## ARBRE DE DECISION CART
