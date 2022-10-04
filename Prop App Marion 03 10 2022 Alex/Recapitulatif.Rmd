@@ -19,7 +19,10 @@ library(corrplot)
 library(rpart)
 library(visNetwork)
 library(plyr)
+```
 
+
+```{r}
 stars <- fread("./data/stars_by_Marie.csv",sep=",")
 stars <- data.table(stars)
 
@@ -30,7 +33,7 @@ stars.V2 <- stars %>% dplyr::rename(temperature = Temperature.K,
                                              couleur = Star_Color, 
                                              spectre = Spectral_Class, 
                                              type = Star_Type) %>% mutate(type = as.factor(type), 
-                                                                          couleur = as.factor(color), 
+                                                                          couleur = as.factor(couleur), 
                                                                           spectre= as.factor(spectre))
 
 levels(stars.V2$type) <- c("Naine brune", "Hyper géante", "Séquence principale", "Naine Rouge", "Super géante", "Naine blanche")
@@ -147,11 +150,47 @@ On observe des fortes corrélations entre les couples :
 
 Objectif : comprendre comment sont classifier les étoiles 
 
+Etape 1 : App / Test 
 ```{r}
-res <- rpart(type~., data=stars.V2)
+index <- sample(nrow(stars.V2), nrow(stars.V2)*0.75)
+data.train <- stars.V2[index, ] #Echantillon d’apprentissage
+data.test <- stars.V2[-index, ] #Echantillon de test
+```
+
+```{r}
+res <- rpart(type~., data=data.train, method='class')
+plotcp(res)
 visTree(res, main = "Classification des étoiles", legend=FALSE)
 ```
-On voit que les étoiles sont en premier lieu distinguées par leur luminosité, la première règle de de classification est $\hat{g}(x)= \mathbb{1}_{Luminosity < 0.071} $ 
+Etape 2 : prédiction après élagage optimal
+```{r}
+tree_opt <- prune(res,cp=res$cptable[which.min(res$cptable[,4]),1])
+
+pred<-predict(tree_opt,newdata=data.test, type="class")
+```
+
+Etape 3 : Matrice de confusion 
+```{r}
+mc <- confusionMatrix(data.test$type,pred)
+mc$table
+mc$overall[[1]]
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 # ONGLET 4 : Statistiques descriptives
 

@@ -253,3 +253,85 @@ resultsTable = function(results) {
 ```
 
 
+### MODELE PREDICTIF ###
+
+Etape 1 : échantillon apprentissage, échantillon de test
+```{r}
+library(caret)
+index <- createDataPartition(stars.V2$type, p = .70, list = FALSE)
+train <- stars.V2[index,]
+test <- stars.V2[-index,]
+```
+Etape 2 : construction du modèle 
+```{r}
+require(nnet)
+require(car)
+mod <- multinom(type ~ ., data = stars.V2)
+summary(mod)
+Anova(mod)
+```
+Odds ratio : 
+```{r}
+exp(coef(mod))
+```
+Etape 3 : prediction et validation 
+```{r}
+pred <- predict(mod, newdata = train, "class")
+
+# Critère accuracy
+mean(pred==train$type)
+
+# BIC, AIC
+c(BIC(mod), AIC(mod))
+```
+Etape 4 : precision et stabilité du modèle 
+```{r}
+n <- 30
+segments <- pls::cvsegments(N=nrow(stars.V2), k = n)
+cvpredictions = rep(0,n)  
+
+for (k in 1:n) {
+  train = stars.V2[-segments[[k]],]   # Training dataset
+  test = stars.V2[segments[[k]],]     # Test dataset
+  mod <- multinom(type~.,data=train)
+  cvpredictions[segments[[k]]] = predict(mod,newdata=test)
+}
+
+cv.glmnet
+```
+
+# Recherche pas à pas du meilleur modèle 
+
+```{r}
+require(RcmdrMisc)
+select <- stepwise(mod, direction="forward/backward", criterion="AIC", trace=0)
+Anova(select)
+```
+`anova()` teste la significative de chaque variable en sachant que la précédente est présente dans le modèle tandis que `Anova()` teste la significativité une à une des variables sachant que les autres sont présentes dans le modèle. 
+
+# Test de la prédiction
+
+On fait la validation croisée 10-fold :
+```{r}
+n = nrow(stars.V2)                   # Sample size
+segments = pls::cvsegments(k=10,N=n) # Defines a list of 10 random segments
+segments
+
+cvpredictions = rep(0,n)   # Initialize a n-vector of predicted LMP 
+for (k in 1:10) {
+  train = stars.V2[-segments[[k]],]   # Training dataset
+  test = stars.V2[segments[[k]],]     # Test dataset
+  mod <-  multinom(type~.,data=train)
+  select <- stepwise(mod, data=train, direction="forward/backward", criterion="AIC", trace=0)
+  bestmod <- multinom(formula(select), data=train)
+  cvpredictions[segments[[k]]] = predict(bestmod,newdata=test)
+}
+```
+
+
+```{r}
+mean(stars.V2$type==cvpredictions)
+```
+Le modèle semble être performant, mais la procédure complète comprit l'étape de prédiction conduit à un résultat pas performant. La sélection des variables est variable à chaque itération 
+
+

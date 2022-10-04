@@ -24,6 +24,8 @@ library(caret)
 library(pls)
 library(leaps)
 library(RcmdrMisc)
+library(heatmaply)
+library(visNetwork)
 
 ### -- I.2. DATASET --------------------------
 
@@ -42,3 +44,7 @@ stars.V2 <- stars %>% dplyr::rename(temperature = Temperature.K,
                                                           spectre= as.factor(spectre))
 
 levels(stars.V2$type) <- c("Naine brune", "Hyper géante", "Séquence principale", "Naine Rouge", "Super géante", "Naine blanche")
+
+### ARBRE CART
+
+

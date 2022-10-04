@@ -121,21 +121,28 @@ shinyServer(function(input, output, session) {
     
     # Corrélations 
     
-    mat.cor <- reactive({
+    mat<- reactive({
         mat <- stars.V2 %>% select(-type)
         levels(mat$couleur) <- 1:9
         levels(mat$spectre) <- 1:7
         mat <- mat %>% mutate(couleur = as.numeric(couleur), 
                               spectre = as.numeric(spectre)) %>% as.matrix()
-        rcorr(mat)
+        mat
     })
     
     output$corr_result <- renderPrint({
-        mat.cor()
+        rcorr(mat())
     })
     
-    output$graph_corr<-renderPlot({
-        corrplot(mat.cor()$r, type="upper", order="hclust", tl.col="black", tl.srt=45)
+    output$graph_corr<-renderPlotly({
+        mat <- stars.V2 %>% select(-type)
+        levels(mat$couleur) <- 1:9
+        levels(mat$spectre) <- 1:7
+        mat <- mat %>% mutate(couleur = as.numeric(couleur), 
+                              spectre = as.numeric(spectre)) %>% as.matrix()
+        mat.cor <- cor(mat())
+        heatmaply_cor(mat.cor, show_dendrogram = c(FALSE, FALSE))
+        
     })
     
     # ACP 
@@ -275,16 +282,16 @@ shinyServer(function(input, output, session) {
     ############# Modèle prédictif ################
     
     mod <- reactive({
-        data <- stars %>% select(1:5)
+        data <- stars.V2 %>% select(1:5)
         
         if (length(input$choix_var_mod_mult)== 0){
-            mod <- multinom(Star_Type~1, data=data)
+            mod <- multinom(type~1, data=data)
         } else {
             var <- c(input$choix_var_mod_mult[1])
             for (i in 1:(length(input$choix_var_mod_mult))){
                 var <- paste0(var, paste0("+", input$choix_var_mod_mult[i]))
             }
-            formul <- paste0("Star_Type~1+",var )
+            formul <- paste0("type~1+",var )
             mod <- multinom(as.formula(formul), data=data)
         }
     })
@@ -294,8 +301,8 @@ shinyServer(function(input, output, session) {
     })
     
     output$pred <- renderPrint({
-        data <- stars %>% select(1:5)
-        table(predict(mod(), newdata = data), data$Star_Type)
+        data <- stars.V2 %>% select(1:5)
+        table(predict(mod(), newdata = data), data$type)
     })
     
     pred_loocv <- reactive({
@@ -323,6 +330,46 @@ shinyServer(function(input, output, session) {
     
     ############# Arbre de décision ############
     
+    CART_index <- reactive({
+        index <- sample(nrow(stars.V2), input$nb_ech_app)
+    })
+    CART_train <- reactive({
+        data.train <- stars.V2[CART_index(), ] #Echantillon d’apprentissage
+        data.train
+    })
+    
+    CART_test <- reactive({
+        data.test <- stars.V2[-CART_index(), ] #Echantillon de test
+        data.test
+    })
+    
+    mod_CART <- reactive({
+        res <- rpart(type~., data=CART_train(), method='class')
+        res
+    })
+ 
+    output$arbreCART <- renderVisNetwork({
+        visTree(mod_CART(), main = "Arbre de décision CART", legend=FALSE, width = "100%")
+    })
+    
+    output$pred_CART <- renderPrint({
+        tree_opt <- prune(mod_CART(),cp=mod_CART()$cptable[which.min(mod_CART()$cptable[,4]),1])
+        pred<-predict(tree_opt,newdata=CART_test(), type="class")
+        mc <- confusionMatrix(CART_test()$type,pred)
+        mc$table
+    })
+    
+    output$accuracy <- renderPrint({
+        tree_opt <- prune(mod_CART(),cp=mod_CART()$cptable[which.min(mod_CART()$cptable[,4]),1])
+        pred<-predict(tree_opt,newdata=CART_test(), type="class")
+        mc <- confusionMatrix(CART_test()$type,pred)
+        
+        print(paste0("Accuracy : ", mc$overall[[1]]))
+    })
+    
+    output$cp <- renderPlot({
+        plotcp(mod_CART())
+    })
     
     ############# Classification Ascendante Hiérarchique ############
     

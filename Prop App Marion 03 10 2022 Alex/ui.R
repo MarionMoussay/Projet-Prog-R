@@ -174,7 +174,7 @@ fluidPage(
                                                   h2("Visualisation des corrélations"),
                                                   fluidRow(
                                                      column(width = 4,verbatimTextOutput("corr_result")),
-                                                     column(width = 8,plotOutput("graph_corr", height = "400px" ))
+                                                     column(width = 8,plotlyOutput("graph_corr", height = "400px" ))
                                                   ),
                                                   
                                                   ## ACP
@@ -267,7 +267,7 @@ fluidPage(
                                   ),
                          ),
                          
-                  
+                         
                          
                          ## MODELE DE PREDICTION #####
                          
@@ -285,7 +285,7 @@ fluidPage(
                                                  fluidRow(
                                                     sidebarLayout(fluid = TRUE,
                                                                   sidebarPanel(checkboxGroupInput(inputId = "choix_var_mod_mult", label = "Choisissez le ou les variables à utiliser dans le modèle",
-                                                                                                  choices = c("Temperature (K)"="Temperature.K", "Luminosité (L.lo)"="Luminosity.L.Lo", "Radius (R.ro)"="Radius.R.Ro", "Magnitude Absolue"="Absolute_Magnitude.Mv"))),
+                                                                                                  choices = c("Température"="temperature", "Luminosité"="luminosite", "Angle"="angle", "Magnitude absolue"="magnitude"))),
                                                                   mainPanel(
                                                                      tabsetPanel(tabPanel("Sommaire du modèle",verbatimTextOutput("resum_mod")),
                                                                                  tabPanel("Matrice de confusion",
@@ -316,61 +316,27 @@ fluidPage(
                          ## ARBRE DE DECISION CART
                          
                          tabPanel("Arbre de décision CART",
+                                  h2("Arbre de décision CART"),
+                                  h3("L'objective est ici de créer un arbre de décison CART à partir des différentes caractéristiques des étoiles et de prédire avec ce modèle le type d'une nouvelle étoile."),
+                                  
                                   sidebarLayout(
                                      sidebarPanel(
-                                        h3("Decision Tree"),
-                                        helpText(
-                                           "These controls are for setting the hyperparameter values",
-                                           "which partly control the structure of the decision tree.",
-                                           "The default values we've put in should create a fairly safe",
-                                           "tree but try changing them if you're feeling adventurous."
-                                        ),
-                                        br(),
-                                        h4("Minimum Split"),
-                                        helpText(
-                                           "If at a given node N is below this value, that node cannot",
-                                           "be split any further: it is a terminal node of the tree."
-                                        ),
-                                        sliderInput(
-                                           inputId = "min_split",
-                                           label = NULL,  # label given in outer code
-                                           min = 2,       # two is the smallest that could be split
-                                           max = 10,      # chosen to not make the models too wild
-                                           value = 2      # defaults to not having an artifical minimum
-                                        ),
-                                        br(),
-                                        h4("Minimum Bucket Size"),
-                                        helpText(
-                                           "If creating a given split would cause N₁ or N₂ to fall below",
-                                           "this minimum, then that split isn't made part of the",
-                                           "decision tree."
-                                        ),
-                                        sliderInput(
-                                           inputId = "min_bucket",
-                                           label = NULL,  # label given in outer code
-                                           min = 1,       # can't have buckets of size zero
-                                           max = 30,      # rpart default is minbucket = 3*minsplit
-                                           value = 1      # defaults to not having an artifical minimum
-                                        ),
-                                        br(),
-                                        h4("Maximum Tree Depth"),
-                                        helpText(
-                                           "Control the maximum depth that the decision tree can reach.",
-                                           "Note that, depending on what features are being used and the",
-                                           "values of the other parameters, you may end up with a tree",
-                                           "much shallower than the maximum."
-                                        ),
-                                        sliderInput(
-                                           inputId = "max_depth",
-                                           label = NULL,  # label given in outer code
-                                           min = 2,       # a min of 2 allows for at least one split
-                                           max = 30,      # rpart can't do 31+ depth on 32-bit machines
-                                           value = 5      # chosen to not make the default too wild
-                                        )
+                                        sliderInput("nb_ech_app", "Taille de l'échantillon d'apprentissage :", 120, 240, 180,sep = 1),
+                                        visNetworkOutput("arbreCART", height = '700px')
                                      ),
-                                     mainPanel(
-                                        plotOutput(outputId = "tree_plot")
+                                     mainPanel( 
+                                        verticalLayout(fluid=TRUE, 
+                                                       h4("__________________________________________________________________"),
+                                                       h4("Matrice de confusion"),
+                                                       verbatimTextOutput("pred_CART"),
+                                                       verbatimTextOutput("accuracy"),
+                                                       h4("__________________________________________________________________"),
+                                                       h4("Taux de mauvais classement en fonction de la taille de l’arbre"),
+                                                       plotOutput("cp")
+                                        )
+                                        
                                      )
+                                     
                                   )
                          ),
                          
