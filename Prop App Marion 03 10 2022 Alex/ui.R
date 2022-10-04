@@ -46,6 +46,19 @@ fluidPage(
                                    br()
                           ),
                           
+                          ## RESUMES  
+                          
+                          tabPanel("Résumés", 
+                                   h2("Résumé du tableau"),
+                                   dataTableOutput("str"),
+                                   h2("_______________________________________"),
+                                   h2("Résumé statistique"),
+                                   dataTableOutput("summary"),
+                                   br(),
+                                   br()
+                                   
+                          ),
+                          
                           ## DISTRIBUTIONS GLOBALES
                           
                           tabPanel("Distribution des variables",
@@ -91,19 +104,6 @@ fluidPage(
                                                   br()
                                    )
                           ),
-                          
-                          ## RESUMES  
-                          
-                          tabPanel("Résumés", 
-                                   h4("Résumé du tableau"),
-                                   verbatimTextOutput("str"),
-                                   h4("Résumé statistique"),
-                                   verbatimTextOutput("summary"),
-                                   br(),
-                                   br()
-                                   
-                          ),
-                          
                        )
                        
               ),
@@ -183,8 +183,8 @@ fluidPage(
                                                   fluidRow(
                                                      column(width = 3,
                                                             wellPanel(
-                                                               colourpicker::colourInput(inputId = "colorACP", label = "Couleur :", value = "blue"),
-                                                               colourpicker::colourInput(inputId = "colorACPsupp", label = "Couleur supplémentaire :", value = "orange"),
+                                                               colourpicker::colourInput(inputId = "colorACP", label = "Couleur :", value = "#BF1B2E"),
+                                                               colourpicker::colourInput(inputId = "colorACPsupp", label = "Couleur supplémentaire :", value = "#4C79B5"),
                                                                
                                                                numericInput("dim1", "Première dimension:", 1,
                                                                             min = 1, max = 4),
@@ -199,19 +199,20 @@ fluidPage(
                                                      # deuxieme colonne
                                                      column(width = 9,
                                                             tabsetPanel(id = "vizACP",
-                                                                        tabPanel("summary",
-                                                                                 verbatimTextOutput("summaryACP")
-                                                                        ),
-                                                                        tabPanel("individus",
+                                                                        
+                                                                        tabPanel("Graphe des individus",
                                                                                  plotlyOutput("ACP_ind"),
                                                                                  plotlyOutput("ACP_ind_ellipse")
                                                                         ),
-                                                                        tabPanel("variables",
+                                                                        tabPanel("Graphes des variables",
                                                                                  plotlyOutput("ACP_var")
                                                                         ),
-                                                                        tabPanel("valeurs propres",
+                                                                        tabPanel("Variance expliquée",
                                                                                  plotlyOutput("graph_vp"),
                                                                                  textOutput("text_vp")
+                                                                        ),
+                                                                        tabPanel("Résumé",
+                                                                                 verbatimTextOutput("summaryACP")
                                                                         )
                                                             )
                                                      )

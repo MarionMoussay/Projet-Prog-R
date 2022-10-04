@@ -45,7 +45,7 @@ shinyServer(function(input, output, session) {
         amBoxplot(stars.V2[,get(input$choix_var_boxplot)], 
                   ylab=input$choix_var_boxplot, 
                   main=paste0("Distribution de la variable ", input$choix_var_boxplot),
-                  las=2, xlab="", col=terrain.colors(1))
+                  las=2, xlab="", col=terrain.colors(9))
         
     })
     
@@ -71,13 +71,25 @@ shinyServer(function(input, output, session) {
     #### Résumés ###############################
     
     # str
-    output$str <- renderPrint({
-        str(stars)
+    output$str <- renderDataTable({
+        stars.V2 |>
+            skimr::skim() |>
+            gt::gt() %>% as.data.frame() %>% select(1,2,3,15) %>% dplyr::rename(Type = skim_type, 
+                                                                         Variable = skim_variable, 
+                                                                         Na = n_missing, 
+                                                                         Distribution = numeric.hist)
     })
     
     # summary
-    output$summary <- renderPrint({
-        summary(stars)
+    output$summary <- renderDataTable({
+        stars.V2 |>
+            skimr::skim() |>
+            gt::gt() %>% as.data.frame() %>% select(2,7,8,9,11,13) %>% dplyr::rename(Variable = skim_variable,
+                                                                              Effectifs = factor.top_counts,
+                                                                              Moyenne = numeric.mean,
+                                                                              SD = numeric.sd,
+                                                                              Q1 = numeric.p25,
+                                                                              Q3 = numeric.p75)
     })
     
     
@@ -152,7 +164,6 @@ shinyServer(function(input, output, session) {
         isolate({
             
             PCA.s.quali <- PCA(stars.V2, quali.sup=5:7, axes = c(input$dim1,input$dim2))
-            
             summary(PCA.s.quali, ncp=max(input$dim1,input$dim2))
         })
     })
@@ -181,8 +192,8 @@ shinyServer(function(input, output, session) {
         isolate({
             g <- fviz_pca_ind(res.pca(),
                               geom.ind = "point", 
-                              col.ind = stars$Star_Type, 
-                              palette = c("brown","red","grey","blue","orange","green"),
+                              col.ind = stars.V2$type, 
+                              palette = terrain.colors(9),
                               addEllipses = TRUE, 
                               legend.title = "Star type", axes = c(input$dim1,input$dim2)) %>% 
                 
@@ -253,7 +264,7 @@ shinyServer(function(input, output, session) {
             
             # % d'inertie du jeux de donnees n'est pas plus grand que le quantile 95%
             # 83.85818%
-            b <- PCA.s.quali()$eig[2,3]
+            b <- res.pca.quali()$eig[2,3]
             
             print(paste0("The quantile from lines permuted is ",a, "and the inertie of the 2 dimensions is ",b))
         })
