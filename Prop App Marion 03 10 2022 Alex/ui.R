@@ -26,7 +26,7 @@ fluidPage(
               
               tabPanel("Contexte",
                        
-                       
+                       ## Magnitude absolue : luminosité intrasèque d'un astre (à contrario de la magnitude apparente qui correspond à une mesure d'irradiance)
                        
                        
               ),
@@ -163,63 +163,95 @@ fluidPage(
                                                   br(),
                                    ), 
                           ),
+                          
+                          tabPanel("Liaison entre les variables", 
+                                   verticalLayout(
+                                      
+                                      ## CORRELOGRAMME ET TEST DE CORRELATION
+                                      sidebarLayout(
+                                         sidebarPanel(width = 6,
+                                                      h2("Entre les variables numériques :"),
+                                                      fluidRow(
+                                                         column(width = 4,verbatimTextOutput("corr_result")),
+                                                         column(width = 8,plotlyOutput("graph_corr", height = "400px" ))
+                                                      ),
+                                         ),
+                                         mainPanel(width = 4,
+                                                   ## KHI-DEUX
+                                                   h2("Entre les variables catégorielles :"),
+                                                   verbatimTextOutput("khi2"),
+                                                   h4("L'hypothèse d'indépendance entre les deux variables est rejetée."),
+                                         ),
+                                      ), 
+                                      
+                                      h2("Analyse de la variance"), 
+                                      
+                                      sidebarLayout(
+                                         sidebarPanel(width=4,
+                                                      awesomeRadio(
+                                                         inputId = "choix_var_anova",
+                                                         label = "Choisissez la variable numérique qui composera le modèle anova :", 
+                                                         choices = list("Température"="temperature", "Luminosité" ="luminosite", "Rayon"="rayon", "Magnitude"="magnitude")
+                                                      ),
+                                                      verbatimTextOutput("summary_anova")
+                                                ),
+                                         mainPanel(width=8,
+                                                verticalLayout(
+                                                   plotlyOutput("qqplot"),
+                                                   verbatimTextOutput("shapiro")
+                                                )
+                                                )
+                                      )
+                                   ),
+                          ),
+                          
                           ##### ANALYSE STRUCTURE #####
                           
                           tabPanel("Analyse de la structure",
                                    
-                                   verticalLayout(fluid = TRUE, 
-                                                  
-                                                  ## CORRELOGRAMME ET TEST DE CORRELATION
-                                                  
-                                                  h2("Visualisation des corrélations"),
-                                                  fluidRow(
-                                                     column(width = 4,verbatimTextOutput("corr_result")),
-                                                     column(width = 8,plotlyOutput("graph_corr", height = "400px" ))
-                                                  ),
-                                                  
-                                                  ## ACP
-                                                  
-                                                  h2("Analyse en composantes principales : analyse de la structure du jeu de données"),
-                                                  fluidRow(
-                                                     column(width = 3,
-                                                            wellPanel(
-                                                               colourpicker::colourInput(inputId = "colorACP", label = "Couleur :", value = "#BF1B2E"),
-                                                               colourpicker::colourInput(inputId = "colorACPsupp", label = "Couleur supplémentaire :", value = "#4C79B5"),
-                                                               
-                                                               numericInput("dim1", "Première dimension:", 1,
-                                                                            min = 1, max = 4),
-                                                               
-                                                               numericInput("dim2", "Seconde dimension:", 2,
-                                                                            min = 1, max = 4),
-                                                               
-                                                               # bouton
-                                                               actionButton("goACP", "VALIDER")
-                                                            )
-                                                     ),
-                                                     # deuxieme colonne
-                                                     column(width = 9,
-                                                            tabsetPanel(id = "vizACP",
-                                                                        
-                                                                        tabPanel("Graphe des individus",
-                                                                                 plotlyOutput("ACP_ind"),
-                                                                                 plotlyOutput("ACP_ind_ellipse")
-                                                                        ),
-                                                                        tabPanel("Graphes des variables",
-                                                                                 plotlyOutput("ACP_var")
-                                                                        ),
-                                                                        tabPanel("Variance expliquée",
-                                                                                 plotlyOutput("graph_vp"),
-                                                                                 textOutput("text_vp")
-                                                                        ),
-                                                                        tabPanel("Résumé",
-                                                                                 verbatimTextOutput("summaryACP")
-                                                                        )
-                                                            )
-                                                     )
-                                                  ),
-                                                  br(),
-                                                  br(),
+                                   ## ACP
+                                   
+                                   h2("Analyse en composantes principales : analyse de la structure du jeu de données"),
+                                   fluidRow(
+                                      column(width = 3,
+                                             wellPanel(
+                                                colourpicker::colourInput(inputId = "colorACP", label = "Couleur :", value = "#BF1B2E"),
+                                                colourpicker::colourInput(inputId = "colorACPsupp", label = "Couleur supplémentaire :", value = "#4C79B5"),
+                                                
+                                                numericInput("dim1", "Première dimension:", 1,
+                                                             min = 1, max = 4),
+                                                
+                                                numericInput("dim2", "Seconde dimension:", 2,
+                                                             min = 1, max = 4),
+                                                
+                                                # bouton
+                                                actionButton("goACP", "VALIDER")
+                                             )
+                                      ),
+                                      # deuxieme colonne
+                                      column(width = 9,
+                                             tabsetPanel(id = "vizACP",
+                                                         
+                                                         tabPanel("Graphe des individus",
+                                                                  plotlyOutput("ACP_ind"),
+                                                                  plotlyOutput("ACP_ind_ellipse")
+                                                         ),
+                                                         tabPanel("Graphes des variables",
+                                                                  plotlyOutput("ACP_var")
+                                                         ),
+                                                         tabPanel("Variance expliquée",
+                                                                  plotlyOutput("graph_vp"),
+                                                                  textOutput("text_vp")
+                                                         ),
+                                                         tabPanel("Résumé",
+                                                                  verbatimTextOutput("summaryACP")
+                                                         )
+                                             )
+                                      )
                                    ),
+                                   br(),
+                                   br(),
+                                   
                                    
                           )
                        ),

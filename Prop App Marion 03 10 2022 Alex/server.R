@@ -127,18 +127,12 @@ shinyServer(function(input, output, session) {
             scale_fill_manual(legend, values = terrain.colors(6))
             
     })
-    
-    ### ANALYSE DE STRUCTURE #################
-    
+    ### LIAISON ENTRE LES VARIABLES ##########
     
     # Corrélations 
     
     mat<- reactive({
-        mat <- stars.V2 %>% select(-type)
-        levels(mat$couleur) <- 1:9
-        levels(mat$spectre) <- 1:7
-        mat <- mat %>% mutate(couleur = as.numeric(couleur), 
-                              spectre = as.numeric(spectre)) %>% as.matrix()
+        mat <- stars.V2 %>% select(-c(type, couleur, spectre)) %>% as.matrix()
         mat
     })
     
@@ -147,15 +141,41 @@ shinyServer(function(input, output, session) {
     })
     
     output$graph_corr<-renderPlotly({
-        mat <- stars.V2 %>% select(-type)
-        levels(mat$couleur) <- 1:9
-        levels(mat$spectre) <- 1:7
-        mat <- mat %>% mutate(couleur = as.numeric(couleur), 
-                              spectre = as.numeric(spectre)) %>% as.matrix()
         mat.cor <- cor(mat())
         heatmaply_cor(mat.cor, show_dendrogram = c(FALSE, FALSE))
         
     })
+    
+    # Test de pearson
+    
+    output$khi2 <- renderPrint({
+        couleur <- stars.V2$couleur
+        spectre <- stars.V2$spectre
+        chisq.test(couleur, spectre)
+    })
+    
+    # Analyse de variance
+    
+    mod_anova <- reactive({
+        mod <- lm(as.formula(paste0(input$choix_var_anova,"~couleur*spectre")), data=stars.V2)
+        mod
+    })
+    
+    output$summary_anova <- renderPrint({
+        summary(mod_anova())$coefficients
+    })
+    
+    output$shapiro <- renderPrint({
+        shapiro_test(residuals(mod_anova()))
+    })
+    
+    output$qqplot <- renderPlotly({
+        ggqqplot(residuals(mod_anova()), title = "QQ-plot")
+    })
+    
+    
+    
+    ### ANALYSE DE STRUCTURE #################
     
     # ACP 
     ## ---- acp-summary --------------------
