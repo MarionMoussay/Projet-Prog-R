@@ -26,6 +26,8 @@ library(leaps)
 library(RcmdrMisc)
 library(heatmaply)
 library(visNetwork)
+library(ggpubr)
+library(rstatix)
 
 ### -- I.2. DATASET --------------------------
 

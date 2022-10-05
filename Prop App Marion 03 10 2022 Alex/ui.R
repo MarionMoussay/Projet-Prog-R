@@ -197,8 +197,10 @@ fluidPage(
                                                 ),
                                          mainPanel(width=8,
                                                 verticalLayout(
+                                                   h4("Normalité des résidus"),
                                                    plotlyOutput("qqplot"),
-                                                   verbatimTextOutput("shapiro")
+                                                   dataTableOutput("shapiro"),
+                                                   br()
                                                 )
                                                 )
                                       )

@@ -165,8 +165,12 @@ shinyServer(function(input, output, session) {
         summary(mod_anova())$coefficients
     })
     
-    output$shapiro <- renderPrint({
-        shapiro_test(residuals(mod_anova()))
+    output$shapiro <- renderDataTable({
+        test <- shapiro_test(residuals(mod_anova()))
+        data.frame("Statistique"= test$statistic[[1]] , "P-value" = test$p.value[[1]], row.names = "Test de shapiro")
+        
+       
+        
     })
     
     output$qqplot <- renderPlotly({
