@@ -1,0 +1,151 @@
+---
+title: "Modèle prédictif"
+author: "Marion"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+```{r}
+library(data.table)
+library(dplyr)
+library(caret)
+library(nnet)
+library(heatmaply)
+library(corrplot)
+library(ggpubr)
+library(rstatix)
+```
+
+
+# IMPORT 
+```{r}
+stars <- fread("data/stars_by_Marie.csv",sep=",")
+stars <- data.table(stars)
+
+stars.V2 <- stars %>% dplyr::rename(temperature = Temperature.K, 
+                                    luminosite = Luminosity.L.Lo, 
+                                    rayon = Radius.R.Ro, 
+                                    magnitude = Absolute_Magnitude.Mv, 
+                                    couleur = Star_Color, 
+                                    spectre = Spectral_Class, 
+                                    type = Star_Type) %>% mutate(type = as.factor(type), 
+                                                                 couleur = as.factor(couleur), 
+                                                                 spectre= as.factor(spectre))
+
+levels(stars.V2$type) <- c("Naine brune", "Hyper géante", "Séquence principale", "Naine Rouge", "Super géante", "Naine blanche")
+stars <- stars.V2
+```
+
+# LIAISON ENTRE VARIABLES
+
+## ENTRE VARIABLES QUANTITATIVES 
+-> matrice de corrélation
+```{r}
+mat.quant <- stars %>% select(1:4)
+heatmaply(cor(mat.quant), show_dendrogram = c(FALSE, FALSE))
+```
+Magnitude fortement corrélée avec l'ensemble des variables notamment la luminosité (mais c'est normal parce que c'est littéralement la magnitude d'un astre qui définit sa luminosité qui est elle meme définit selon l'angle).
+
+Test de pearson : test d'indépendance des variables
+```{r}
+cor.mtest(mat.quant)$p
+```
+
+
+## ENTRE VARIABLES CATEGORIELLES
+-> test du khi deux
+```{r}
+chisq.test(stars$couleur, stars$spectre)
+```
+La p-value est <5% donc l'hypothèse d'indépendance est rejetée. 
+
+## ENTRE VARIABLES QUANTITATIVES ET CATEGORIELLES
+
+Choisir la variable quantitative :
+
+-> Analyse de variance 
+
+### Modèle 
+```{r}
+mod <- lm(magnitude~couleur*spectre,  data=stars)
+anova(mod)
+```
+
+### Hypothèse de normalité  
+```{r}
+ggqqplot(residuals(mod))
+test <- shapiro_test(residuals(mod))
+test$p.value[[1]]
+test$statistic[[1]]
+```
+Les variables catégorielles ne confirment pas l'hypothèse de normalité donc on choisit de ne pas les inclure dans le modèle multinomiale.
+
+# Modèle multinomiale 
+```{r}
+mod.mult <- multinom(type~ luminosite+magnitude+rayon+temperature, data=stars)
+summary(mod.mult)
+```
+```{r}
+confusionMatrix(predict(mod.mult, newdata=stars), stars$type)
+```
+# Recherche du meilleur modèle :
+
+```{r}
+data <- stars %>% select(luminosite, temperature, magnitude, rayon, type)
+select <- summary(regsubsets(type~.,data=data,nvmax=4))
+bic <- select$bic                           
+aic <- bic - (log(nrow(data))-2)*(1:4) 
+plot(1:4,
+     bic,
+     pch=16,
+     bty="l",
+     type="b",
+     xlab="Number of explanatory variables",
+     ylab="Information criterion",
+     ylim=range(c(aic,bic)),
+     col="darkgray",
+     main="Exhaustive model selection",
+     cex.lab=1.25,
+     cex.axis=1.25,
+     cex.main=1.25,
+     lwd=2)
+lines(1:4,aic,type="b",pch=17,lwd=2,col="coral1")
+legend("topleft",
+       lwd=2,
+       lty=1,
+       pch=c(16,17),
+       col=c("darkgray","coral1"),
+       bty="n",
+       cex=1.25,
+       legend=c("BIC","AIC"))
+grid()
+```
+```{r}
+colnames(select$which)[select$which[3,]]
+```
+
+```{r}
+best.mod <- multinom(type~temperature+magnitude+rayon, data = stars)
+
+pred <- predict(best.mod, newdata=data.frame('temperature' = 2000, 'luminosite' = 0.000140, 'rayon' = 0.1100, 'magnitude' = 19.70))
+print(paste0("prediction : ", pred))
+```
+```{r}
+ggplot(data = stars) + 
+  geom_point(aes(x = temperature, y = magnitude, color = type, shape = spectre, size = luminosite)) +
+  annotate("point", x= 20000, y=0, size=5, color='purple')+
+  annotate(geom="text", x=20000+10, y=0+2, label="Votre étoile",color="purple")+
+  scale_y_reverse(name="Magnitude absolue (Mv)") +
+  scale_x_reverse(name = "Température ", limits=c(34000,3000)) + 
+  labs(title="Diagramme Hertzsprung-Russell")+
+  theme_bw() +
+  theme(panel.grid.major = element_blank(), 
+        axis.line = element_line(colour = "black"), 
+        legend.text= element_text(size=15), 
+        legend.title = element_text(size=15), 
+        plot.title = element_text(size=15, face="bold.italic"))
+```
+
+

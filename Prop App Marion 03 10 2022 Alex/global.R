@@ -28,6 +28,9 @@ library(heatmaply)
 library(visNetwork)
 library(ggpubr)
 library(rstatix)
+library(rpart)
+library(visNetwork)
+library(plyr)
 
 ### -- I.2. DATASET --------------------------
 

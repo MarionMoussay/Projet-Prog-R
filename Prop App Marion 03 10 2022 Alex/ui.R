@@ -74,7 +74,7 @@ fluidPage(
                                                                h4("Le but est ici de visualiser la distribution de chaque variable quantitive."),
                                                                awesomeRadio(
                                                                   inputId = "choix_var_boxplot",
-                                                                  label = "Choisissez la variable à illuster :", 
+                                                                  label = "Choisissez la variable à illustrer :", 
                                                                   choices = list("Température"="temperature", "Luminosité" ="luminosite", "Rayon" ="rayon", "Magnitude"="magnitude")
                                                                ),
                                                                
@@ -92,7 +92,7 @@ fluidPage(
                                                                h4("Le but est ici de visualiser les effectifs de chaque variable qualitative."),
                                                                awesomeRadio(
                                                                   inputId = "choix_var_quali",
-                                                                  label = "Choisissez la variable à illuster :", 
+                                                                  label = "Choisissez la variable à illustrer :", 
                                                                   choices = list("Classe spectrale"="spectre", "Couleur" ="couleur")
                                                                ),
                                                                
@@ -169,7 +169,7 @@ fluidPage(
                                       
                                       ## CORRELOGRAMME ET TEST DE CORRELATION
                                       sidebarLayout(
-                                         sidebarPanel(width = 6,
+                                         sidebarPanel(width = 8,
                                                       h2("Entre les variables numériques :"),
                                                       fluidRow(
                                                          column(width = 4,verbatimTextOutput("corr_result")),
@@ -194,15 +194,15 @@ fluidPage(
                                                          choices = list("Température"="temperature", "Luminosité" ="luminosite", "Rayon"="rayon", "Magnitude"="magnitude")
                                                       ),
                                                       verbatimTextOutput("summary_anova")
-                                                ),
+                                         ),
                                          mainPanel(width=8,
-                                                verticalLayout(
-                                                   h4("Normalité des résidus"),
-                                                   plotlyOutput("qqplot"),
-                                                   dataTableOutput("shapiro"),
-                                                   br()
-                                                )
-                                                )
+                                                   verticalLayout(
+                                                      h4("Normalité des résidus"),
+                                                      plotlyOutput("qqplot"),
+                                                      dataTableOutput("shapiro"),
+                                                      br()
+                                                   )
+                                         )
                                       )
                                    ),
                           ),
@@ -226,11 +226,9 @@ fluidPage(
                                                 numericInput("dim2", "Seconde dimension:", 2,
                                                              min = 1, max = 4),
                                                 
-                                                # bouton
                                                 actionButton("goACP", "VALIDER")
                                              )
                                       ),
-                                      # deuxieme colonne
                                       column(width = 9,
                                              tabsetPanel(id = "vizACP",
                                                          
@@ -307,43 +305,64 @@ fluidPage(
                          ## MODELE DE PREDICTION #####
                          
                          tabPanel("Modèle prédictif", 
-                                  verticalLayout(fluid = TRUE, 
-                                                 
-                                                 ## Modèle multinomiale
-                                                 
-                                                 ## Objectif : permettre dans un premier temps à l'utilisateur de choisir
-                                                 ##   - les variables pour construire le modèle multinomiale;
-                                                 ##   - la métrique de validation.
-                                                 ## -> ressort le summary, les valeurs prédites + matrices de confusion + critères 
-                                                 
-                                                 h4("Modèle multinomiale"),
-                                                 fluidRow(
-                                                    sidebarLayout(fluid = TRUE,
-                                                                  sidebarPanel(checkboxGroupInput(inputId = "choix_var_mod_mult", label = "Choisissez le ou les variables à utiliser dans le modèle",
-                                                                                                  choices = c("Température"="temperature", "Luminosité"="luminosite", "Angle"="angle", "Magnitude absolue"="magnitude"))),
-                                                                  mainPanel(
-                                                                     tabsetPanel(tabPanel("Sommaire du modèle",verbatimTextOutput("resum_mod")),
-                                                                                 tabPanel("Matrice de confusion",
-                                                                                          verbatimTextOutput("pred") 
-                                                                                 )
-                                                                     ),
-                                                                  )
-                                                    )
-                                                 ),
-                                                 
-                                                 ## Modèle d'apprentissage 
-                                                 
-                                                 h4("Apprentissage leave one-out"),
-                                                 fluidRow(
-                                                    sidebarLayout(fluid = TRUE,
-                                                                  sidebarPanel(checkboxGroupInput(inputId = "choix_bf", label = "Choisissez le sens de l'algorithme",
-                                                                                                  choices = c("forward","backward","forward/backward"))),
-                                                                  mainPanel(
-                                                                     tabsetPanel(tabPanel("Sommaire du modèle loocv",verbatimTextOutput("resum_loocv"))
-                                                                     ),
-                                                                  )
-                                                    )
-                                                 )
+                                  tabsetPanel(
+                                     tabPanel("Choix du modèle",
+                                              verticalLayout(fluid = TRUE, 
+                                                             
+                                                             ## Modèle multinomiale
+                                                             
+                                                             ## Objectif : permettre dans un premier temps à l'utilisateur de choisir
+                                                             ##   - les variables pour construire le modèle multinomiale;
+                                                             ##   - la métrique de validation.
+                                                             ## -> ressort le summary, les valeurs prédites + matrices de confusion + critères 
+                                                             
+                                                             h3("Modèle multinomiale"),
+                                                             fluidRow(
+                                                                sidebarLayout(fluid = TRUE,
+                                                                              sidebarPanel(checkboxGroupInput(inputId = "choix_var_mod_mult", label = "Choisissez le ou les variables à utiliser dans le modèle",
+                                                                                                              choices = c("Température"="temperature", "Luminosité"="luminosite", "Rayon"="rayon", "Magnitude absolue"="magnitude"),
+                                                                                                              selected = c("Température"="temperature", "Luminosité"="luminosite", "Rayon"="rayon", "Magnitude absolue"="magnitude"))),
+                                                                              mainPanel(
+                                                                                 tabsetPanel(tabPanel("Sommaire du modèle",verbatimTextOutput("resum_mod")),
+                                                                                             tabPanel("Matrice de confusion",verbatimTextOutput("pred"))
+                                                                                 ),
+                                                                              )
+                                                                )
+                                                             ),
+                                                             
+                                                             ## Meilleur modèle  
+                                                             h4("________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________"),
+                                                             h3("Recherche du meilleur modèle au sens de l'AIC et BIC"),
+                                                             fluidRow(
+                                                                sidebarLayout(fluid = TRUE,
+                                                                              sidebarPanel(plotOutput("aic_bic")),
+                                                                              mainPanel(
+                                                                                 h3("Modèle retenu : Type ~ Temperature + Magnitude + Rayon"),
+                                                                                 verbatimTextOutput("coef_best_mod")
+                                                                              )
+                                                                )
+                                                             )
+                                              )
+                                     ),
+                                     tabPanel("Prédire une nouvelle étoile", 
+                                              sidebarLayout(fluid=TRUE, 
+                                                            sidebarPanel(
+                                                               h3("Renseignez ci dessous des valeurs pour votre nouvelle étoile"),
+                                                               textInput("temperature", "Température (entre 1939 et 40 000) :", "11550"),
+                                                               textInput("luminosite", "Luminosité (entre 0 et 850 000) :", "8800"),
+                                                               textInput("rayon", "Rayon (entre 0 et 1950) :", "6.0450"),
+                                                               textInput("magnitude", "Magnitude (entre -12 et 20) :", "-3.35"),
+                                                               textInput("titre_new_etoile", "Nom de votre étoile", "Mon étoile"),
+                                                               actionButton("gopred", "VALIDER")
+                                                            ), 
+                                                            mainPanel(
+                                                               h3("Le type prédit s'affiche ci dessous, ainsi que le diagramme HR avec votre nouvelle étoile."),
+                                                               verbatimTextOutput("nouvelle_etoile"), 
+                                                               plotOutput("new_pred_plot"),
+                                                               downloadButton('downloadPlot', 'Télécharger le diagramme')
+                                                            ),
+                                              )
+                                     )
                                   )
                                   
                          ),
@@ -427,7 +446,7 @@ fluidPage(
                          )
                          
               ),
-              tabPanel("A propos de nous"),
+              
               
               tags$footer(column(6, "Institut Agro-campus, Rennes", icon = icon("fa-sharp fa-solid fa-house")), 
                           column(2, actionLink("twitter_share", label = "Share", icon = icon("fa-thin fa-star"),

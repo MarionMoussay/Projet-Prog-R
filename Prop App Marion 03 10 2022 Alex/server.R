@@ -332,37 +332,77 @@ shinyServer(function(input, output, session) {
     })
     
     output$resum_mod <- renderPrint({
-        summary(mod())
+        summary(mod())$coeff
+    })
+    
+    pred.mod.mult <- reactive({
+        data <- stars.V2 %>% select(1:5)
+        predict(mod(), newdata = data)
     })
     
     output$pred <- renderPrint({
         data <- stars.V2 %>% select(1:5)
-        table(predict(mod(), newdata = data), data$type)
+        print(table(pred.mod.mult(), data$type))
+        paste0("Accuracy : ", mean(pred.mod.mult()== data$type))
     })
     
-    pred_loocv <- reactive({
-        data <- stars %>% select(1:5)
-        n <- nrow(data)                   
-        segments <- pls::cvsegments(k=240,N=n) 
-        cvpredictions <- rep(0,n)   
-        
-        for (k in 1:240) {
-            train <- data[-segments[[k]],]  
-            test <- data[segments[[k]],]     
-            mod <- multinom(Star_Type~.,data=train)
-            select <- stepwise(mod,data=data,direction=input$choix_bf, criterion="AIC", trace=0)
-            print(paste0("nombre de variables sélectionnés:", length(coef(select)-1)))
-            bestmod <- multinom(formula(select), data=train)   
-            cvpredictions[segments[[k]]] = predict(bestmod,newdata=test)
+
+    output$aic_bic <- renderPlot({
+        data <- stars.V2 %>% select(luminosite, temperature, magnitude, rayon, type)
+        select <- summary(regsubsets(type~.,data=as.data.frame(data),nvmax=4))
+
+        data <- stars.V2 %>% select(luminosite, temperature, magnitude, rayon, type)
+        bic <- select$bic
+        aic <- bic - (log(nrow(data))-2)*(1:4)
+        plot(1:4,bic,pch=16,bty="l",type="b",xlab="Nombre de variables explicatives",ylab="Critères",ylim=range(c(aic,bic)),
+             col="darkgray",main="Sélection exhaustive du modèle",cex.lab=1.25,cex.axis=1.25,cex.main=1.25,lwd=2)
+        lines(1:4,aic,type="b",pch=17,lwd=2,col="coral1")
+        legend("topleft",lwd=2,lty=1,pch=c(16,17),col=c("darkgray","coral1"),bty="n",cex=1.25,legend=c("BIC","AIC"))
+
+    })
+
+    output$coef_best_mod <- renderPrint({
+        best.mod <- multinom(type~temperature+magnitude+rayon, data = stars.V2)
+        summary(best.mod)$coeff
+    })
+    
+    new_star <- reactive({
+        pred <- predict(best.mod, newdata=data.frame('temperature' = as.numeric(input$temperature), 
+                                                     'luminosite' = as.numeric(input$luminosite),
+                                                     'rayon' = as.numeric(input$rayon), 
+                                                     'magnitude' = as.numeric(input$magnitude)))
+        pred
+    })
+    
+    output$nouvelle_etoile <- reactive({
+        input$gopred
+        isolate({
+            print(paste0("Prediction de votre nouvelle étoile : ", new_star()))
+        })
+    })
+    
+    output$new_pred_plot <- renderPlot({
+        ggplot(data = stars.V2) + 
+            geom_point(aes(x = temperature, y = magnitude, color = type, shape = spectre, size = luminosite)) +
+            annotate("point", x=  as.numeric(input$temperature), y=as.numeric(input$magnitude), size=5, color='purple')+
+            annotate(geom="text", x=as.numeric(input$temperature)+10, y=as.numeric(input$magnitude)+2, label=input$titre_new_etoile,color="purple")+
+            scale_y_reverse(name="Magnitude absolue (Mv)") +
+            scale_x_reverse(name = "Température ", limits=c(34000,3000)) + 
+            labs(title="Diagramme Hertzsprung-Russell")+
+            theme_bw() +
+            theme(panel.grid.major = element_blank(), 
+                  axis.line = element_line(colour = "black"), 
+                  legend.text= element_text(size=15), 
+                  legend.title = element_text(size=15), 
+                  plot.title = element_text(size=15, face="bold.italic"))
+    })
+    
+    output$downloadPlot <- downloadHandler(
+        filename = function() { paste(input$dataset, '.png', sep='') },
+        content = function(file) {
+            ggsave(file,plotInput())
         }
-        
-        cvpredictions
-    })
-    
-    output$resum_loocv <- renderPrint({
-        summary(pred_loocv())
-    })
-    
+    )
     ############# Arbre de décision ############
     
     CART_index <- reactive({
@@ -448,8 +488,6 @@ shinyServer(function(input, output, session) {
     output$hr_diag_clusters <- renderPlotly({
         km <- kmeans(matrice(), centers = input$nb_clusters)
         df_clust <- matrice() %>% bind_cols(cluster = as.factor(km$cluster))
-        
-        
         graph <- ggplot(data = df_clust) +
             geom_point(aes(x = Temperature.K, y = Absolute_Magnitude.Mv, color =cluster)) +
             scale_y_reverse() +
