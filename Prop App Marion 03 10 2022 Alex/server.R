@@ -290,7 +290,7 @@ shinyServer(function(input, output, session) {
             # 83.85818%
             b <- res.pca.quali()$eig[2,3]
             
-            print(paste0("The quantile from lines permuted is ",a, "and the inertie of the 2 dimensions is ",b))
+            print(paste0("Le quantile des lignes permutées est ",a, "et l'inertie des deux premières dimensions est ",b))
         })
     })
     
@@ -382,19 +382,23 @@ shinyServer(function(input, output, session) {
     })
     
     output$new_pred_plot <- renderPlot({
-        ggplot(data = stars.V2) + 
-            geom_point(aes(x = temperature, y = magnitude, color = type, shape = spectre, size = luminosite)) +
-            annotate("point", x=  as.numeric(input$temperature), y=as.numeric(input$magnitude), size=5, color='purple')+
-            annotate(geom="text", x=as.numeric(input$temperature)+10, y=as.numeric(input$magnitude)+2, label=input$titre_new_etoile,color="purple")+
-            scale_y_reverse(name="Magnitude absolue (Mv)") +
-            scale_x_reverse(name = "Température ", limits=c(34000,3000)) + 
-            labs(title="Diagramme Hertzsprung-Russell")+
-            theme_bw() +
-            theme(panel.grid.major = element_blank(), 
-                  axis.line = element_line(colour = "black"), 
-                  legend.text= element_text(size=15), 
-                  legend.title = element_text(size=15), 
-                  plot.title = element_text(size=15, face="bold.italic"))
+        input$gopred
+        isolate({
+            ggplot(data = stars.V2) + 
+                geom_point(aes(x = temperature, y = magnitude, color = type, shape = spectre, size = luminosite)) +
+                annotate("point", x=  as.numeric(input$temperature), y=as.numeric(input$magnitude), size=5, color='purple')+
+                annotate(geom="text", x=as.numeric(input$temperature)+10, y=as.numeric(input$magnitude)+2, label=input$titre_new_etoile,color="purple")+
+                scale_y_reverse(name="Magnitude absolue (Mv)") +
+                scale_x_reverse(name = "Température ", limits=c(34000,3000)) + 
+                labs(title="Diagramme Hertzsprung-Russell")+
+                theme_bw() +
+                theme(panel.grid.major = element_blank(), 
+                      axis.line = element_line(colour = "black"), 
+                      legend.text= element_text(size=15), 
+                      legend.title = element_text(size=15), 
+                      plot.title = element_text(size=15, face="bold.italic"))
+        })
+        
     })
     
     output$downloadPlot <- downloadHandler(

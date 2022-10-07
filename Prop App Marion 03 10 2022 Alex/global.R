@@ -31,6 +31,7 @@ library(rstatix)
 library(rpart)
 library(visNetwork)
 library(plyr)
+library(sparkline)
 
 ### -- I.2. DATASET --------------------------
 
