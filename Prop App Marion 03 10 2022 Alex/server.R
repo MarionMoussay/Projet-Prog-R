@@ -19,14 +19,18 @@ shinyServer(function(input, output, session) {
     
     
     
-    ############ ---- ONGLET 2 : FOCUS SUR LES DONNEES --------------------
+    ############ ---- ONGLET 2 : JEU DE DONNEES --------------------
     
-    #### Jeu de données brut #####################
+    #### 1) Télécharger les données #####################
+    
+    # Table des données :
     
     output$table <- renderDT({
         datatable(stars.V2, class = 'cell-border stripe',
                   options = list(paging = FALSE, lengthChange = FALSE, scrollY = "600px", scrollX = T),
                   rownames = FALSE)})
+    
+    # Bouton télécharger :
     
     output$downloadCsv2 <- downloadHandler(
         filename = function() {
@@ -37,9 +41,35 @@ shinyServer(function(input, output, session) {
         }
     )
     
-    #### Boxplot ###############################
+    #### 2) Résumés ###############################
     
-    # Variables quantitatives
+    # Résumé du tableau (str) :
+    
+    output$str <- renderDataTable({
+        stars.V2 |>
+            skimr::skim() |>
+            gt::gt() %>% as.data.frame() %>% select(1,2,3,15) %>% dplyr::rename(Type = skim_type, 
+                                                                                Variable = skim_variable, 
+                                                                                Na = n_missing, 
+                                                                                Distribution = numeric.hist)
+    })
+    
+    # Résumé statistique (summary) :
+    
+    output$summary <- renderDataTable({
+        stars.V2 |>
+            skimr::skim() |>
+            gt::gt() %>% as.data.frame() %>% select(2,7,8,9,11,13) %>% dplyr::rename(Variable = skim_variable,
+                                                                                     Effectifs = factor.top_counts,
+                                                                                     Moyenne = numeric.mean,
+                                                                                     SD = numeric.sd,
+                                                                                     Q1 = numeric.p25,
+                                                                                     Q3 = numeric.p75)
+    })
+    
+    #### 3) Distribution des variables ###############################
+    
+    # Distribution des caractéristiques numériques :
     
     output$star_boxplot <- renderAmCharts({
         amBoxplot(stars.V2[,get(input$choix_var_boxplot)], 
@@ -49,7 +79,7 @@ shinyServer(function(input, output, session) {
         
     })
     
-    # Variables qualitatives 
+    # Effectifs des caractéristiques catégorielles :
     
     output$histo_quali<-renderPlotly({
         if (input$choix_var_quali == "spectre") { 
@@ -68,36 +98,14 @@ shinyServer(function(input, output, session) {
             scale_fill_manual(legend, values = terrain.colors(9))
     })
     
-    #### Résumés ###############################
-    
-    # str
-    output$str <- renderDataTable({
-        stars.V2 |>
-            skimr::skim() |>
-            gt::gt() %>% as.data.frame() %>% select(1,2,3,15) %>% dplyr::rename(Type = skim_type, 
-                                                                         Variable = skim_variable, 
-                                                                         Na = n_missing, 
-                                                                         Distribution = numeric.hist)
-    })
-    
-    # summary
-    output$summary <- renderDataTable({
-        stars.V2 |>
-            skimr::skim() |>
-            gt::gt() %>% as.data.frame() %>% select(2,7,8,9,11,13) %>% dplyr::rename(Variable = skim_variable,
-                                                                              Effectifs = factor.top_counts,
-                                                                              Moyenne = numeric.mean,
-                                                                              SD = numeric.sd,
-                                                                              Q1 = numeric.p25,
-                                                                              Q3 = numeric.p75)
-    })
     
     
-    ############ ---- ONGLET 3 : VARIABLES ~ TYPE --------------------
     
-    #### Statistiques descriptives #############
+    ############ ---- ONGLET 3 : FOCUS SUR LES CARACTERISTIQUES DES ETOILES --------------------
     
-    # Distribution variables quantitatives 
+    #### 1) Statistiques descriptives #############
+    
+    # Distribution des caractéristiques numériques selon les types d'étoiles :
     
     output$star_type_boxplot <- renderAmCharts({
         amBoxplot(as.formula(paste(input$choix_var_boxplot_type,"~type")), 
@@ -108,7 +116,7 @@ shinyServer(function(input, output, session) {
         
     })
     
-    # Effectifs variables qualtitatives 
+    # Effectifs des caractéristiques catégorielles selon les types d'étoiles :
     
     output$histo_quali_type<-renderPlotly({
         if (input$choix_var_quali_type == "spectre") { 
@@ -127,9 +135,10 @@ shinyServer(function(input, output, session) {
             scale_fill_manual(legend, values = terrain.colors(6))
             
     })
-    ### LIAISON ENTRE LES VARIABLES ##########
     
-    # Corrélations 
+    ### 2) Liaison entre les variables ##########
+    
+    # Entre les variables numériques (corrélation) :
     
     mat<- reactive({
         mat <- stars.V2 %>% select(-c(type, couleur, spectre)) %>% as.matrix()
@@ -146,7 +155,7 @@ shinyServer(function(input, output, session) {
         
     })
     
-    # Test de pearson
+    # Entre les variables catégorielles (Test de pearson) :
     
     output$khi2 <- renderPrint({
         couleur <- stars.V2$couleur
@@ -154,7 +163,7 @@ shinyServer(function(input, output, session) {
         chisq.test(couleur, spectre)
     })
     
-    # Analyse de variance
+    # Analyse de la variance :
     
     mod_anova <- reactive({
         mod <- lm(as.formula(paste0(input$choix_var_anova,"~couleur*spectre")), data=stars.V2)
@@ -168,9 +177,6 @@ shinyServer(function(input, output, session) {
     output$shapiro <- renderDataTable({
         test <- shapiro_test(residuals(mod_anova()))
         data.frame("Statistique"= test$statistic[[1]] , "P-value" = test$p.value[[1]], row.names = "Test de shapiro")
-        
-       
-        
     })
     
     output$qqplot <- renderPlotly({
@@ -179,20 +185,9 @@ shinyServer(function(input, output, session) {
     
     
     
-    ### ANALYSE DE STRUCTURE #################
+    ### 3) Analyse de la structure #################
     
-    # ACP 
-    ## ---- acp-summary --------------------
-    output$summaryACP <- renderPrint({
-        input$goACP
-        isolate({
-            
-            PCA.s.quali <- PCA(stars.V2, quali.sup=5:7, axes = c(input$dim1,input$dim2))
-            summary(PCA.s.quali, ncp=max(input$dim1,input$dim2))
-        })
-    })
-    
-    ## ---- acp-individus --------------------
+    ## ---- 3.a) Graphe des individus --------------------
     res.pca <- reactive({
         res.pca <- PCA(as.data.frame(stars.V2)[,c(1,2,3,4,7)], quali.sup = 5, graph=FALSE, axes = c(input$dim1,input$dim2))
         
@@ -201,12 +196,8 @@ shinyServer(function(input, output, session) {
     output$ACP_ind<-renderPlotly({
         input$goACP 
         isolate({
-            print(input$dim1)
-            print(input$dim2)
-            
             g <- fviz_pca_ind(res.pca(), repel = TRUE,label="none", axes = c(input$dim1,input$dim2),col.ind=input$colorACP) %>% 
                 fviz_add(res.pca()$quali.sup$coord, color = input$colorACPsupp, axes = c(input$dim1,input$dim2))
-            
             ggplotly(g)
         })
     })
@@ -220,22 +211,19 @@ shinyServer(function(input, output, session) {
                               palette = terrain.colors(9),
                               addEllipses = TRUE, 
                               legend.title = "Star type", axes = c(input$dim1,input$dim2)) %>% 
-                
                 fviz_add(res.pca()$quali.sup$coord, color = "black", axes = c(input$dim1,input$dim2))
-            
             ggplotly(g)
         })
         
     })
     
-    ## ---- acp-variables --------------------
+    ## ---- 3.b) Graphe des variables --------------------
     res.pca.quali <- reactive({
         PCA.s.quali <- PCA(stars.V2, quali.sup=5:7, axes = c(input$dim1,input$dim2))
         PCA.s.quali
     })
     
     output$ACP_var<-renderPlotly({
-        
         input$goACP
         isolate({
             ggplotly(fviz_pca_var(res.pca.quali(), col.var = "cos2", axes = c(input$dim1,input$dim2),
@@ -245,7 +233,7 @@ shinyServer(function(input, output, session) {
         })
     })
     
-    ## ---- acp-valeurs-propres --------------------
+    ## ---- 3.c) Variance expliquée --------------------
     output$graph_vp<-renderPlotly({
         input$goACP
         isolate({
@@ -264,8 +252,9 @@ shinyServer(function(input, output, session) {
         
         input$goACP
         isolate({
+            
+            # on cherche à calculer le quantile de l'inertie des 2 premières dimensions si on permute le jeux de données
             permuteLigne <- function(v) {return(v[sample(1:length(v),replace=FALSE)])}
-            #Xnew <- apply(X,2,permuteLigne)
             
             test <- stars[,1:4]
             test
@@ -282,21 +271,34 @@ shinyServer(function(input, output, session) {
                 iner <- c(iner,PCA(mat,graph=F)$eig[2,3])
             }
             
-            # calcul du quantile
-            # 56.89314%
+            # calcul de l'inertie du quantile (=57%)
             a <- quantile(iner,0.95)
             
-            # % d'inertie du jeux de donnees n'est pas plus grand que le quantile 95%
-            # 83.85818%
+            # % l'inertie du jeux de donnees (=84%) est plus grand que le quantile 95%
             b <- res.pca.quali()$eig[2,3]
             
-            print(paste0("Le quantile des lignes permutées est ",a, "et l'inertie des deux premières dimensions est ",b))
+            print(paste0("Le quantile de l'inertie avec des lignes permutées est ",a, "et l'inertie de nos 2 premières dimensions est ",b))
         })
     })
     
-    ############ ---- ONGLET 4  : CLASSIFIEUR, TYPE~VARIABLES ----------------
+    ## ---- 3.d) Résumé --------------------
     
-    ##### Diagramme HR #######
+    output$summaryACP <- renderPrint({
+        input$goACP
+        isolate({
+            PCA.s.quali <- PCA(stars.V2, quali.sup=5:7, axes = c(input$dim1,input$dim2))
+            summary(PCA.s.quali, ncp=max(input$dim1,input$dim2))
+        })
+    })
+    
+    
+    
+    
+    
+    
+    ############ ---- ONGLET 4  : CLASSIFICATION DES ETOILES ----------------
+    
+    ############ ---- ONGLET 4.1  : CLASSIFICATION OFFICIELLE DES ETOILES ----------------
     
     output$diagramme_HR<-renderPlot({
         data <- stars.V2 %>% filter(type %in% input$choix_var_hrdiag)
@@ -313,8 +315,11 @@ shinyServer(function(input, output, session) {
                   plot.title = element_text(size=15, face="bold.italic"))
     })
     
+    ############ ---- ONGLET 4.2  : MODELE PREDICTIF ----------------
     
-    ############# Modèle prédictif ################
+    ############# 1) Choix du modèle ################
+    
+    ## ---- 1.a) Sommaire du modèle --------------------
     
     mod <- reactive({
         data <- stars.V2 %>% select(1:5)
@@ -335,6 +340,8 @@ shinyServer(function(input, output, session) {
         summary(mod())$coeff
     })
     
+    ## ---- 1.b) Matrice de confusion --------------------
+    
     pred.mod.mult <- reactive({
         data <- stars.V2 %>% select(1:5)
         predict(mod(), newdata = data)
@@ -346,11 +353,12 @@ shinyServer(function(input, output, session) {
         paste0("Accuracy : ", mean(pred.mod.mult()== data$type))
     })
     
-
+    ## ---- 1.c) Recherche du meilleur modèle au sens de l'AIC et BIC --------------------
+    
     output$aic_bic <- renderPlot({
         data <- stars.V2 %>% select(luminosite, temperature, magnitude, rayon, type)
         select <- summary(regsubsets(type~.,data=as.data.frame(data),nvmax=4))
-
+        
         data <- stars.V2 %>% select(luminosite, temperature, magnitude, rayon, type)
         bic <- select$bic
         aic <- bic - (log(nrow(data))-2)*(1:4)
@@ -358,22 +366,23 @@ shinyServer(function(input, output, session) {
              col="darkgray",main="Sélection exhaustive du modèle",cex.lab=1.25,cex.axis=1.25,cex.main=1.25,lwd=2)
         lines(1:4,aic,type="b",pch=17,lwd=2,col="coral1")
         legend("topleft",lwd=2,lty=1,pch=c(16,17),col=c("darkgray","coral1"),bty="n",cex=1.25,legend=c("BIC","AIC"))
-
+        
     })
-
+    
     output$coef_best_mod <- renderPrint({
         best.mod <- multinom(type~temperature+magnitude+rayon, data = stars.V2)
         summary(best.mod)$coeff
     })
     
+    ############# 2) Prédire une nouvelle étoile ################
+    
     new_star <- reactive({
-        pred <- predict(best.mod, newdata=data.frame('temperature' = as.numeric(input$temperature), 
-                                                     'luminosite' = as.numeric(input$luminosite),
-                                                     'rayon' = as.numeric(input$rayon), 
+        pred <- predict(best.mod, newdata=data.frame('temperature' = as.numeric(input$temperature),
                                                      'magnitude' = as.numeric(input$magnitude)))
         pred
     })
     
+    # ERREUR ICI :
     output$nouvelle_etoile <- reactive({
         input$gopred
         isolate({
@@ -407,7 +416,8 @@ shinyServer(function(input, output, session) {
             ggsave(file,plotInput())
         }
     )
-    ############# Arbre de décision ############
+    
+    ############ ---- ONGLET 4.3  : ARBRE DE DECISION ----------------
     
     CART_index <- reactive({
         index <- sample(nrow(stars.V2), input$nb_ech_app)
@@ -450,7 +460,7 @@ shinyServer(function(input, output, session) {
         plotcp(mod_CART())
     })
     
-    ############# Classification Ascendante Hiérarchique ############
+    ############ ---- ONGLET 4.4  : CLASSIFICATION ASCENDANTE HIERARCHIQUE ----------------
     
     output$choix_ultrametric <- renderUI({
         awesomeRadio(
@@ -471,23 +481,34 @@ shinyServer(function(input, output, session) {
         cah <- hclust(d, method=input$choix_ultrametric)
         cah
     })
+    
+    ############# 1) Inertie intra-groupe ################
+    
     output$fct_perte_coude <- renderPlotly({
         data <- data.frame("inertie" = rev(cah()$height)[1:20], "clusters" = 1:20)
         graph <- ggplot(data, aes(y= inertie, x=clusters)) + geom_line(col="#75b8d1")+geom_point(col="#75b8d1") +labs(title="Fonction de perte")+ylab("Inertie intra-groupe")+ xlab("Nombre de clusters") + theme_minimal()
         ggplotly(graph)
     })
     
+    ############# 2) Statistiques de Gap ################
+    
     output$fct_perte_gap <- renderPlotly({
         fviz_nbclust(matrice(),kmeans, method="gap_stat", k.max = 10) + labs(subtitle = "Gap Statistic method")
     })
+    
+    ############# 3) Méthode silhouette ################
     
     output$fct_perte_silhouette <- renderPlotly({
         fviz_nbclust(matrice(), kmeans, method="silhouette", k.max = 10) + labs(subtitle = "Silhouette method")
     })
     
+    ############# 4) Dendogramme ################
+    
     output$plot_dendogramme <- renderPlotly({
         ggplotly(fviz_dend(cah(), k = input$nb_clusters, show_labels = FALSE, rect = TRUE)+theme(legend.position = "none"))
     })
+    
+    ############# 5) Diagramme HR ################
     
     output$hr_diag_clusters <- renderPlotly({
         km <- kmeans(matrice(), centers = input$nb_clusters)
@@ -505,8 +526,5 @@ shinyServer(function(input, output, session) {
             theme(plot.title = element_text(hjust = 0.5,size=9))
         ggplotly(graph)
     })
-    
-    ############ ---- ONGLET 4 : A PROPOS DE NOUS ----------------
-    
     
 })

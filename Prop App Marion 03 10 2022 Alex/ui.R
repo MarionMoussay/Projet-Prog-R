@@ -22,7 +22,7 @@ fluidPage(
    navbarPage("Caractérisation des étoiles", 
               theme = shinytheme("sandstone"),
               
-              ########## ONGLET 1 ###############
+              ############ ---- ONGLET 1  : CONTEXTE ----------------
               
               tabPanel("Contexte",
                        
@@ -31,11 +31,12 @@ fluidPage(
                        
               ),
               
-              ## JEU DE DONNEES BRUT
+              ############ ---- ONGLET 2 : JEU DE DONNEES --------------------
               
               tabPanel("Jeu de données",
                        tabsetPanel(
-                          ## TELECHARGER CSV
+                          
+                          #### 1) Télécharger les données #####################
                           
                           tabPanel("Télécharger les données", 
                                    h1("Jeu de données"),
@@ -46,7 +47,7 @@ fluidPage(
                                    br()
                           ),
                           
-                          ## RESUMES  
+                          #### 2) Résumés ###############################
                           
                           tabPanel("Résumés", 
                                    h2("Résumé du tableau"),
@@ -59,14 +60,14 @@ fluidPage(
                                    
                           ),
                           
-                          ## DISTRIBUTIONS GLOBALES
+                          #### 3) Distribution des variables ###############################
                           
                           tabPanel("Distribution des variables",
                                    
                                    verticalLayout(fluid=TRUE,
                                                   fluidRow(
                                                      
-                                                     ## BOXPLOT VARIABLES QUANTITATIF ##
+                                                     # Distribution des caractéristiques numériques :
                                                      
                                                      h2("Distribution des caractéristiques numériques"),
                                                      column(width = 3,
@@ -84,7 +85,7 @@ fluidPage(
                                                   ), 
                                                   fluidRow(
                                                      
-                                                     ## GRAPHES BATONS VARIABLES QUALITATIVES ##
+                                                     # Effectifs des caractéristiques catégorielles :
                                                      
                                                      h2("Effectifs des caractéristiques catégorielles"),
                                                      column(width = 3,
@@ -108,7 +109,7 @@ fluidPage(
                        
               ),
               
-              ########## ONGLET 2 ###############
+              ############ ---- ONGLET 3 : FOCUS SUR LES CARACTERISTIQUES DES ETOILES --------------------
               
               # L'objectif est ici de mieux visualiser les données selon le type de l'étoile
               
@@ -117,14 +118,14 @@ fluidPage(
                        
                        tabsetPanel(
                           
-                          ## STATISTIQUES DESCRIPTIVES 
+                          #### 1) Statistiques descriptives ############# 
                           
                           tabPanel("Statistiques descriptives",
                                    
                                    verticalLayout(fluid=TRUE,
                                                   fluidRow(
                                                      
-                                                     ## BOXPLOT PAR TYPE D'ETOILES ##
+                                                     # Boxplot par type d'étoile :
                                                      
                                                      h2("Distribution des caractéristiques numériques selon les types d'étoiles"),
                                                      column(width = 3,
@@ -142,7 +143,7 @@ fluidPage(
                                                   ), 
                                                   fluidRow(
                                                      
-                                                     ## GRAPHES BATONS PAR TYPE D'ETOILES ##
+                                                     # Graphe bâton par type d'étoile :
                                                      
                                                      h2("Effectifs des caractéristiques catégorielles selon les types d'étoiles"),
                                                      column(width = 3,
@@ -164,10 +165,13 @@ fluidPage(
                                    ), 
                           ),
                           
+                          ### 2) Liaison entre les variables ##########
+                          
                           tabPanel("Liaison entre les variables", 
                                    verticalLayout(
                                       
-                                      ## CORRELOGRAMME ET TEST DE CORRELATION
+                                      # Entre les variables numériques (corrélation) :
+                                      
                                       sidebarLayout(
                                          sidebarPanel(width = 8,
                                                       h2("Entre les variables numériques :"),
@@ -176,6 +180,9 @@ fluidPage(
                                                          column(width = 8,plotlyOutput("graph_corr", height = "400px" ))
                                                       ),
                                          ),
+                                         
+                                         # Entre les variables catégorielles (Test de pearson) :
+                                         
                                          mainPanel(width = 4,
                                                    ## KHI-DEUX
                                                    h2("Entre les variables catégorielles :"),
@@ -183,6 +190,8 @@ fluidPage(
                                                    h4("L'hypothèse d'indépendance entre les deux variables est rejetée."),
                                          ),
                                       ), 
+                                      
+                                      # Analyse de la variance :
                                       
                                       h2("Analyse de la variance"), 
                                       
@@ -205,13 +214,14 @@ fluidPage(
                                          )
                                       )
                                    ),
+                                   
+                                   br(),
+                                   br(),
                           ),
                           
-                          ##### ANALYSE STRUCTURE #####
+                          ### 3) Analyse de la structure #################
                           
                           tabPanel("Analyse de la structure",
-                                   
-                                   ## ACP
                                    
                                    h2("Analyse en composantes principales : analyse de la structure du jeu de données"),
                                    fluidRow(
@@ -232,17 +242,28 @@ fluidPage(
                                       column(width = 9,
                                              tabsetPanel(id = "vizACP",
                                                          
+                                                         ## ---- 3.a) Graphe des individus --------------------
+                                                         
                                                          tabPanel("Graphe des individus",
                                                                   plotlyOutput("ACP_ind"),
                                                                   plotlyOutput("ACP_ind_ellipse")
                                                          ),
+                                                         
+                                                         ## ---- 3.b) Graphe des variables --------------------
+                                                         
                                                          tabPanel("Graphes des variables",
                                                                   plotlyOutput("ACP_var")
                                                          ),
+                                                         
+                                                         ## ---- 3.c) Variance expliquée --------------------
+                                                         
                                                          tabPanel("Variance expliquée",
                                                                   plotlyOutput("graph_vp"),
                                                                   textOutput("text_vp")
                                                          ),
+                                                         
+                                                         ## ---- 3.d) Résumé --------------------
+                                                         
                                                          tabPanel("Résumé",
                                                                   verbatimTextOutput("summaryACP")
                                                          )
@@ -257,22 +278,22 @@ fluidPage(
                        ),
               ),
               
-              ########## ONGLET 3 ###############
+              ############ ---- ONGLET 4  : CLASSIFICATION DES ETOILES ----------------
               
               navbarMenu("Classification des étoiles",
                          
-                         ##### DIAGRAMME HR ####
+                         ############ ---- ONGLET 4.1  : CLASSIFICATION OFFICIELLE DES ETOILES ----------------
                          
                          tabPanel("Classification officielle des étoiles",
                                   
-                                  ### Objectif : poser le contexte de la classification d'étoiles, présenter les différents types d'étoiles et les variables caractérisant les groupes
-                                  ### -> Mise en parallèle direct de la théorie versus les données 
-                                  ### Toutes les informations sur un seul diagramme :
-                                  ### - taille des points = luminosité, 
-                                  ### - forme des points = classes spectrales, 
-                                  ### - couleur = type d'étoiles, 
-                                  ### - abcisses = température 
-                                  ### - ordonnées = magnitude 
+                                  # Objectif : poser le contexte de la classification d'étoiles, présenter les différents types d'étoiles et les variables caractérisant les groupes
+                                  # -> Mise en parallèle direct de la théorie versus les données 
+                                  # Toutes les informations sur un seul diagramme :
+                                  # - taille des points = luminosité, 
+                                  # - forme des points = classes spectrales, 
+                                  # - couleur = type d'étoiles, 
+                                  # - abcisses = température 
+                                  # - ordonnées = magnitude 
                                   
                                   h1("Le diagramme de Hertzsprung-Russell, la réference officielle de classification des étoiles"),
                                   h2("Objectif : définir le type d'une étoile en fonction de ses caractéristiques."),
@@ -302,19 +323,22 @@ fluidPage(
                          
                          
                          
-                         ## MODELE DE PREDICTION #####
+                         ############ ---- ONGLET 4.2  : MODELE PREDICTIF ----------------
                          
                          tabPanel("Modèle prédictif", 
                                   tabsetPanel(
+                                     
+                                     ############# 1) Choix du modèle ################
+                                     
                                      tabPanel("Choix du modèle",
                                               verticalLayout(fluid = TRUE, 
                                                              
-                                                             ## Modèle multinomiale
+                                                             # Modèle multinomiale
                                                              
-                                                             ## Objectif : permettre dans un premier temps à l'utilisateur de choisir
-                                                             ##   - les variables pour construire le modèle multinomiale;
-                                                             ##   - la métrique de validation.
-                                                             ## -> ressort le summary, les valeurs prédites + matrices de confusion + critères 
+                                                             # Objectif : permettre dans un premier temps à l'utilisateur de choisir
+                                                             # - les variables pour construire le modèle multinomiale;
+                                                             # - la métrique de validation.
+                                                             # -> ressort le summary, les valeurs prédites + matrices de confusion + critères 
                                                              
                                                              h3("Modèle multinomiale"),
                                                              fluidRow(
@@ -323,14 +347,22 @@ fluidPage(
                                                                                                               choices = c("Température"="temperature", "Luminosité"="luminosite", "Rayon"="rayon", "Magnitude absolue"="magnitude"),
                                                                                                               selected = c("Température"="temperature", "Luminosité"="luminosite", "Rayon"="rayon", "Magnitude absolue"="magnitude"))),
                                                                               mainPanel(
-                                                                                 tabsetPanel(tabPanel("Sommaire du modèle",verbatimTextOutput("resum_mod")),
+                                                                                 tabsetPanel(
+                                                                                    
+                                                                                    ## ---- 1.a) Sommaire du modèle --------------------
+                                                                                    
+                                                                                    tabPanel("Sommaire du modèle",verbatimTextOutput("resum_mod")),
+                                                                                    
+                                                                                    ## ---- 1.b) Matrice de confusion --------------------
+                                                                                    
                                                                                              tabPanel("Matrice de confusion",verbatimTextOutput("pred"))
                                                                                  ),
                                                                               )
                                                                 )
                                                              ),
                                                              
-                                                             ## Meilleur modèle  
+                                                             ## ---- 1.c) Recherche du meilleur modèle au sens de l'AIC et BIC --------------------
+                                                             
                                                              h4("________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________"),
                                                              h3("Recherche du meilleur modèle au sens de l'AIC et BIC"),
                                                              fluidRow(
@@ -344,13 +376,14 @@ fluidPage(
                                                              )
                                               )
                                      ),
+                                     
+                                     ############# 2) Prédire une nouvelle étoile ################
+                                     
                                      tabPanel("Prédire une nouvelle étoile", 
                                               sidebarLayout(fluid=TRUE, 
                                                             sidebarPanel(
                                                                h3("Renseignez ci dessous des valeurs pour votre nouvelle étoile"),
                                                                textInput("temperature", "Température (entre 1939 et 40 000) :", "11550"),
-                                                               textInput("luminosite", "Luminosité (entre 0 et 850 000) :", "8800"),
-                                                               textInput("rayon", "Rayon (entre 0 et 1950) :", "6.0450"),
                                                                textInput("magnitude", "Magnitude (entre -12 et 20) :", "-3.35"),
                                                                textInput("titre_new_etoile", "Nom de votre étoile", "Mon étoile"),
                                                                actionButton("gopred", "VALIDER")
@@ -361,13 +394,15 @@ fluidPage(
                                                                plotOutput("new_pred_plot"),
                                                                downloadButton('downloadPlot', 'Télécharger le diagramme')
                                                             ),
-                                              )
+                                              ),
+                                              br(),
+                                              br()
                                      )
                                   )
                                   
                          ),
                          
-                         ## ARBRE DE DECISION CART
+                         ############ ---- ONGLET 4.3  : ARBRE DE DECISION ----------------
                          
                          tabPanel("Arbre de décision CART",
                                   h2("Arbre de décision CART"),
@@ -394,7 +429,7 @@ fluidPage(
                                   )
                          ),
                          
-                         ## CLASSIFICATION ASCENDANTE HIERARCHIQUE
+                         ############ ---- ONGLET 4.4  : CLASSIFICATION ASCENDANTE HIERARCHIQUE ----------------
                          
                          tabPanel("Classification Ascendante Hiérarchique",
                                   fluidRow( 
@@ -411,8 +446,17 @@ fluidPage(
                                         span(tags$i(h3("Fonctions de perte")), style="color:#045a8d"),
                                         span(tags$i(h5("L'affichage des fonctions de perte peut prendre un peu de temps.")), style="color:#045a8d"),
                                         tabsetPanel(
+                                           
+                                           ############# 1) Inertie intra-groupe ################
+                                           
                                            tabPanel("Inertie intra-groupe", plotlyOutput("fct_perte_coude")),
+                                           
+                                           ############# 2) Statistiques de Gap ################
+                                           
                                            tabPanel("Statistiques de GAP", plotlyOutput("fct_perte_gap")),
+                                           
+                                           ############# 3) Méthode silhouette ################
+                                           
                                            tabPanel("Méthode silhouette", plotlyOutput("fct_perte_silhouette"))
                                            
                                            
@@ -429,12 +473,18 @@ fluidPage(
                                               mainPanel(
                                                  column(6,
                                                         tabsetPanel(
+                                                           
+                                                           ############# 4) Dendogramme ################
+                                                           
                                                            tabPanel("Dendogramme", plotlyOutput("plot_dendogramme"))
                                                         )
                                                  ),
                                                  column(6,
                                                         tabsetPanel(
-                                                           tabPanel("'HR-Diagram'", plotlyOutput("hr_diag_clusters"))
+                                                           
+                                                           ############# 5) Diagramme HR ################
+                                                           
+                                                           tabPanel("'Diagramme HR'", plotlyOutput("hr_diag_clusters"))
                                                         )
                                                  ),
                                                  
