@@ -1,18 +1,43 @@
+# Ci-joint notre plan. Les titres sont mis de sorte qu'avec (Top Level) il est simple 
+# ... de naviguer à la partie souhaitée. Les titres sont identiques dans l'UI que dans 
+# ... le SERVER, pour permettre de rapidement faire le lien entre la partie UI et la 
+# ... partie SERVER associée.
 
-## Fil conducteur : 
 
-## ONGLET 1 - CONTEXTE : Quel est le contexte de recherche / enjeux 
-## ONGLET 2 - FOCUS SUR LES DONNEES : 
-## Comment les variables sont-elles distribués selon le type de l'étoile, quelle est la structure du jeu de données ?
-##    - Jeu de données brut;
-##    - Résumés (tableau et statistique);
-##    - Statistiques descriptives (visualisation des variables quantitatives et qualitatives en fonction du type d'étoiles);
-##    - Analyse de la structure du jeu de données : corrélations + ACP 
-## ONGLET 3 - CLASSIFICATION DES ETOILES : comment le type d'étoiles est définit ?
-##    - Classification officielle : diagramme HR
-##    - Modèles de prédictions : modèle de régression (l'objectif étant de prédire un type d'étoile pour des nouvelles entrées de variable)
-##    - Arbre de décision CART
-##    - Classification Ascendante Hiérarchique : comparaison des groupes de sortie 
+
+
+
+# ONGLET 1  : CONTEXTE (Quel est le contexte de recherche / enjeux)
+# ONGLET 2 : JEU DE DONNEES
+#     1) Télécharger les données
+#     2) Résumés
+#     3) Distribution des variables
+# ONGLET 3 : FOCUS SUR LES CARACTERISTIQUES DES ETOILES (Comment les variables sont-elles 
+# ... distribués selon le type de l'étoile, quelle est la structure du jeu de données ?)
+#     1) Statistiques descriptives
+#     2) Liaison entre les variables
+#     3) Analyse de la structure 
+#           3.a) Graphe des individus
+#           3.b) Graphe des variables
+#           3.c) Variance expliquée
+#           3.d) Résumé
+# ONGLET 4  : CLASSIFICATION DES ETOILES (comment le type d'étoiles est définit ?)
+# ONGLET 4.1  : CLASSIFICATION OFFICIELLE DES ETOILES
+# ONGLET 4.2  : MODELE PREDICTIF
+#     1) Choix du modèle
+#           1.a) Sommaire du modèle
+#           1.b) Matrice de confusion
+#           1.c) Recherche du meilleur modèle au sens de l'AIC et BIC
+#     2) Prédire une nouvelle étoile (l'objectif étant de prédire un type d'étoile pour des nouvelles entrées de variable)
+# ONGLET 4.3  : ARBRE DE DECISION
+# ONGLET 4.4  : CLASSIFICATION ASCENDANTE HIERARCHIQUE (comparaison des groupes de sortie)
+#     1) Inertie intra-groupe
+#     2) Statistiques de Gap
+#     3) Méthode silhouette
+#     4) Dendogramme
+#     5) Diagramme HR
+
+
 
 
 
@@ -385,6 +410,7 @@ fluidPage(
                                                                h3("Renseignez ci dessous des valeurs pour votre nouvelle étoile"),
                                                                textInput("temperature", "Température (entre 1939 et 40 000) :", "11550"),
                                                                textInput("magnitude", "Magnitude (entre -12 et 20) :", "-3.35"),
+                                                               textInput("rayon", "Rayon (entre 0 et 2000) :", "0.16"),
                                                                textInput("titre_new_etoile", "Nom de votre étoile", "Mon étoile"),
                                                                actionButton("gopred", "VALIDER")
                                                             ), 
