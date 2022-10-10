@@ -196,7 +196,7 @@ shinyServer(function(input, output, session) {
     })
     
     output$summary_anova <- renderPrint({
-        summary(mod_anova())$coefficients
+        Anova(mod_anova())
     })
     
     output$shapiro <- renderDataTable({
@@ -208,15 +208,20 @@ shinyServer(function(input, output, session) {
         ggqqplot(residuals(mod_anova()), title = "QQ-plot")
     })
     
-    output$plot_mixte <- renderPlotly({
-        ggplot(stars.V2, aes(y = get(input$choix_var_anova), x = (..count..)/sum(..count..)*100, fill = spectre)) +
-            geom_bar() +
-            ylab(legend) + 
-            labs(title="Effectifs selon le spectre (%)")+
-            theme_minimal() +
-            theme(axis.line = element_line(colour = "black"), 
-                  axis.title.x = element_blank())+
-            scale_fill_manual(legend, values = terrain.colors(6))
+    output$plot_mixte_spectre <- renderAmCharts({
+        amBoxplot(as.formula(paste(input$choix_var_anova,"~spectre")), 
+                  data=stars.V2, 
+                  ylab=input$choix_var_anova, 
+                  main=paste0("Distribution en fonction du spectre de la variable ", input$choix_var_anova),
+                  las=2, xlab="", col=terrain.colors(7))
+    })
+    
+    output$plot_mixte_couleur <- renderAmCharts({
+        amBoxplot(as.formula(paste(input$choix_var_anova,"~couleur")), 
+                  data=stars.V2, 
+                  ylab=input$choix_var_anova, 
+                  main=paste0("Distribution en fonction de la couleur de la variable ", input$choix_var_anova),
+                  las=2, xlab="", col=terrain.colors(10))
     })
     
     
@@ -340,7 +345,7 @@ shinyServer(function(input, output, session) {
     ## ---- 1.a) Sommaire du modèle --------------------
     
     mod <- reactive({
-        data <- stars.V2 %>% select(1:5)
+        data <- stars.V2 
         
         if (length(input$choix_var_mod_mult)== 0){
             mod <- multinom(type~1, data=data)
@@ -349,7 +354,7 @@ shinyServer(function(input, output, session) {
             for (i in 1:(length(input$choix_var_mod_mult))){
                 var <- paste0(var, paste0("+", input$choix_var_mod_mult[i]))
             }
-            formul <- paste0("type~1+",var )
+            formul <- paste0("type~1+",var)
             mod <- multinom(as.formula(formul), data=data)
         }
     })

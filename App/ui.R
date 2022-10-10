@@ -19,13 +19,13 @@
 #           3.c) Variance expliquée
 #           3.d) Résumé
 # ONGLET 4  : CLASSIFICATION DES ETOILES (comment le type d'étoiles est définit ?)
-# ONGLET 4.1  : MODELE PREDICTIF
+# ONGLET 4.1  : CLASSIFICATION OFFICIELLE DES ETOILES
+# ONGLET 4.2  : MODELE PREDICTIF
 #     1) Choix du modèle
 #           1.a) Sommaire du modèle
 #           1.b) Matrice de confusion
 #           1.c) Recherche du meilleur modèle au sens de l'AIC et BIC
 #     2) Prédire une nouvelle étoile (l'objectif étant de prédire un type d'étoile pour des nouvelles entrées de variable)
-# ONGLET 4.2  : CLASSIFICATION OFFICIELLE DES ETOILES
 # ONGLET 4.3  : ARBRE DE DECISION
 # ONGLET 4.4  : CLASSIFICATION ASCENDANTE HIERARCHIQUE (comparaison des groupes de sortie)
 #     1) Inertie intra-groupe
@@ -36,43 +36,43 @@
 
 
 
+
+fluidPage(
+   # shinythemes::themeSelector(),
+   # navbarPage
+   navbarPage("Caractérisation des étoiles", 
+              theme = shinytheme("sandstone"),
               
-              fluidPage(
-                # shinythemes::themeSelector(),
-                # navbarPage
-                navbarPage("Caractérisation des étoiles", 
-                           theme = shinytheme("sandstone"),
-                           
-                           ############ ---- ONGLET 1 : CONTEXTE --------------------
-                           
-                           tabPanel("Contexte",
-                                    strong("Pourquoi classifier les étoiles?", align = "center"),
-                                    br(),
-                                    br(),
-                                    p("Avec l'émergence de nouvelles technologies de pointes, l'analyse des données constitue un point essentiel pour de nombreux domaines tels que la biologie, la cosmologie ou l'astrophysique par exemple."),
-                                    br(),
-                                    strong("Ici, nous nous interessons à la classification des étoiles.", align = "center"), 
-                                    br(),
-                                    br(),
-                                    p("Grâce à des données morphologiques où à des paramètres liés à la structure de l'objet et à la photométrie, il est possible de séparer les étoiles en différents groupes.",em("(Bertin & Arnouts 1996, Henrion et al. 2011, Molino et al. 2014, Diaz-García et al. 2019, Lopez-Sanjuan et al. 2019)", style= "color:black")),
-                                    br(),
-                                    p("L'objectif de notre application est ainsi de pouvoir déterminer l'appartenance d'une étoile à tel ou tel groupes selon 6 modalités."),
-                                    br(),
-                                    p("Pour cela, nous disposons d'un jeu de donnés contenant 240 observations d'étoiles décrites selon 6 variables qui sont:"),
-                                    code(" La température de surface (en Kelvin), la luminosité relative (au Soleil), le rayon relatif (au Soleil), la magnitude absolue, la couleur, la classe spectrale." , align = "center"),
-                                    br(),
-                                    br(),
-                                    strong("Voici une illustration de l'apparence des différents types d'étoiles"),
-                                    br(),
-                                    br(),
-                                    img(src = "type_stars.jpg", height = 150, width = 800, align = "right"),
-                                    br(),
-                                    br()
-                                    
-                                    ## Magnitude absolue : luminosité intrasèque d'un astre (à contrario de la magnitude apparente qui correspond à une mesure d'irradiance)
-                                    
-                                    
-                           ),
+              ############ ---- ONGLET 1 : CONTEXTE --------------------
+              
+              tabPanel("Contexte",
+                       strong("Pourquoi classifier les étoiles?", align = "center"),
+                       br(),
+                       br(),
+                       p("Avec l'émergence de nouvelles technologies de pointes, l'analyse des données constitue un point essentiel pour de nombreux domaines tels que la biologie, la cosmologie ou l'astrophysique par exemple."),
+                       br(),
+                       strong("Ici, nous nous interessons à la classification des étoiles.", align = "center"), 
+                       br(),
+                       br(),
+                       p("Grâce à des données morphologiques où à des paramètres liés à la structure de l'objet et à la photométrie, il est possible de séparer les étoiles en différents groupes.",em("(Bertin & Arnouts 1996, Henrion et al. 2011, Molino et al. 2014, Diaz-García et al. 2019, Lopez-Sanjuan et al. 2019)", style= "color:black")),
+                       br(),
+                       p("L'objectif de notre application est ainsi de pouvoir déterminer l'appartenance d'une étoile à tel ou tel groupes selon 6 modalités."),
+                       br(),
+                       p("Pour cela, nous disposons d'un jeu de donnés contenant 240 observations d'étoiles décrites selon 6 variables qui sont:"),
+                       code(" La température de surface (en Kelvin), la luminosité relative (au Soleil), le rayon relatif (au Soleil), la magnitude absolue, la couleur, la classe spectrale." , align = "center"),
+                       br(),
+                       br(),
+                       strong("Voici une illustration de l'apparence des différents types d'étoiles"),
+                       br(),
+                       br(),
+                       img(src = "type_stars.jpg", height = 150, width = 800, align = "right"),
+                       br(),
+                       br()
+                       
+                       ## Magnitude absolue : luminosité intrasèque d'un astre (à contrario de la magnitude apparente qui correspond à une mesure d'irradiance)
+                       
+                       
+              ),
               
               ############ ---- ONGLET 2 : JEU DE DONNEES --------------------
               
@@ -215,43 +215,45 @@
                                       br(),
                                       tabsetPanel(
                                          tabPanel("Etude selon la nature",
-                                                      
-                                                      # Entre les variables numériques (corrélation) :
-                                                      
-                                                      h2("Entre les variables numériques : matrice des corrélations"),
-                                                      fluidRow(
-                                                         column(width = 4,verbatimTextOutput("corr_result")),
-                                                         column(width = 8,plotlyOutput("graph_corr", height = "400px" ))
-                                                      ),
-                                                      
+                                                  
+                                                  # Entre les variables numériques (corrélation) :
+                                                  
+                                                  h2("Entre les variables numériques : matrice des corrélations"),
+                                                  fluidRow(
+                                                     column(width = 4,verbatimTextOutput("corr_result")),
+                                                     column(width = 8,plotlyOutput("graph_corr", height = "400px" ))
+                                                  ),
+                                                  
                                                   h3("_____________________________________________________________________________________________________________________________________________________________________"),
-                                                      # Entre les variables catégorielles (Test de pearson) :
-                                                      
-                                                      h2("Entre les variables catégorielles : test du khi-deux"),
-                                                      h3("Le test du khi-deux d'indépendance vérifie si deux variables sont susceptibles d'être liées ou pas."),
-                                                      verbatimTextOutput("khi2"),
-                                                      h3("L'hypothèse d'indépendance entre les deux variables est rejetée."),
+                                                  # Entre les variables catégorielles (Test de pearson) :
+                                                  
+                                                  h2("Entre les variables catégorielles : test du khi-deux"),
+                                                  h3("Le test du khi-deux d'indépendance vérifie si deux variables sont susceptibles d'être liées ou pas."),
+                                                  verbatimTextOutput("khi2"),
+                                                  h3("L'hypothèse d'indépendance entre les deux variables est rejetée."),
                                          ),
                                          
                                          tabPanel("Etude mixte",
-                                                  
-                                                  # Analyse de la variance :
-                                                  
-                                                  h2("Analyse de la variance"), 
                                                   sidebarLayout(
                                                      sidebarPanel(width=4,
                                                                   
+                                                                  # Analyse de la variance :
+                                                                  
+                                                                  h2("Analyse de la variance"),
                                                                   awesomeRadio(
                                                                      inputId = "choix_var_anova",
                                                                      label = "Choisissez la variable numérique qui composera le modèle anova :", 
                                                                      choices = list("Température"="temperature", "Luminosité" ="luminosite", "Rayon"="rayon", "Magnitude"="magnitude")
                                                                   ),
                                                                   verbatimTextOutput("summary_anova"),
-
+                                                                  
                                                      ),
                                                      mainPanel(width=8,
+                                                               h2("Distributions des variables numériques selon les modalités de spectre et couleur"),
                                                                verticalLayout(
-                                                                  plotlyOutput("plot_mixte")
+                                                                  amChartsOutput("plot_mixte_spectre"),
+                                                                  amChartsOutput("plot_mixte_couleur"),
+                                                                  
                                                                )
                                                      )
                                                   ),
@@ -259,88 +261,69 @@
                                                   
                                          ),
                                       ), 
-                                      
-                                      
-                                      
-                                      
-                                      
-                                      # sidebarLayout(
-                                      #    sidebarPanel(width=4,
-                                      #                 
-                                      #    ),
-                                      #    mainPanel(width=8,
-                                      #              verticalLayout(
-                                      #                 h4("Normalité des résidus"),
-                                      #                 plotlyOutput("qqplot"),
-                                      #                 dataTableOutput("shapiro"),
-                                      #                 br()
-                                      #              )
-                                      #    )
-                                      # )
+                                      br(),
+                                      br(),
                                    ),
                                    
-                                   br(),
-                                   br(),
+                                   ### 3) Analyse de la structure #################
+                                   
+                                   tabPanel("Analyse de la structure",
+                                            
+                                            h2("Analyse en composantes principales : analyse de la structure du jeu de données"),
+                                            fluidRow(
+                                               column(width = 3,
+                                                      wellPanel(
+                                                         colourpicker::colourInput(inputId = "colorACP", label = "Couleur :", value = "#E61C34"),
+                                                         colourpicker::colourInput(inputId = "colorACPsupp", label = "Couleur supplémentaire :", value = "#4E4EBA"),
+                                                         
+                                                         numericInput("dim1", "Première dimension:", 1,
+                                                                      min = 1, max = 4),
+                                                         
+                                                         numericInput("dim2", "Seconde dimension:", 2,
+                                                                      min = 1, max = 4),
+                                                         
+                                                         actionButton("goACP", "VALIDER")
+                                                      )
+                                               ),
+                                               column(width = 9,
+                                                      tabsetPanel(id = "vizACP",
+                                                                  
+                                                                  ## ---- 3.a) Graphe des individus --------------------
+                                                                  
+                                                                  tabPanel("Graphe des individus",
+                                                                           plotlyOutput("ACP_ind"),
+                                                                           plotlyOutput("ACP_ind_ellipse")
+                                                                  ),
+                                                                  
+                                                                  ## ---- 3.b) Graphe des variables --------------------
+                                                                  
+                                                                  tabPanel("Graphes des variables",
+                                                                           plotlyOutput("ACP_var")
+                                                                  ),
+                                                                  
+                                                                  ## ---- 3.c) Variance expliquée --------------------
+                                                                  
+                                                                  tabPanel("Variance expliquée",
+                                                                           plotlyOutput("graph_vp"),
+                                                                           br(),
+                                                                           br(),
+                                                                           textOutput("text_vp")
+                                                                  ),
+                                                                  
+                                                                  ## ---- 3.d) Résumé --------------------
+                                                                  
+                                                                  tabPanel("Résumé",
+                                                                           verbatimTextOutput("summaryACP")
+                                                                  )
+                                                      )
+                                               )
+                                            ),
+                                            br(),
+                                            br(),
+                                            
+                                            
+                                   )
                           ),
-                          
-                          ### 3) Analyse de la structure #################
-                          
-                          tabPanel("Analyse de la structure",
-                                   
-                                   h2("Analyse en composantes principales : analyse de la structure du jeu de données"),
-                                   fluidRow(
-                                      column(width = 3,
-                                             wellPanel(
-                                                colourpicker::colourInput(inputId = "colorACP", label = "Couleur :", value = "#E61C34"),
-                                                colourpicker::colourInput(inputId = "colorACPsupp", label = "Couleur supplémentaire :", value = "#4E4EBA"),
-                                                
-                                                numericInput("dim1", "Première dimension:", 1,
-                                                             min = 1, max = 4),
-                                                
-                                                numericInput("dim2", "Seconde dimension:", 2,
-                                                             min = 1, max = 4),
-                                                
-                                                actionButton("goACP", "VALIDER")
-                                             )
-                                      ),
-                                      column(width = 9,
-                                             tabsetPanel(id = "vizACP",
-                                                         
-                                                         ## ---- 3.a) Graphe des individus --------------------
-                                                         
-                                                         tabPanel("Graphe des individus",
-                                                                  plotlyOutput("ACP_ind"),
-                                                                  plotlyOutput("ACP_ind_ellipse")
-                                                         ),
-                                                         
-                                                         ## ---- 3.b) Graphe des variables --------------------
-                                                         
-                                                         tabPanel("Graphes des variables",
-                                                                  plotlyOutput("ACP_var")
-                                                         ),
-                                                         
-                                                         ## ---- 3.c) Variance expliquée --------------------
-                                                         
-                                                         tabPanel("Variance expliquée",
-                                                                  plotlyOutput("graph_vp"),
-                                                                  br(),
-                                                                  br(),
-                                                                  textOutput("text_vp")
-                                                         ),
-                                                         
-                                                         ## ---- 3.d) Résumé --------------------
-                                                         
-                                                         tabPanel("Résumé",
-                                                                  verbatimTextOutput("summaryACP")
-                                                         )
-                                             )
-                                      )
-                                   ),
-                                   br(),
-                                   br(),
-                                   
-                                   
-                          )
                        ),
               ),
               
@@ -348,7 +331,46 @@
               
               navbarMenu("Classification des étoiles",
                          
-                         ############ ---- ONGLET 4.1  : MODELE PREDICTIF ----------------
+                         ############ ---- ONGLET 4.1  : CLASSIFICATION OFFICIELLE DES ETOILES ----------------
+                         
+                         tabPanel("Classification officielle des étoiles",
+                                  
+                                  # Objectif : poser le contexte de la classification d'étoiles, présenter les différents types d'étoiles et les variables caractérisant les groupes
+                                  # -> Mise en parallèle direct de la théorie versus les données 
+                                  # Toutes les informations sur un seul diagramme :
+                                  # - taille des points = luminosité, 
+                                  # - forme des points = classes spectrales, 
+                                  # - couleur = type d'étoiles, 
+                                  # - abcisses = température 
+                                  # - ordonnées = magnitude 
+                                  
+                                  h1("Le diagramme de Hertzsprung-Russell, la réference officielle de classification des étoiles"),
+                                  h2("Objectif : définir le type d'une étoile en fonction de ses caractéristiques."),
+                                  column(7,
+                                         wellPanel(    
+                                            verticalLayout(fluid = TRUE,
+                                                           fluidRow(
+                                                              column(4,includeHTML("contexteP1.html")), 
+                                                              column(4,includeHTML("contexteP2.html")),
+                                                              column(4,
+                                                                     checkboxGroupInput(inputId = "choix_var_hrdiag", label = "Choisissez le ou les type(s) à représenter", 
+                                                                                        choices = c("Naine brune", "Hyper géante", "Séquence principale", "Naine Rouge", "Super géante", "Naine blanche"), 
+                                                                                        selected = c("Naine brune", "Hyper géante", "Séquence principale", "Naine Rouge", "Super géante", "Naine blanche")),
+                                                                     icon("fa-thin fa-star"),
+                                                                     HTML('<a href="https://en.wikipedia.org/wiki/Hertzsprung%E2%80%93Russell_diagram" role="button">Pour en savoir plus</a>')
+                                                              )
+                                                           ),
+                                                           plotOutput("diagramme_HR", height = "500px")
+                                            )
+                                         )
+                                  ),
+                                  column(5, 
+                                         img(src = "diagramme-hr.jpg", width="700", height="700", position="center"),
+                                         
+                                  ),
+                         ),
+                         
+                         ############ ---- ONGLET 4.2  : MODELE PREDICTIF ----------------
                          
                          tabPanel("Modèle prédictif", 
                                   tabsetPanel(
@@ -427,48 +449,6 @@
                                   )
                                   
                          ),
-                         
-                         ############ ---- ONGLET 4.2  : CLASSIFICATION OFFICIELLE DES ETOILES ----------------
-                         
-                         tabPanel("Classification officielle des étoiles",
-                                  
-                                  # Objectif : poser le contexte de la classification d'étoiles, présenter les différents types d'étoiles et les variables caractérisant les groupes
-                                  # -> Mise en parallèle direct de la théorie versus les données 
-                                  # Toutes les informations sur un seul diagramme :
-                                  # - taille des points = luminosité, 
-                                  # - forme des points = classes spectrales, 
-                                  # - couleur = type d'étoiles, 
-                                  # - abcisses = température 
-                                  # - ordonnées = magnitude 
-                                  
-                                  h1("Le diagramme de Hertzsprung-Russell, la réference officielle de classification des étoiles"),
-                                  h2("Objectif : définir le type d'une étoile en fonction de ses caractéristiques."),
-                                  column(7,
-                                         wellPanel(    
-                                            verticalLayout(fluid = TRUE,
-                                                           fluidRow(
-                                                              column(4,includeHTML("contexteP1.html")), 
-                                                              column(4,includeHTML("contexteP2.html")),
-                                                              column(4,
-                                                                     checkboxGroupInput(inputId = "choix_var_hrdiag", label = "Choisissez le ou les type(s) à représenter", 
-                                                                                        choices = c("Naine brune", "Hyper géante", "Séquence principale", "Naine Rouge", "Super géante", "Naine blanche"), 
-                                                                                        selected = c("Naine brune", "Hyper géante", "Séquence principale", "Naine Rouge", "Super géante", "Naine blanche")),
-                                                                     icon("fa-thin fa-star"),
-                                                                     HTML('<a href="https://en.wikipedia.org/wiki/Hertzsprung%E2%80%93Russell_diagram" role="button">Pour en savoir plus</a>')
-                                                              )
-                                                           ),
-                                                           plotOutput("diagramme_HR", height = "500px")
-                                            )
-                                         )
-                                  ),
-                                  column(5, 
-                                         img(src = "diagramme-hr.jpg", width="700", height="700", position="center"),
-                                         
-                                  ),
-                         ),
-                         
-                         
-                         
                          
                          
                          

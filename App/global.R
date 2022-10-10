@@ -32,6 +32,7 @@ library(rpart)
 library(visNetwork)
 library(plyr)
 library(sparkline)
+library(car)
 
 ### -- I.2. DATASET --------------------------
 
