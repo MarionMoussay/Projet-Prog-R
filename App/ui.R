@@ -421,8 +421,7 @@ fluidPage(
                                   
                                   sidebarLayout(
                                      sidebarPanel(
-                                        sliderInput("nb_ech_app", "Taille de l'échantillon d'apprentissage :", 120, 240, 180,sep = 1),
-                                        visNetworkOutput("arbreCART", height = '700px')
+                                       visNetworkOutput("arbreCART", height = '700px')
                                      ),
                                      mainPanel( 
                                         verticalLayout(fluid=TRUE, 
@@ -432,6 +431,7 @@ fluidPage(
                                                        verbatimTextOutput("accuracy"),
                                                        h4("__________________________________________________________________"),
                                                        h4("Taux de mauvais classement en fonction de la taille de l’arbre"),
+                                                       verbatimTextOutput("min"),
                                                        plotOutput("cp")
                                         )
                                         

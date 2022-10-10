@@ -426,39 +426,32 @@ shinyServer(function(input, output, session) {
     
     ############ ---- ONGLET 4.3  : ARBRE DE DECISION ----------------
     
-    CART_index <- reactive({
-        index <- sample(nrow(stars.V2), input$nb_ech_app)
-    })
-    CART_train <- reactive({
-        data.train <- stars.V2[CART_index(), ] #Echantillon d’apprentissage
-        data.train
-    })
-    
-    CART_test <- reactive({
-        data.test <- stars.V2[-CART_index(), ] #Echantillon de test
-        data.test
-    })
-    
     mod_CART <- reactive({
-        res <- rpart(type~., data=CART_train(), method='class')
+        res <- rpart(type~., data=stars.V2, method='class', control=rpart.control(minsplit=1,cp=0, xval=20))
         res
     })
  
     output$arbreCART <- renderVisNetwork({
-        visTree(mod_CART(), main = "Arbre de décision CART", legend=FALSE, width = "100%")
+        visTree(prune(mod_CART(),cp=mod_CART()$cptable[which.min(mod_CART()$cptable[,4]),1]), legend=FALSE, main = "Arbre de décision CART")
+    })
+    
+    
+    output$min <- renderPrint({
+        paste0("Nombre de noeuds optimal : ", which.min(mod_CART()$cptable[,4]))
+        
     })
     
     output$pred_CART <- renderPrint({
         tree_opt <- prune(mod_CART(),cp=mod_CART()$cptable[which.min(mod_CART()$cptable[,4]),1])
-        pred<-predict(tree_opt,newdata=CART_test(), type="class")
-        mc <- confusionMatrix(CART_test()$type,pred)
+        pred<-predict(tree_opt,newdata=stars.V2, type="class")
+        mc <- confusionMatrix(stars.V2$type,pred)
         mc$table
     })
     
     output$accuracy <- renderPrint({
         tree_opt <- prune(mod_CART(),cp=mod_CART()$cptable[which.min(mod_CART()$cptable[,4]),1])
-        pred<-predict(tree_opt,newdata=CART_test(), type="class")
-        mc <- confusionMatrix(CART_test()$type,pred)
+        pred<-predict(tree_opt,newdata=stars.V2, type="class")
+        mc <- confusionMatrix(stars.V2$type,pred)
         
         print(paste0("Accuracy : ", mc$overall[[1]]))
     })
