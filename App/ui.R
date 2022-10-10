@@ -255,7 +255,7 @@
                                                                )
                                                      )
                                                   ),
-                                                  plotlyOutput("plot_mixte")
+                                                  
                                                   
                                          ),
                                       ), 
