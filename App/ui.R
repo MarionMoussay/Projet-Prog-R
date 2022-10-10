@@ -421,7 +421,7 @@ fluidPage(
                                   
                                   sidebarLayout(
                                      sidebarPanel(
-                                       visNetworkOutput("arbreCART", height = '700px')
+                                        visNetworkOutput("arbreCART", height = '700px'),
                                      ),
                                      mainPanel( 
                                         verticalLayout(fluid=TRUE, 
