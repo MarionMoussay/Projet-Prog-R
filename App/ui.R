@@ -46,33 +46,24 @@ fluidPage(
               ############ ---- ONGLET 1 : CONTEXTE --------------------
               
               tabPanel("Contexte",
-                       strong("Pourquoi classifier les étoiles?", align = "center"),
                        br(),
-                       br(),
-                       p("Avec l'émergence de nouvelles technologies de pointes, l'analyse des données constitue un point essentiel pour de nombreux domaines tels que la biologie, la cosmologie ou l'astrophysique par exemple."),
-                       br(),
-                       strong("Ici, nous nous interessons à la classification des étoiles.", align = "center"), 
-                       br(),
-                       br(),
-                       p("Grâce à des données morphologiques où à des paramètres liés à la structure de l'objet et à la photométrie, il est possible de séparer les étoiles en différents groupes.",em("(Bertin & Arnouts 1996, Henrion et al. 2011, Molino et al. 2014, Diaz-García et al. 2019, Lopez-Sanjuan et al. 2019)", style= "color:black")),
-                       br(),
-                       p("L'objectif de notre application est ainsi de pouvoir déterminer l'appartenance d'une étoile à tel ou tel groupes selon 6 modalités."),
-                       br(),
-                       p("Pour cela, nous disposons d'un jeu de donnés contenant 240 observations d'étoiles décrites selon 6 variables qui sont:"),
-                       code(" La température de surface (en Kelvin), la luminosité relative (au Soleil), le rayon relatif (au Soleil), la magnitude absolue, la couleur, la classe spectrale." , align = "center"),
-                       br(),
-                       br(),
-                       strong("Voici une illustration de l'apparence des différents types d'étoiles"),
-                       br(),
-                       br(),
-                       img(src = "type_stars.jpg", height = 150, width = 800, align = "right"),
-                       br(),
-                       br()
-                       
-                       ## Magnitude absolue : luminosité intrasèque d'un astre (à contrario de la magnitude apparente qui correspond à une mesure d'irradiance)
-                       
-                       
+                       sidebarLayout(
+                          sidebarPanel(width=12,
+                                       h1("Pourquoi classifier les étoiles?", align = "center"),
+                                       h3("- Avec l'émergence de nouvelles technologies de pointes, l'analyse des données constitue un point essentiel pour de nombreux domaines tels que la biologie, la cosmologie ou l'astrophysique."),
+                                       h3("- Grâce à des données morphologiques où à des paramètres liés à la structure de l'objet et à la photométrie, il est possible de séparer les étoiles en différents groupes.", em("(Bertin & Arnouts 1996, Henrion et al. 2011, Molino et al. 2014, Diaz-García et al. 2019, Lopez-Sanjuan et al. 2019)")),
+                                       br(),
+                                       h3("L'objectif de notre application est ainsi de pouvoir déterminer l'appartenance d'une étoile à tel ou tel groupes selon 6 modalités."),
+                                       h3("Pour cela, nous disposons d'un jeu de donnés contenant 240 observations d'étoiles décrites selon 6 variables qui sont la température (en Kelvin), la luminosité relative au Soleil, le rayon relatif au Soleil, la magnitude absolue, la couleur et la classe spectrale."),
+                                       h3("Voici une illustration de l'apparence des différents types d'étoiles"),
+                                       br(),
+                                       HTML('<center><img src="type_stars.jpg", style= "border-radius: 10% 10% 10% 10%; border: 3px solid"></center>'),
+                          ),
+                          mainPanel(width=0,
+                          )
+                       ),
               ),
+              
               
               ############ ---- ONGLET 2 : JEU DE DONNEES --------------------
               
@@ -264,65 +255,65 @@ fluidPage(
                                       br(),
                                       br(),
                                    ),
+                          ),
+                          
+                          ### 3) Analyse de la structure #################
+                          
+                          tabPanel("Analyse de la structure",
                                    
-                                   ### 3) Analyse de la structure #################
+                                   h2("Analyse en composantes principales : analyse de la structure du jeu de données"),
+                                   fluidRow(
+                                      column(width = 3,
+                                             wellPanel(
+                                                colourpicker::colourInput(inputId = "colorACP", label = "Couleur :", value = "#E61C34"),
+                                                colourpicker::colourInput(inputId = "colorACPsupp", label = "Couleur supplémentaire :", value = "#4E4EBA"),
+                                                
+                                                numericInput("dim1", "Première dimension:", 1,
+                                                             min = 1, max = 4),
+                                                
+                                                numericInput("dim2", "Seconde dimension:", 2,
+                                                             min = 1, max = 4),
+                                                
+                                                actionButton("goACP", "VALIDER")
+                                             )
+                                      ),
+                                      column(width = 9,
+                                             tabsetPanel(id = "vizACP",
+                                                         
+                                                         ## ---- 3.a) Graphe des individus --------------------
+                                                         
+                                                         tabPanel("Graphe des individus",
+                                                                  plotlyOutput("ACP_ind"),
+                                                                  plotlyOutput("ACP_ind_ellipse")
+                                                         ),
+                                                         
+                                                         ## ---- 3.b) Graphe des variables --------------------
+                                                         
+                                                         tabPanel("Graphes des variables",
+                                                                  plotlyOutput("ACP_var")
+                                                         ),
+                                                         
+                                                         ## ---- 3.c) Variance expliquée --------------------
+                                                         
+                                                         tabPanel("Variance expliquée",
+                                                                  plotlyOutput("graph_vp"),
+                                                                  br(),
+                                                                  br(),
+                                                                  textOutput("text_vp")
+                                                         ),
+                                                         
+                                                         ## ---- 3.d) Résumé --------------------
+                                                         
+                                                         tabPanel("Résumé",
+                                                                  verbatimTextOutput("summaryACP")
+                                                         )
+                                             )
+                                      )
+                                   ),
+                                   br(),
+                                   br(),
                                    
-                                   tabPanel("Analyse de la structure",
-                                            
-                                            h2("Analyse en composantes principales : analyse de la structure du jeu de données"),
-                                            fluidRow(
-                                               column(width = 3,
-                                                      wellPanel(
-                                                         colourpicker::colourInput(inputId = "colorACP", label = "Couleur :", value = "#E61C34"),
-                                                         colourpicker::colourInput(inputId = "colorACPsupp", label = "Couleur supplémentaire :", value = "#4E4EBA"),
-                                                         
-                                                         numericInput("dim1", "Première dimension:", 1,
-                                                                      min = 1, max = 4),
-                                                         
-                                                         numericInput("dim2", "Seconde dimension:", 2,
-                                                                      min = 1, max = 4),
-                                                         
-                                                         actionButton("goACP", "VALIDER")
-                                                      )
-                                               ),
-                                               column(width = 9,
-                                                      tabsetPanel(id = "vizACP",
-                                                                  
-                                                                  ## ---- 3.a) Graphe des individus --------------------
-                                                                  
-                                                                  tabPanel("Graphe des individus",
-                                                                           plotlyOutput("ACP_ind"),
-                                                                           plotlyOutput("ACP_ind_ellipse")
-                                                                  ),
-                                                                  
-                                                                  ## ---- 3.b) Graphe des variables --------------------
-                                                                  
-                                                                  tabPanel("Graphes des variables",
-                                                                           plotlyOutput("ACP_var")
-                                                                  ),
-                                                                  
-                                                                  ## ---- 3.c) Variance expliquée --------------------
-                                                                  
-                                                                  tabPanel("Variance expliquée",
-                                                                           plotlyOutput("graph_vp"),
-                                                                           br(),
-                                                                           br(),
-                                                                           textOutput("text_vp")
-                                                                  ),
-                                                                  
-                                                                  ## ---- 3.d) Résumé --------------------
-                                                                  
-                                                                  tabPanel("Résumé",
-                                                                           verbatimTextOutput("summaryACP")
-                                                                  )
-                                                      )
-                                               )
-                                            ),
-                                            br(),
-                                            br(),
-                                            
-                                            
-                                   )
+                                   
                           ),
                        ),
               ),
@@ -553,9 +544,6 @@ fluidPage(
                           column(2, actionLink("twitter_share", label = "Share", icon = icon("fa-thin fa-star"),
                                                style= "color:white;", onclick = sprintf("window.open('%s')", 
                                                                                         "https://github.com/MarionMoussay/Projet-Prog-R"))),
-                          column(2, actionLink("easter_egg", label = "Ne pas cliquer", icon = icon("stop"),
-                                               style= "color:white;", onclick = sprintf("window.open('%s')", 
-                                                                                        "https://www.youtube.com/watch?v=dty7JyWKoKg"))),
                           style = "
    position:fixed;
    text-align:center;
@@ -572,6 +560,7 @@ fluidPage(
               
    )
 )
+
 
 
 
