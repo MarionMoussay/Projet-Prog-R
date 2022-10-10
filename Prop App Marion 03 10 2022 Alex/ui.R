@@ -22,13 +22,13 @@
 #           3.c) Variance expliquée
 #           3.d) Résumé
 # ONGLET 4  : CLASSIFICATION DES ETOILES (comment le type d'étoiles est définit ?)
-# ONGLET 4.1  : CLASSIFICATION OFFICIELLE DES ETOILES
-# ONGLET 4.2  : MODELE PREDICTIF
+# ONGLET 4.1  : MODELE PREDICTIF
 #     1) Choix du modèle
 #           1.a) Sommaire du modèle
 #           1.b) Matrice de confusion
 #           1.c) Recherche du meilleur modèle au sens de l'AIC et BIC
 #     2) Prédire une nouvelle étoile (l'objectif étant de prédire un type d'étoile pour des nouvelles entrées de variable)
+# ONGLET 4.2  : CLASSIFICATION OFFICIELLE DES ETOILES
 # ONGLET 4.3  : ARBRE DE DECISION
 # ONGLET 4.4  : CLASSIFICATION ASCENDANTE HIERARCHIQUE (comparaison des groupes de sortie)
 #     1) Inertie intra-groupe
@@ -270,7 +270,6 @@
                           tabPanel("Analyse de la structure",
                                    
                                    h2("Analyse en composantes principales : analyse de la structure du jeu de données"),
-                                   h3("Objectif : définir le type d'une étoile en fonction de ses caractéristiques."),
                                    fluidRow(
                                       column(width = 3,
                                              wellPanel(
@@ -329,48 +328,7 @@
               
               navbarMenu("Classification des étoiles",
                          
-                         ############ ---- ONGLET 4.1  : CLASSIFICATION OFFICIELLE DES ETOILES ----------------
-                         
-                         tabPanel("Classification officielle des étoiles",
-                                  
-                                  # Objectif : poser le contexte de la classification d'étoiles, présenter les différents types d'étoiles et les variables caractérisant les groupes
-                                  # -> Mise en parallèle direct de la théorie versus les données 
-                                  # Toutes les informations sur un seul diagramme :
-                                  # - taille des points = luminosité, 
-                                  # - forme des points = classes spectrales, 
-                                  # - couleur = type d'étoiles, 
-                                  # - abcisses = température 
-                                  # - ordonnées = magnitude 
-                                  
-                                  h1("Le diagramme de Hertzsprung-Russell, la réference officielle de classification des étoiles"),
-                                  h2("Objectif : définir le type d'une étoile en fonction de ses caractéristiques."),
-                                  column(7,
-                                         wellPanel(    
-                                            verticalLayout(fluid = TRUE,
-                                                           fluidRow(
-                                                              column(4,includeHTML("contexteP1.html")), 
-                                                              column(4,includeHTML("contexteP2.html")),
-                                                              column(4,
-                                                                     checkboxGroupInput(inputId = "choix_var_hrdiag", label = "Choisissez le ou les type(s) à représenter", 
-                                                                                        choices = c("Naine brune", "Hyper géante", "Séquence principale", "Naine Rouge", "Super géante", "Naine blanche"), 
-                                                                                        selected = c("Naine brune", "Hyper géante", "Séquence principale", "Naine Rouge", "Super géante", "Naine blanche")),
-                                                                     icon("fa-thin fa-star"),
-                                                                     HTML('<a href="https://en.wikipedia.org/wiki/Hertzsprung%E2%80%93Russell_diagram" role="button">Pour en savoir plus</a>')
-                                                              )
-                                                           ),
-                                                           plotOutput("diagramme_HR", height = "500px")
-                                            )
-                                         )
-                                  ),
-                                  column(5, 
-                                         img(src = "diagramme-hr.jpg", width="700", height="700", position="center"),
-                                         
-                                  ),
-                         ),
-                         
-                         
-                         
-                         ############ ---- ONGLET 4.2  : MODELE PREDICTIF ----------------
+                         ############ ---- ONGLET 4.1  : MODELE PREDICTIF ----------------
                          
                          tabPanel("Modèle prédictif", 
                                   tabsetPanel(
@@ -402,7 +360,7 @@
                                                                                     
                                                                                     ## ---- 1.b) Matrice de confusion --------------------
                                                                                     
-                                                                                             tabPanel("Matrice de confusion",verbatimTextOutput("pred"))
+                                                                                    tabPanel("Matrice de confusion",verbatimTextOutput("pred"))
                                                                                  ),
                                                                               )
                                                                 )
@@ -449,6 +407,51 @@
                                   )
                                   
                          ),
+                         
+                         ############ ---- ONGLET 4.2  : CLASSIFICATION OFFICIELLE DES ETOILES ----------------
+                         
+                         tabPanel("Classification officielle des étoiles",
+                                  
+                                  # Objectif : poser le contexte de la classification d'étoiles, présenter les différents types d'étoiles et les variables caractérisant les groupes
+                                  # -> Mise en parallèle direct de la théorie versus les données 
+                                  # Toutes les informations sur un seul diagramme :
+                                  # - taille des points = luminosité, 
+                                  # - forme des points = classes spectrales, 
+                                  # - couleur = type d'étoiles, 
+                                  # - abcisses = température 
+                                  # - ordonnées = magnitude 
+                                  
+                                  h1("Le diagramme de Hertzsprung-Russell, la réference officielle de classification des étoiles"),
+                                  h2("Objectif : définir le type d'une étoile en fonction de ses caractéristiques."),
+                                  column(7,
+                                         wellPanel(    
+                                            verticalLayout(fluid = TRUE,
+                                                           fluidRow(
+                                                              column(4,includeHTML("contexteP1.html")), 
+                                                              column(4,includeHTML("contexteP2.html")),
+                                                              column(4,
+                                                                     checkboxGroupInput(inputId = "choix_var_hrdiag", label = "Choisissez le ou les type(s) à représenter", 
+                                                                                        choices = c("Naine brune", "Hyper géante", "Séquence principale", "Naine Rouge", "Super géante", "Naine blanche"), 
+                                                                                        selected = c("Naine brune", "Hyper géante", "Séquence principale", "Naine Rouge", "Super géante", "Naine blanche")),
+                                                                     icon("fa-thin fa-star"),
+                                                                     HTML('<a href="https://en.wikipedia.org/wiki/Hertzsprung%E2%80%93Russell_diagram" role="button">Pour en savoir plus</a>')
+                                                              )
+                                                           ),
+                                                           plotOutput("diagramme_HR", height = "500px")
+                                            )
+                                         )
+                                  ),
+                                  column(5, 
+                                         img(src = "diagramme-hr.jpg", width="700", height="700", position="center"),
+                                         
+                                  ),
+                         ),
+                         
+                         
+                         
+                         
+                         
+                         
                          
                          ############ ---- ONGLET 4.3  : ARBRE DE DECISION ----------------
                          

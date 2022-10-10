@@ -22,13 +22,13 @@
 #           3.c) Variance expliquée
 #           3.d) Résumé
 # ONGLET 4  : CLASSIFICATION DES ETOILES (comment le type d'étoiles est définit ?)
-# ONGLET 4.1  : CLASSIFICATION OFFICIELLE DES ETOILES
-# ONGLET 4.2  : MODELE PREDICTIF
+# ONGLET 4.1  : MODELE PREDICTIF
 #     1) Choix du modèle
 #           1.a) Sommaire du modèle
 #           1.b) Matrice de confusion
 #           1.c) Recherche du meilleur modèle au sens de l'AIC et BIC
 #     2) Prédire une nouvelle étoile (l'objectif étant de prédire un type d'étoile pour des nouvelles entrées de variable)
+# ONGLET 4.2  : CLASSIFICATION OFFICIELLE DES ETOILES
 # ONGLET 4.3  : ARBRE DE DECISION
 # ONGLET 4.4  : CLASSIFICATION ASCENDANTE HIERARCHIQUE (comparaison des groupes de sortie)
 #     1) Inertie intra-groupe
@@ -326,24 +326,7 @@ shinyServer(function(input, output, session) {
     
     ############ ---- ONGLET 4  : CLASSIFICATION DES ETOILES ----------------
     
-    ############ ---- ONGLET 4.1  : CLASSIFICATION OFFICIELLE DES ETOILES ----------------
-    
-    output$diagramme_HR<-renderPlot({
-        data <- stars.V2 %>% filter(type %in% input$choix_var_hrdiag)
-        ggplot(data = data) + 
-            geom_point(aes(x = temperature, y = magnitude, color = type, shape = spectre, size = luminosite)) +
-            scale_y_reverse(name="Magnitude absolue (Mv)") +
-            scale_x_reverse(name = "Température ", limits=c(34000,3000)) + 
-            labs(title="Diagramme Hertzsprung-Russell")+
-            theme_bw() +
-            theme(panel.grid.major = element_blank(), 
-                  axis.line = element_line(colour = "black"), 
-                  legend.text= element_text(size=15), 
-                  legend.title = element_text(size=15), 
-                  plot.title = element_text(size=15, face="bold.italic"))
-    })
-    
-    ############ ---- ONGLET 4.2  : MODELE PREDICTIF ----------------
+    ############ ---- ONGLET 4.1  : MODELE PREDICTIF ----------------
     
     ############# 1) Choix du modèle ################
     
@@ -446,6 +429,23 @@ shinyServer(function(input, output, session) {
             ggsave(file,plotInput())
         }
     )
+    
+    ############ ---- ONGLET 4.2  : CLASSIFICATION OFFICIELLE DES ETOILES ----------------
+    
+    output$diagramme_HR<-renderPlot({
+        data <- stars.V2 %>% filter(type %in% input$choix_var_hrdiag)
+        ggplot(data = data) + 
+            geom_point(aes(x = temperature, y = magnitude, color = type, shape = spectre, size = luminosite)) +
+            scale_y_reverse(name="Magnitude absolue (Mv)") +
+            scale_x_reverse(name = "Température ", limits=c(34000,3000)) + 
+            labs(title="Diagramme Hertzsprung-Russell")+
+            theme_bw() +
+            theme(panel.grid.major = element_blank(), 
+                  axis.line = element_line(colour = "black"), 
+                  legend.text= element_text(size=15), 
+                  legend.title = element_text(size=15), 
+                  plot.title = element_text(size=15, face="bold.italic"))
+    })
     
     ############ ---- ONGLET 4.3  : ARBRE DE DECISION ----------------
     
