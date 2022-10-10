@@ -312,7 +312,7 @@ shinyServer(function(input, output, session) {
             # % l'inertie du jeux de donnees (=84%) est plus grand que le quantile 95%
             b <- res.pca.quali()$eig[2,3]
             
-            print(paste0("Le quantile de l'inertie avec des lignes permutées est ",a, "et l'inertie de nos 2 premières dimensions est ",b))
+            print(paste0("Le quantile de l'inertie avec des lignes permutées est de ",round(a), " et l'inertie de nos 2 premières dimensions est ",round(b), "."))
         })
     })
     
