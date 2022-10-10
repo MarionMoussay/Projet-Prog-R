@@ -4,9 +4,6 @@
 # ... partie SERVER associée.
 
 
-
-
-
 # ONGLET 1  : CONTEXTE (Quel est le contexte de recherche / enjeux)
 # ONGLET 2 : JEU DE DONNEES
 #     1) Télécharger les données
@@ -215,50 +212,71 @@
                           
                           tabPanel("Liaison entre les variables", 
                                    verticalLayout(
-                                      
-                                      # Entre les variables numériques (corrélation) :
-                                      
-                                      sidebarLayout(
-                                         sidebarPanel(width = 8,
-                                                      h2("Entre les variables numériques :"),
+                                      br(),
+                                      tabsetPanel(
+                                         tabPanel("Etude selon la nature",
+                                                      
+                                                      # Entre les variables numériques (corrélation) :
+                                                      
+                                                      h2("Entre les variables numériques : matrice des corrélations"),
                                                       fluidRow(
                                                          column(width = 4,verbatimTextOutput("corr_result")),
                                                          column(width = 8,plotlyOutput("graph_corr", height = "400px" ))
                                                       ),
+                                                      
+                                                  h3("_____________________________________________________________________________________________________________________________________________________________________"),
+                                                      # Entre les variables catégorielles (Test de pearson) :
+                                                      
+                                                      h2("Entre les variables catégorielles : test du khi-deux"),
+                                                      h3("Le test du khi-deux d'indépendance vérifie si deux variables sont susceptibles d'être liées ou pas."),
+                                                      verbatimTextOutput("khi2"),
+                                                      h3("L'hypothèse d'indépendance entre les deux variables est rejetée."),
                                          ),
                                          
-                                         # Entre les variables catégorielles (Test de pearson) :
-                                         
-                                         mainPanel(width = 4,
-                                                   ## KHI-DEUX
-                                                   h2("Entre les variables catégorielles :"),
-                                                   verbatimTextOutput("khi2"),
-                                                   h4("L'hypothèse d'indépendance entre les deux variables est rejetée."),
+                                         tabPanel("Etude mixte",
+                                                  
+                                                  # Analyse de la variance :
+                                                  
+                                                  h2("Analyse de la variance"), 
+                                                  sidebarLayout(
+                                                     sidebarPanel(width=4,
+                                                                  
+                                                                  awesomeRadio(
+                                                                     inputId = "choix_var_anova",
+                                                                     label = "Choisissez la variable numérique qui composera le modèle anova :", 
+                                                                     choices = list("Température"="temperature", "Luminosité" ="luminosite", "Rayon"="rayon", "Magnitude"="magnitude")
+                                                                  ),
+                                                                  verbatimTextOutput("summary_anova"),
+
+                                                     ),
+                                                     mainPanel(width=8,
+                                                               verticalLayout(
+                                                                  plotlyOutput("plot_mixte")
+                                                               )
+                                                     )
+                                                  ),
+                                                  plotlyOutput("plot_mixte")
+                                                  
                                          ),
                                       ), 
                                       
-                                      # Analyse de la variance :
                                       
-                                      h2("Analyse de la variance"), 
                                       
-                                      sidebarLayout(
-                                         sidebarPanel(width=4,
-                                                      awesomeRadio(
-                                                         inputId = "choix_var_anova",
-                                                         label = "Choisissez la variable numérique qui composera le modèle anova :", 
-                                                         choices = list("Température"="temperature", "Luminosité" ="luminosite", "Rayon"="rayon", "Magnitude"="magnitude")
-                                                      ),
-                                                      verbatimTextOutput("summary_anova")
-                                         ),
-                                         mainPanel(width=8,
-                                                   verticalLayout(
-                                                      h4("Normalité des résidus"),
-                                                      plotlyOutput("qqplot"),
-                                                      dataTableOutput("shapiro"),
-                                                      br()
-                                                   )
-                                         )
-                                      )
+                                      
+                                      
+                                      # sidebarLayout(
+                                      #    sidebarPanel(width=4,
+                                      #                 
+                                      #    ),
+                                      #    mainPanel(width=8,
+                                      #              verticalLayout(
+                                      #                 h4("Normalité des résidus"),
+                                      #                 plotlyOutput("qqplot"),
+                                      #                 dataTableOutput("shapiro"),
+                                      #                 br()
+                                      #              )
+                                      #    )
+                                      # )
                                    ),
                                    
                                    br(),

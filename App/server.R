@@ -4,9 +4,6 @@
 # ... partie SERVER associée.
 
 
-
-
-
 # ONGLET 1  : CONTEXTE (Quel est le contexte de recherche / enjeux)
 # ONGLET 2 : JEU DE DONNEES
 #     1) Télécharger les données
@@ -211,6 +208,16 @@ shinyServer(function(input, output, session) {
         ggqqplot(residuals(mod_anova()), title = "QQ-plot")
     })
     
+    output$plot_mixte <- renderPlotly({
+        ggplot(stars.V2, aes(y = get(input$choix_var_anova), x = (..count..)/sum(..count..)*100, fill = spectre)) +
+            geom_bar() +
+            ylab(legend) + 
+            labs(title="Effectifs selon le spectre (%)")+
+            theme_minimal() +
+            theme(axis.line = element_line(colour = "black"), 
+                  axis.title.x = element_blank())+
+            scale_fill_manual(legend, values = terrain.colors(6))
+    })
     
     
     ### 3) Analyse de la structure #################
