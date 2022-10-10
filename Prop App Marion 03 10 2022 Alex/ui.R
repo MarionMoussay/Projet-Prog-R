@@ -273,8 +273,8 @@
                                    fluidRow(
                                       column(width = 3,
                                              wellPanel(
-                                                colourpicker::colourInput(inputId = "colorACP", label = "Couleur :", value = "#BF1B2E"),
-                                                colourpicker::colourInput(inputId = "colorACPsupp", label = "Couleur supplémentaire :", value = "#4C79B5"),
+                                                colourpicker::colourInput(inputId = "colorACP", label = "Couleur :", value = "#E61C34"),
+                                                colourpicker::colourInput(inputId = "colorACPsupp", label = "Couleur supplémentaire :", value = "#4E4EBA"),
                                                 
                                                 numericInput("dim1", "Première dimension:", 1,
                                                              min = 1, max = 4),
@@ -305,6 +305,8 @@
                                                          
                                                          tabPanel("Variance expliquée",
                                                                   plotlyOutput("graph_vp"),
+                                                                  br(),
+                                                                  br(),
                                                                   textOutput("text_vp")
                                                          ),
                                                          
