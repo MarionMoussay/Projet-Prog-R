@@ -270,6 +270,7 @@
                           tabPanel("Analyse de la structure",
                                    
                                    h2("Analyse en composantes principales : analyse de la structure du jeu de données"),
+                                   h3("Objectif : définir le type d'une étoile en fonction de ses caractéristiques."),
                                    fluidRow(
                                       column(width = 3,
                                              wellPanel(
