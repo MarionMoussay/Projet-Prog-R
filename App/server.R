@@ -187,42 +187,7 @@ shinyServer(function(input, output, session) {
         spectre <- stars.V2$spectre
         chisq.test(couleur, spectre)
     })
-    
-    # Analyse de la variance :
-    
-    mod_anova <- reactive({
-        mod <- lm(as.formula(paste0(input$choix_var_anova,"~couleur*spectre")), data=stars.V2)
-        mod
-    })
-    
-    output$summary_anova <- renderPrint({
-        Anova(mod_anova())
-    })
-    
-    output$shapiro <- renderDataTable({
-        test <- shapiro_test(residuals(mod_anova()))
-        data.frame("Statistique"= test$statistic[[1]] , "P-value" = test$p.value[[1]], row.names = "Test de shapiro")
-    })
-    
-    output$qqplot <- renderPlotly({
-        ggqqplot(residuals(mod_anova()), title = "QQ-plot")
-    })
-    
-    output$plot_mixte_spectre <- renderAmCharts({
-        amBoxplot(as.formula(paste(input$choix_var_anova,"~spectre")), 
-                  data=stars.V2, 
-                  ylab=input$choix_var_anova, 
-                  main=paste0("Distribution en fonction du spectre de la variable ", input$choix_var_anova),
-                  las=2, xlab="", col=terrain.colors(7))
-    })
-    
-    output$plot_mixte_couleur <- renderAmCharts({
-        amBoxplot(as.formula(paste(input$choix_var_anova,"~couleur")), 
-                  data=stars.V2, 
-                  ylab=input$choix_var_anova, 
-                  main=paste0("Distribution en fonction de la couleur de la variable ", input$choix_var_anova),
-                  las=2, xlab="", col=terrain.colors(10))
-    })
+
     
     
     ### 3) Analyse de la structure #################

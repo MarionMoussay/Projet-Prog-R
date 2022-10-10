@@ -203,59 +203,28 @@ fluidPage(
                           
                           tabPanel("Liaison entre les variables", 
                                    verticalLayout(
-                                      br(),
-                                      tabsetPanel(
-                                         tabPanel("Etude selon la nature",
-                                                  
-                                                  # Entre les variables numériques (corrélation) :
-                                                  
-                                                  h2("Entre les variables numériques : matrice des corrélations"),
-                                                  fluidRow(
-                                                     column(width = 4,verbatimTextOutput("corr_result")),
-                                                     column(width = 8,plotlyOutput("graph_corr", height = "400px" ))
-                                                  ),
-                                                  
-                                                  h3("_____________________________________________________________________________________________________________________________________________________________________"),
-                                                  # Entre les variables catégorielles (Test de pearson) :
-                                                  
-                                                  h2("Entre les variables catégorielles : test du khi-deux"),
-                                                  h3("Le test du khi-deux d'indépendance vérifie si deux variables sont susceptibles d'être liées ou pas."),
-                                                  verbatimTextOutput("khi2"),
-                                                  h3("L'hypothèse d'indépendance entre les deux variables est rejetée."),
-                                         ),
-                                         
-                                         tabPanel("Etude mixte",
-                                                  sidebarLayout(
-                                                     sidebarPanel(width=4,
-                                                                  
-                                                                  # Analyse de la variance :
-                                                                  
-                                                                  h2("Analyse de la variance"),
-                                                                  awesomeRadio(
-                                                                     inputId = "choix_var_anova",
-                                                                     label = "Choisissez la variable numérique qui composera le modèle anova :", 
-                                                                     choices = list("Température"="temperature", "Luminosité" ="luminosite", "Rayon"="rayon", "Magnitude"="magnitude")
-                                                                  ),
-                                                                  verbatimTextOutput("summary_anova"),
-                                                                  
-                                                     ),
-                                                     mainPanel(width=8,
-                                                               h2("Distributions des variables numériques selon les modalités de spectre et couleur"),
-                                                               verticalLayout(
-                                                                  amChartsOutput("plot_mixte_spectre"),
-                                                                  amChartsOutput("plot_mixte_couleur"),
-                                                                  
-                                                               )
-                                                     )
-                                                  ),
-                                                  
-                                                  
-                                         ),
-                                      ), 
-                                      br(),
-                                      br(),
-                                   ),
+
+                                      # Entre les variables numériques (corrélation) :
+                                      
+                                      h2("Entre les variables numériques : matrice des corrélations"),
+                                      fluidRow(
+                                         column(width = 4,verbatimTextOutput("corr_result")),
+                                         column(width = 8,plotlyOutput("graph_corr", height = "400px" ))
+                                      ),
+                                      
+                                      h3("_____________________________________________________________________________________________________________________________________________________________________"),
+                                      # Entre les variables catégorielles (Test de pearson) :
+                                      
+                                      h2("Entre les variables catégorielles : test du khi-deux"),
+                                      h3("Le test du khi-deux d'indépendance vérifie si deux variables sont susceptibles d'être liées ou pas."),
+                                      verbatimTextOutput("khi2"),
+                                      h3("L'hypothèse d'indépendance entre les deux variables est rejetée."),
+                                      
+                                   ), 
+                                   br(),
+                                   br(),
                           ),
+                          
                           
                           ### 3) Analyse de la structure #################
                           
