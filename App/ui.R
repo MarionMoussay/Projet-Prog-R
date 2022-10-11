@@ -362,12 +362,7 @@ fluidPage(
                                                                                     
                                                                                     ## ---- 1.b) Matrice de confusion --------------------
                                                                                     
-                                                                                    tabPanel("Matrice de confusion",
-                                                                                             verticalLayout(
-                                                                                                verbatimTextOutput("confusion_matrix"),
-                                                                                                verbatimTextOutput("accuracy_pred")
-                                                                                             )
-                                                                                             )
+                                                                                    tabPanel("Matrice de confusion",verbatimTextOutput("confusion_matrix"))
                                                                                  ),
                                                                               )
                                                                 )
