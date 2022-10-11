@@ -19,13 +19,13 @@
 #           3.c) Variance expliquée
 #           3.d) Résumé
 # ONGLET 4  : CLASSIFICATION DES ETOILES (comment le type d'étoiles est définit ?)
-# ONGLET 4.1  : MODELE PREDICTIF
-#     1) Choix du modèle
-#           1.a) Sommaire du modèle
-#           1.b) Matrice de confusion
-#           1.c) Recherche du meilleur modèle au sens de l'AIC et BIC
-#     2) Prédire une nouvelle étoile (l'objectif étant de prédire un type d'étoile pour des nouvelles entrées de variable)
-# ONGLET 4.2  : CLASSIFICATION OFFICIELLE DES ETOILES
+# ONGLET 4.1  : CLASSIFICATION OFFICIELLE DES ETOILES
+# ONGLET 4.2  : MODELE PREDICTIF
+#     1) Prédire une nouvelle étoile (l'objectif étant de prédire un type d'étoile pour des nouvelles entrées de variable)
+#     2) Choix du modèle
+#           2.a) Sommaire du modèle
+#           2.b) Matrice de confusion
+#           2.c) Recherche du meilleur modèle au sens de l'AIC et BIC
 # ONGLET 4.3  : ARBRE DE DECISION
 # ONGLET 4.4  : CLASSIFICATION ASCENDANTE HIERARCHIQUE (comparaison des groupes de sortie)
 #     1) Inertie intra-groupe
@@ -303,65 +303,26 @@ shinyServer(function(input, output, session) {
     
     ############ ---- ONGLET 4  : CLASSIFICATION DES ETOILES ----------------
     
-    ############ ---- ONGLET 4.1  : MODELE PREDICTIF ----------------
+    ############ ---- ONGLET 4.1  : CLASSIFICATION OFFICIELLE DES ETOILES ----------------
     
-    ############# 1) Choix du modèle ################
-    
-    ## ---- 1.a) Sommaire du modèle --------------------
-    
-    mod <- reactive({
-        data <- stars.V2 %>% select(1:5)
-        
-        if (length(input$choix_var_mod_mult)== 0){
-            mod <- multinom(type~1, data=data)
-        } else {
-            var <- c(input$choix_var_mod_mult[1])
-            for (i in 1:(length(input$choix_var_mod_mult))){
-                var <- paste0(var, paste0("+", input$choix_var_mod_mult[i]))
-            }
-            formul <- paste0("type~1+",var)
-            mod <- multinom(as.formula(formul), data=data)
-        }
+    output$diagramme_HR<-renderPlot({
+        data <- stars.V2 %>% filter(type %in% input$choix_var_hrdiag)
+        ggplot(data = data) + 
+            geom_point(aes(x = temperature, y = magnitude, color = type, size = luminosite)) +
+            scale_y_reverse(name="Magnitude absolue (Mv)") +
+            scale_x_reverse(name = "Température ", limits=c(34000,3000)) + 
+            labs(title="Diagramme Hertzsprung-Russell")+
+            theme_bw() +
+            theme(panel.grid.major = element_blank(), 
+                  axis.line = element_line(colour = "black"), 
+                  legend.text= element_text(size=15), 
+                  legend.title = element_text(size=15), 
+                  plot.title = element_text(size=15, face="bold.italic"))
     })
     
-    output$resum_mod <- renderPrint({
-        summary(mod())
-    })
+    ############ ---- ONGLET 4.2  : MODELE PREDICTIF ----------------
     
-    ## ---- 1.b) Matrice de confusion --------------------
-    
-    pred.mod.mult <- reactive({
-        data <- stars.V2 %>% select(1:5)
-        predict(mod(), newdata = data)
-    })
-    
-    output$confusion_matrix <- renderPrint({
-        data <- stars.V2 %>% select(1:5)
-        confusionMatrix(pred.mod.mult(), data$type)
-    })
-    
-    
-    ## ---- 1.c) Recherche du meilleur modèle au sens de l'AIC et BIC --------------------
-    
-    output$aic_bic <- renderPlot({
-        data <- stars.V2 %>% select(luminosite, temperature, magnitude, rayon, type)
-        select <- summary(regsubsets(type~.,data=data,nvmax=6))
-        
-        bic <- select$bic
-        aic <- bic - (log(nrow(data))-2)*(1:4)
-        plot(1:4,bic,pch=16,bty="l",type="b",xlab="Nombre de variables explicatives",ylab="Critères",ylim=range(c(aic,bic)),
-             col="darkgray",main="Sélection exhaustive du modèle",cex.lab=1.25,cex.axis=1.25,cex.main=1.25,lwd=2)
-        lines(1:4,aic,type="b",pch=17,lwd=2,col="coral1")
-        legend("topleft",lwd=2,lty=1,pch=c(16,17),col=c("darkgray","coral1"),bty="n",cex=1.25,legend=c("BIC","AIC"))
-        
-    })
-    
-    output$coef_best_mod <- renderPrint({
-        best.mod <- multinom(type~temperature+magnitude+rayon, data = stars.V2)
-        summary(best.mod)$coeff
-    })
-    
-    ############# 2) Prédire une nouvelle étoile ################
+    ############# 1) Prédire une nouvelle étoile ################
     
     new_star <- reactive({
         best.mod <- multinom(type~temperature+magnitude+rayon, data = stars.V2)
@@ -371,7 +332,7 @@ shinyServer(function(input, output, session) {
         pred
     })
     
-    # ERREUR ICI :
+    
     output$nouvelle_etoile <- reactive({
         input$gopred
         isolate({
@@ -383,7 +344,7 @@ shinyServer(function(input, output, session) {
         input$gopred
         isolate({
             ggplot(data = stars.V2) + 
-                geom_point(aes(x = temperature, y = magnitude, color = type, shape = spectre, size = luminosite)) +
+                geom_point(aes(x = temperature, y = magnitude, color = type, size = luminosite)) +
                 annotate("point", x=  as.numeric(input$temperature), y=as.numeric(input$magnitude), size=5, color='purple')+
                 annotate(geom="text", x=as.numeric(input$temperature)+10, y=as.numeric(input$magnitude)+2, label=input$titre_new_etoile,color="purple")+
                 scale_y_reverse(name="Magnitude absolue (Mv)") +
@@ -406,22 +367,65 @@ shinyServer(function(input, output, session) {
         }
     )
     
-    ############ ---- ONGLET 4.2  : CLASSIFICATION OFFICIELLE DES ETOILES ----------------
+    ############# 2) Choix du modèle ################
     
-    output$diagramme_HR<-renderPlot({
-        data <- stars.V2 %>% filter(type %in% input$choix_var_hrdiag)
-        ggplot(data = data) + 
-            geom_point(aes(x = temperature, y = magnitude, color = type, size = luminosite)) +
-            scale_y_reverse(name="Magnitude absolue (Mv)") +
-            scale_x_reverse(name = "Température ", limits=c(34000,3000)) + 
-            labs(title="Diagramme Hertzsprung-Russell")+
-            theme_bw() +
-            theme(panel.grid.major = element_blank(), 
-                  axis.line = element_line(colour = "black"), 
-                  legend.text= element_text(size=15), 
-                  legend.title = element_text(size=15), 
-                  plot.title = element_text(size=15, face="bold.italic"))
+    ## ---- 2.a) Sommaire du modèle --------------------
+    
+    mod <- reactive({
+        data <- stars.V2 %>% select(1:5)
+        
+        if (length(input$choix_var_mod_mult)== 0){
+            mod <- multinom(type~1, data=data)
+        } else {
+            var <- c(input$choix_var_mod_mult[1])
+            for (i in 1:(length(input$choix_var_mod_mult))){
+                var <- paste0(var, paste0("+", input$choix_var_mod_mult[i]))
+            }
+            formul <- paste0("type~1+",var)
+            mod <- multinom(as.formula(formul), data=data)
+        }
     })
+    
+    output$resum_mod <- renderPrint({
+        summary(mod())
+    })
+    
+    ## ---- 2.b) Matrice de confusion --------------------
+    
+    pred.mod.mult <- reactive({
+        data <- stars.V2 %>% select(1:5)
+        predict(mod(), newdata = data)
+    })
+    
+    output$confusion_matrix <- renderPrint({
+        data <- stars.V2 %>% select(1:5)
+        confusionMatrix(pred.mod.mult(), data$type)
+    })
+    
+    
+    ## ---- 2.c) Recherche du meilleur modèle au sens de l'AIC et BIC --------------------
+    
+    output$aic_bic <- renderPlot({
+        data <- stars.V2 %>% select(luminosite, temperature, magnitude, rayon, type)
+        select <- summary(regsubsets(type~.,data=data,nvmax=6))
+        
+        bic <- select$bic
+        aic <- bic - (log(nrow(data))-2)*(1:4)
+        plot(1:4,bic,pch=16,bty="l",type="b",xlab="Nombre de variables explicatives",ylab="Critères",ylim=range(c(aic,bic)),
+             col="darkgray",main="Sélection exhaustive du modèle",cex.lab=1.25,cex.axis=1.25,cex.main=1.25,lwd=2)
+        lines(1:4,aic,type="b",pch=17,lwd=2,col="coral1")
+        legend("topleft",lwd=2,lty=1,pch=c(16,17),col=c("darkgray","coral1"),bty="n",cex=1.25,legend=c("BIC","AIC"))
+        
+    })
+    
+    output$coef_best_mod <- renderPrint({
+        best.mod <- multinom(type~temperature+magnitude+rayon, data = stars.V2)
+        summary(best.mod)$coeff
+    })
+    
+    
+    
+   
     
     ############ ---- ONGLET 4.3  : ARBRE DE DECISION ----------------
     ech_app_CART <- reactive({

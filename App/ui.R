@@ -21,11 +21,11 @@
 # ONGLET 4  : CLASSIFICATION DES ETOILES (comment le type d'étoiles est définit ?)
 # ONGLET 4.1  : CLASSIFICATION OFFICIELLE DES ETOILES
 # ONGLET 4.2  : MODELE PREDICTIF
-#     1) Choix du modèle
-#           1.a) Sommaire du modèle
-#           1.b) Matrice de confusion
-#           1.c) Recherche du meilleur modèle au sens de l'AIC et BIC
-#     2) Prédire une nouvelle étoile (l'objectif étant de prédire un type d'étoile pour des nouvelles entrées de variable)
+#     1) Prédire une nouvelle étoile (l'objectif étant de prédire un type d'étoile pour des nouvelles entrées de variable)
+#     2) Choix du modèle
+#           2.a) Sommaire du modèle
+#           2.b) Matrice de confusion
+#           2.c) Recherche du meilleur modèle au sens de l'AIC et BIC
 # ONGLET 4.3  : ARBRE DE DECISION
 # ONGLET 4.4  : CLASSIFICATION ASCENDANTE HIERARCHIQUE (comparaison des groupes de sortie)
 #     1) Inertie intra-groupe
@@ -40,7 +40,7 @@
 fluidPage(
    # shinythemes::themeSelector(),
    # navbarPage
-   navbarPage("Caractérisation des étoiles", 
+   navbarPage("Caractérisation du type des étoiles", 
               theme = shinytheme("sandstone"),
               
               ############ ---- ONGLET 1 : CONTEXTE --------------------
@@ -53,7 +53,7 @@ fluidPage(
                                        h3("- Avec l'émergence de nouvelles technologies de pointes, l'analyse des données constitue un point essentiel pour de nombreux domaines tels que la biologie, la cosmologie ou l'astrophysique."),
                                        h3("- Grâce à des données morphologiques où à des paramètres liés à la structure de l'objet et à la photométrie, il est possible de séparer les étoiles en différents groupes.", em("(Bertin & Arnouts 1996, Henrion et al. 2011, Molino et al. 2014, Diaz-García et al. 2019, Lopez-Sanjuan et al. 2019)")),
                                        br(),
-                                       h3("L'objectif de notre application est ainsi de pouvoir déterminer l'appartenance d'une étoile à tel ou tel groupes selon plusieurs modalités."),
+                                       h3("L'objectif de notre application est ainsi de pouvoir déterminer l'appartenance d'une étoile à un groupe selon plusieurs modalités."),
                                        h3("Pour cela, nous disposons d'un jeu de données contenant 240 observations d'étoiles décrites selon 6 variables qui sont la température (en Kelvin), la luminosité relative au Soleil, le rayon relatif au Soleil, la magnitude absolue, la couleur et la classe spectrale."),
                                        h3("Voici une illustration de l'apparence des différents types d'étoiles:"),
                                        br(),
@@ -335,57 +335,7 @@ fluidPage(
                          tabPanel("Modèle prédictif", 
                                   tabsetPanel(
                                      
-                                     ############# 1) Choix du modèle ################
-                                     
-                                     tabPanel("Choix du modèle",
-                                              verticalLayout(fluid = TRUE, 
-                                                             
-                                                             # Modèle multinomiale
-                                                             
-                                                             # Objectif : permettre dans un premier temps à l'utilisateur de choisir
-                                                             # - les variables pour construire le modèle multinomiale;
-                                                             # - la métrique de validation.
-                                                             # -> ressort le summary, les valeurs prédites + matrices de confusion + critères 
-                                                             
-                                                             h3("Modèle multinomiale"),
-                                                             fluidRow(
-                                                                sidebarLayout(fluid = TRUE,
-                                                                              sidebarPanel(checkboxGroupInput(inputId = "choix_var_mod_mult", label = "Choisissez le ou les variables à utiliser dans le modèle",
-                                                                                                              choices = c("Température"="temperature", "Luminosité"="luminosite", "Rayon"="rayon", "Magnitude absolue"="magnitude"),
-                                                                                                              selected = c("Température"="temperature", "Luminosité"="luminosite", "Rayon"="rayon", "Magnitude absolue"="magnitude"))),
-                                                                              mainPanel(
-                                                                                 tabsetPanel(
-                                                                                    
-                                                                                    ## ---- 1.a) Sommaire du modèle --------------------
-                                                                                    
-                                                                                    tabPanel("Sommaire du modèle",verbatimTextOutput("resum_mod")),
-                                                                                    
-                                                                                    ## ---- 1.b) Matrice de confusion --------------------
-                                                                                    
-                                                                                    tabPanel("Matrice de confusion",verbatimTextOutput("confusion_matrix"))
-                                                                                 ),
-                                                                              )
-                                                                )
-                                                             ),
-                                                             
-                                                             ## ---- 1.c) Recherche du meilleur modèle au sens de l'AIC et BIC --------------------
-                                                             
-                                                             h4("________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________"),
-                                                             h3("Recherche du meilleur modèle au sens de l'AIC et BIC"),
-                                                             fluidRow(
-                                                                sidebarLayout(fluid = TRUE,
-                                                                              sidebarPanel(plotOutput("aic_bic")),
-                                                                              mainPanel(
-                                                                                 h3("Modèle retenu : Type ~ Temperature + Magnitude + Rayon"),
-                                                                                 verbatimTextOutput("coef_best_mod")
-                                                                              )
-                                                                )
-                                                             )
-                                              )
-                                     ),
-                                     
-                                     ############# 2) Prédire une nouvelle étoile ################
-                                     
+                                     ############# 1) Prédire une nouvelle étoile ################
                                      tabPanel("Prédire une nouvelle étoile", 
                                               sidebarLayout(fluid=TRUE, 
                                                             sidebarPanel(
@@ -405,7 +355,58 @@ fluidPage(
                                               ),
                                               br(),
                                               br()
-                                     )
+                                     ),
+                                     ############# 2) Choix du modèle ################
+                                     tabPanel("Choix du modèle",
+                                              verticalLayout(fluid = TRUE, 
+                                                             ## ---- 1.a) Recherche du meilleur modèle au sens de l'AIC et BIC --------------------
+                                                             
+                                                             h4("________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________"),
+                                                             h3("Recherche du meilleur modèle au sens de l'AIC et BIC"),
+                                                             fluidRow(
+                                                                sidebarLayout(fluid = TRUE,
+                                                                              sidebarPanel(plotOutput("aic_bic")),
+                                                                              mainPanel(
+                                                                                 h3("Modèle retenu : Type ~ Temperature + Magnitude + Rayon"),
+                                                                                 verbatimTextOutput("coef_best_mod")
+                                                                              )
+                                                                )
+                                                             ),
+                                                             # Modèle multinomiale
+                                                             
+                                                             # Objectif : permettre dans un premier temps à l'utilisateur de choisir
+                                                             # - les variables pour construire le modèle multinomiale;
+                                                             # - la métrique de validation.
+                                                             # -> ressort le summary, les valeurs prédites + matrices de confusion + critères 
+                                                             
+                                                             h3("Modèle multinomiale"),
+                                                             fluidRow(
+                                                                sidebarLayout(fluid = TRUE,
+                                                                              sidebarPanel(checkboxGroupInput(inputId = "choix_var_mod_mult", label = "Choisissez le ou les variables à utiliser dans le modèle",
+                                                                                                              choices = c("Température"="temperature", "Luminosité"="luminosite", "Rayon"="rayon", "Magnitude absolue"="magnitude"),
+                                                                                                              selected = c("Température"="temperature", "Luminosité"="luminosite", "Rayon"="rayon", "Magnitude absolue"="magnitude"))),
+                                                                              mainPanel(
+                                                                                 tabsetPanel(
+                                                                                    
+                                                                                    ## ---- 1.b) Sommaire du modèle --------------------
+                                                                                    
+                                                                                    tabPanel("Sommaire du modèle",verbatimTextOutput("resum_mod")),
+                                                                                    
+                                                                                    ## ---- 1.c) Matrice de confusion --------------------
+                                                                                    
+                                                                                    tabPanel("Matrice de confusion",verbatimTextOutput("confusion_matrix"))
+                                                                                 ),
+                                                                              )
+                                                                )
+                                                             ),
+                                                             
+                                                             
+                                              )
+                                     ),
+                                     
+                                     
+                                     
+                                     
                                   )
                                   
                          ),
