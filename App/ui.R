@@ -54,8 +54,8 @@ fluidPage(
                                        h3("- Grâce à des données morphologiques où à des paramètres liés à la structure de l'objet et à la photométrie, il est possible de séparer les étoiles en différents groupes.", em("(Bertin & Arnouts 1996, Henrion et al. 2011, Molino et al. 2014, Diaz-García et al. 2019, Lopez-Sanjuan et al. 2019)")),
                                        br(),
                                        h3("L'objectif de notre application est ainsi de pouvoir déterminer l'appartenance d'une étoile à tel ou tel groupes selon plusieurs modalités."),
-                                       h3("Pour cela, nous disposons d'un jeu de donnés contenant 240 observations d'étoiles décrites selon 6 variables qui sont la température (en Kelvin), la luminosité relative au Soleil, le rayon relatif au Soleil, la magnitude absolue, la couleur et la classe spectrale."),
-                                       h3("Voici une illustration de l'apparence des différents types d'étoiles"),
+                                       h3("Pour cela, nous disposons d'un jeu de données contenant 240 observations d'étoiles décrites selon 6 variables qui sont la température (en Kelvin), la luminosité relative au Soleil, le rayon relatif au Soleil, la magnitude absolue, la couleur et la classe spectrale."),
+                                       h3("Voici une illustration de l'apparence des différents types d'étoiles:"),
                                        br(),
                                        HTML('<center><img src="type_stars.jpg", style= "border-radius: 10% 10% 10% 10%; border: 3px solid"></center>'),
                           ),
@@ -74,7 +74,7 @@ fluidPage(
                           
                           tabPanel("Télécharger les données", 
                                    h1("Jeu de données"),
-                                   h4("Le jeu de données comportent 40 étoiles de chaque type."),
+                                   h4("Le jeu de données comporte 40 étoiles de chaque type."),
                                    dataTableOutput("table"),
                                    downloadButton("downloadCsv2", "Télécharger"),tags$br(),tags$br(),
                                    br(),
@@ -251,7 +251,7 @@ fluidPage(
                                                          
                                                          ## ---- 3.a) Graphe des individus --------------------
                                                          
-                                                         tabPanel("Graphe des individus",
+                                                         tabPanel("Graphes des individus",
                                                                   plotlyOutput("ACP_ind"),
                                                                   plotlyOutput("ACP_ind_ellipse")
                                                          ),
