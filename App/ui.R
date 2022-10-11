@@ -440,7 +440,7 @@ fluidPage(
                                                                 ),
                                                                 ),
                                                        h4("__________________________________________________________________"),
-                                                       h4("Taux de mauvais classement"),
+                                                       h4("Taux de mauvais classement en fonction de la taille de l'arbre"),
                                                        verbatimTextOutput("min"),
                                                        plotOutput("cp")
                                         )
