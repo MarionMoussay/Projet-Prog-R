@@ -409,9 +409,8 @@ shinyServer(function(input, output, session) {
     ############ ---- ONGLET 4.2  : CLASSIFICATION OFFICIELLE DES ETOILES ----------------
     
     output$diagramme_HR<-renderPlot({
-        data <- stars.V2 %>% filter(type %in% input$choix_var_hrdiag)
-        ggplot(data = data) + 
-            geom_point(aes(x = temperature, y = magnitude, color = type, shape = spectre, size = luminosite)) +
+        ggplot(data = stars.V2) + 
+            geom_point(aes(x = temperature, y = magnitude, color = type, size = luminosite)) +
             scale_y_reverse(name="Magnitude absolue (Mv)") +
             scale_x_reverse(name = "Température ", limits=c(34000,3000)) + 
             labs(title="Diagramme Hertzsprung-Russell")+
