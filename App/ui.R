@@ -53,7 +53,7 @@ fluidPage(
                                        h3("- Avec l'émergence de nouvelles technologies de pointes, l'analyse des données constitue un point essentiel pour de nombreux domaines tels que la biologie, la cosmologie ou l'astrophysique."),
                                        h3("- Grâce à des données morphologiques où à des paramètres liés à la structure de l'objet et à la photométrie, il est possible de séparer les étoiles en différents groupes.", em("(Bertin & Arnouts 1996, Henrion et al. 2011, Molino et al. 2014, Diaz-García et al. 2019, Lopez-Sanjuan et al. 2019)")),
                                        br(),
-                                       h3("L'objectif de notre application est ainsi de pouvoir déterminer l'appartenance d'une étoile à tel ou tel groupes selon 6 modalités."),
+                                       h3("L'objectif de notre application est ainsi de pouvoir déterminer l'appartenance d'une étoile à tel ou tel groupes selon plusieurs modalités."),
                                        h3("Pour cela, nous disposons d'un jeu de donnés contenant 240 observations d'étoiles décrites selon 6 variables qui sont la température (en Kelvin), la luminosité relative au Soleil, le rayon relatif au Soleil, la magnitude absolue, la couleur et la classe spectrale."),
                                        h3("Voici une illustration de l'apparence des différents types d'étoiles"),
                                        br(),
@@ -509,7 +509,7 @@ fluidPage(
               ),
               
               
-              tags$footer(column(6, "Institut Agro-campus, Rennes", icon = icon("fa-sharp fa-solid fa-house")), 
+              tags$footer(column(6, "L'Institut Agro Rennes/Angers", icon = icon("fa-sharp fa-solid fa-house")), 
                           column(2, actionLink("twitter_share", label = "Share", icon = icon("fa-thin fa-star"),
                                                style= "color:white;", onclick = sprintf("window.open('%s')", 
                                                                                         "https://github.com/MarionMoussay/Projet-Prog-R"))),
