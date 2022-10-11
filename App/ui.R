@@ -422,7 +422,7 @@ fluidPage(
                                   
                                   sidebarLayout(
                                      sidebarPanel(
-                                        sliderInput("taille_app", "Nombre d'individus :", 120, 240, 180,sep = 1),
+                                        sliderInput("taille_app", "Nombre d'individus :", 120, 240, 240,sep = 1),
                                         visNetworkOutput("arbreCART", height = '700px'),
                                      ),
                                      mainPanel( 
