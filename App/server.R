@@ -310,7 +310,7 @@ shinyServer(function(input, output, session) {
     ## ---- 1.a) Sommaire du modèle --------------------
     
     mod <- reactive({
-        data <- stars.V2 
+        data <- stars.V2 %>% select(1:5)
         
         if (length(input$choix_var_mod_mult)== 0){
             mod <- multinom(type~1, data=data)
@@ -325,7 +325,7 @@ shinyServer(function(input, output, session) {
     })
     
     output$resum_mod <- renderPrint({
-        summary(mod())$coeff
+        summary(mod())
     })
     
     ## ---- 1.b) Matrice de confusion --------------------
@@ -466,7 +466,7 @@ shinyServer(function(input, output, session) {
     output$imp_var <- renderPlotly({
         cp.opt <- mod_CART()$cptable %>% as_tibble() %>% filter(xerror == min(xerror)) %>% select(CP) %>% slice(1) %>% as.numeric()
         tree_opt <- prune(mod_CART(),cp=cp.opt)
-        vip(tree_opt)
+        vip(tree_opt, aesthetics=list(fill=terrain.colors(6)))
     })
     
     ############ ---- ONGLET 4.4  : CLASSIFICATION ASCENDANTE HIERARCHIQUE ----------------
