@@ -421,6 +421,7 @@ fluidPage(
                                   
                                   sidebarLayout(
                                      sidebarPanel(
+                                        sliderInput("taille_app", "Taille de l'échantillon d'apprentissage :", 120, 240, 180,sep = 1),
                                         visNetworkOutput("arbreCART", height = '700px'),
                                      ),
                                      mainPanel( 

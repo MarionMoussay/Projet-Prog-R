@@ -424,9 +424,16 @@ shinyServer(function(input, output, session) {
     })
     
     ############ ---- ONGLET 4.3  : ARBRE DE DECISION ----------------
+    ech_app_CART <- reactive({
+        stars.V2[sample(240 ,input$taille_app),]
+    })
+    
+    ech_test_CART <- reactive({
+        stars.V2[-sample(240 ,input$taille_app),]
+    })
     
     mod_CART <- reactive({
-        res <- rpart(type~temperature+rayon+magnitude+luminosite+spectre+couleur, data=stars.V2, method='class', control=rpart.control(minsplit=1,cp=0, xval=20))
+        res <- rpart(type~temperature+rayon+magnitude+luminosite, data=ech_app_CART(), method='class', control=rpart.control(minsplit=1,cp=0, xval=20))
         res
     })
     
@@ -444,16 +451,16 @@ shinyServer(function(input, output, session) {
     output$pred_CART <- renderPrint({
         cp.opt <- mod_CART()$cptable %>% as_tibble() %>% filter(xerror == min(xerror)) %>% select(CP) %>% slice(1) %>% as.numeric()
         tree_opt <- prune(mod_CART(),cp=cp.opt)
-        pred<-predict(tree_opt,newdata=stars.V2, type="class")
-        mc <- confusionMatrix(stars.V2$type,pred)
+        pred<-predict(tree_opt,newdata=ech_test_CART(), type="class")
+        mc <- confusionMatrix(ech_test_CART()$type,pred)
         mc$table
     })
     
     output$accuracy <- renderPrint({
         cp.opt <- mod_CART()$cptable %>% as_tibble() %>% filter(xerror == min(xerror)) %>% select(CP) %>% slice(1) %>% as.numeric()
         tree_opt <- prune(mod_CART(),cp=cp.opt)
-        pred<-predict(tree_opt,newdata=stars.V2, type="class")
-        mc <- confusionMatrix(stars.V2$type,pred)
+        pred<-predict(tree_opt,newdata=ech_test_CART(), type="class")
+        mc <- confusionMatrix(ech_test_CART()$type,pred)
         
         print(paste0("Accuracy : ", mc$overall[[1]]))
     })
@@ -466,7 +473,7 @@ shinyServer(function(input, output, session) {
     output$imp_var <- renderPlotly({
         cp.opt <- mod_CART()$cptable %>% as_tibble() %>% filter(xerror == min(xerror)) %>% select(CP) %>% slice(1) %>% as.numeric()
         tree_opt <- prune(mod_CART(),cp=cp.opt)
-        vip(tree_opt, aesthetics=list(fill=terrain.colors(6)))
+        vip(tree_opt)
     })
     
     ############ ---- ONGLET 4.4  : CLASSIFICATION ASCENDANTE HIERARCHIQUE ----------------

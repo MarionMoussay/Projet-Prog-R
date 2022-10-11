@@ -33,6 +33,7 @@ library(visNetwork)
 library(plyr)
 library(sparkline)
 library(car)
+library(vip)
 
 ### -- I.2. DATASET --------------------------
 
