@@ -335,19 +335,18 @@ shinyServer(function(input, output, session) {
         predict(mod(), newdata = data)
     })
     
-    output$pred <- renderPrint({
+    output$confusion_matrix <- renderPrint({
         data <- stars.V2 %>% select(1:5)
-        print(table(pred.mod.mult(), data$type))
-        paste0("Accuracy : ", mean(pred.mod.mult()== data$type))
+        confusionMatrix(pred.mod.mult(), data$type)
     })
+    
     
     ## ---- 1.c) Recherche du meilleur modèle au sens de l'AIC et BIC --------------------
     
     output$aic_bic <- renderPlot({
         data <- stars.V2 %>% select(luminosite, temperature, magnitude, rayon, type)
-        select <- summary(regsubsets(type~.,data=as.data.frame(data),nvmax=4))
+        select <- summary(regsubsets(type~.,data=data,nvmax=6))
         
-        data <- stars.V2 %>% select(luminosite, temperature, magnitude, rayon, type)
         bic <- select$bic
         aic <- bic - (log(nrow(data))-2)*(1:4)
         plot(1:4,bic,pch=16,bty="l",type="b",xlab="Nombre de variables explicatives",ylab="Critères",ylim=range(c(aic,bic)),
@@ -427,12 +426,13 @@ shinyServer(function(input, output, session) {
     ############ ---- ONGLET 4.3  : ARBRE DE DECISION ----------------
     
     mod_CART <- reactive({
-        res <- rpart(type~., data=stars.V2, method='class', control=rpart.control(minsplit=1,cp=0, xval=20))
+        res <- rpart(type~temperature+rayon+magnitude+luminosite+spectre+couleur, data=stars.V2, method='class', control=rpart.control(minsplit=1,cp=0, xval=20))
         res
     })
- 
+    
     output$arbreCART <- renderVisNetwork({
-        visTree(prune(mod_CART(),cp=mod_CART()$cptable[which.min(mod_CART()$cptable[,4]),1]), legend=FALSE, main = "Arbre de décision CART")
+        cp.opt <- mod_CART()$cptable %>% as_tibble() %>% filter(xerror == min(xerror)) %>% select(CP) %>% slice(1) %>% as.numeric()
+        visTree(prune(mod_CART(),cp=cp.opt),legend=FALSE, main = "Arbre optimal")
     })
     
     
@@ -442,14 +442,16 @@ shinyServer(function(input, output, session) {
     })
     
     output$pred_CART <- renderPrint({
-        tree_opt <- prune(mod_CART(),cp=mod_CART()$cptable[which.min(mod_CART()$cptable[,4]),1])
+        cp.opt <- mod_CART()$cptable %>% as_tibble() %>% filter(xerror == min(xerror)) %>% select(CP) %>% slice(1) %>% as.numeric()
+        tree_opt <- prune(mod_CART(),cp=cp.opt)
         pred<-predict(tree_opt,newdata=stars.V2, type="class")
         mc <- confusionMatrix(stars.V2$type,pred)
         mc$table
     })
     
     output$accuracy <- renderPrint({
-        tree_opt <- prune(mod_CART(),cp=mod_CART()$cptable[which.min(mod_CART()$cptable[,4]),1])
+        cp.opt <- mod_CART()$cptable %>% as_tibble() %>% filter(xerror == min(xerror)) %>% select(CP) %>% slice(1) %>% as.numeric()
+        tree_opt <- prune(mod_CART(),cp=cp.opt)
         pred<-predict(tree_opt,newdata=stars.V2, type="class")
         mc <- confusionMatrix(stars.V2$type,pred)
         
@@ -458,6 +460,13 @@ shinyServer(function(input, output, session) {
     
     output$cp <- renderPlot({
         plotcp(mod_CART())
+        
+    })
+    
+    output$imp_var <- renderPlotly({
+        cp.opt <- mod_CART()$cptable %>% as_tibble() %>% filter(xerror == min(xerror)) %>% select(CP) %>% slice(1) %>% as.numeric()
+        tree_opt <- prune(mod_CART(),cp=cp.opt)
+        vip(tree_opt)
     })
     
     ############ ---- ONGLET 4.4  : CLASSIFICATION ASCENDANTE HIERARCHIQUE ----------------

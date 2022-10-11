@@ -51,12 +51,3 @@ stars.V2 <- stars %>% dplyr::rename(temperature = Temperature.K,
                                                           spectre= as.factor(spectre))
 
 levels(stars.V2$type) <- c("Naine brune", "Hyper géante", "Séquence principale", "Naine Rouge", "Super géante", "Naine blanche")
-
-table <- stars.V2 |>
-  skimr::skim() |>
-  gt::gt() %>% as.data.frame() %>% select(2,7,8,9,11,13) %>% dplyr::rename(Variable = skim_variable,
-                                                                    Effectifs = "factor.top_counts",
-                                                                    Moyenne = numeric.mean,
-                                                                    SD = numeric.sd,
-                                                                    Q1 = numeric.p25,
-                                                                    Q3 = numeric.p75)

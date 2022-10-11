@@ -362,7 +362,12 @@ fluidPage(
                                                                                     
                                                                                     ## ---- 1.b) Matrice de confusion --------------------
                                                                                     
-                                                                                    tabPanel("Matrice de confusion",verbatimTextOutput("pred"))
+                                                                                    tabPanel("Matrice de confusion",
+                                                                                             verticalLayout(
+                                                                                                verbatimTextOutput("confusion_matrix"),
+                                                                                                verbatimTextOutput("accuracy_pred")
+                                                                                             )
+                                                                                             )
                                                                                  ),
                                                                               )
                                                                 )
@@ -426,9 +431,17 @@ fluidPage(
                                      mainPanel( 
                                         verticalLayout(fluid=TRUE, 
                                                        h4("__________________________________________________________________"),
-                                                       h4("Matrice de confusion"),
-                                                       verbatimTextOutput("pred_CART"),
-                                                       verbatimTextOutput("accuracy"),
+                                                       fluidRow(fluid=TRUE, 
+                                                                column(6,
+                                                                       h4("Matrice de confusion"),
+                                                                       verbatimTextOutput("pred_CART"),
+                                                                       verbatimTextOutput("accuracy"),
+                                                                ),
+                                                                column(6,
+                                                                       h4("Importance des variables"),
+                                                                       plotlyOutput("imp_var"),
+                                                                ),
+                                                                ),
                                                        h4("__________________________________________________________________"),
                                                        h4("Taux de mauvais classement en fonction de la taille de l’arbre"),
                                                        verbatimTextOutput("min"),
