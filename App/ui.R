@@ -421,7 +421,7 @@ fluidPage(
                                   
                                   sidebarLayout(
                                      sidebarPanel(
-                                        sliderInput("taille_app", "Taille de l'échantillon d'apprentissage :", 120, 240, 180,sep = 1),
+                                        sliderInput("taille_app", "Nombre d'individus :", 120, 240, 180,sep = 1),
                                         visNetworkOutput("arbreCART", height = '700px'),
                                      ),
                                      mainPanel( 
@@ -439,7 +439,7 @@ fluidPage(
                                                                 ),
                                                                 ),
                                                        h4("__________________________________________________________________"),
-                                                       h4("Taux de mauvais classement en fonction de la taille de l’arbre"),
+                                                       h4("Taux de mauvais classement"),
                                                        verbatimTextOutput("min"),
                                                        plotOutput("cp")
                                         )
