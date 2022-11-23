@@ -95,3 +95,5 @@ coef(bestmod)
 bestmod = multinom(data$Star_Type~.,data=data[,selected])   # Fits the best submodel
 coef(bestmod)
 
+
+#cvcvhebs
